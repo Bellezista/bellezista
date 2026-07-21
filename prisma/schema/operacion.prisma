@@ -1,0 +1,33 @@
+enum EstadoOperacion {
+  PENDIENTE_DE_PAGO
+  PAGADO_EN_REVISION
+  LIBERADO
+  INCIDENCIA_ABIERTA
+
+  @@schema("public")
+}
+
+// SCHEMA-ONLY PLACEHOLDER for Etapa 1 -- this is the client's own open item
+// (see CLAUDE.md: unresolved whether Fase 2's payment/escrow flow needs this
+// schema-only or with full commission logic). No Server Action, no page, and
+// no component may reference this model in Etapa 1. Treat any request to add
+// logic here as an out-of-scope change requiring a new quote.
+model Operacion {
+  id            String  @id @default(uuid()) @db.Uuid
+  anuncioId     String  @map("anuncio_id") @db.Uuid
+  anuncio       Anuncio @relation(fields: [anuncioId], references: [id])
+  propietarioId String  @map("propietario_id") @db.Uuid
+  compradorId   String  @map("comprador_id") @db.Uuid
+
+  precioFinal Decimal? @db.Decimal(12, 2) @map("precio_final")
+  comision    Decimal? @db.Decimal(12, 2)
+
+  estadoOperacion EstadoOperacion @default(PENDIENTE_DE_PAGO) @map("estado_operacion")
+
+  fechaPago       DateTime? @map("fecha_pago")
+  plazoRevision   Int?      @map("plazo_revision")
+  fechaLiberacion DateTime? @map("fecha_liberacion")
+
+  @@map("operacion")
+  @@schema("public")
+}

@@ -1,0 +1,39 @@
+// The only contact mechanism between an interested buyer and the owner --
+// phone/email are never exchanged directly, in any circumstance (see the
+// non-negotiable security requirement in CLAUDE.md and the plan's security
+// section).
+model Conversacion {
+  id     String  @id @default(uuid()) @db.Uuid
+  anuncioId String @map("anuncio_id") @db.Uuid
+  anuncio   Anuncio @relation(fields: [anuncioId], references: [id])
+
+  interesadoId String  @map("interesado_id") @db.Uuid
+  interesado   Usuario @relation("interesado", fields: [interesadoId], references: [id])
+
+  propietarioId String  @map("propietario_id") @db.Uuid
+  propietario   Usuario @relation("propietario", fields: [propietarioId], references: [id])
+
+  fechaUltimaActividad DateTime @default(now()) @map("fecha_ultima_actividad")
+
+  mensajes Mensaje[]
+
+  @@unique([anuncioId, interesadoId])
+  @@map("conversacion")
+  @@schema("public")
+}
+
+model Mensaje {
+  id             String       @id @default(uuid()) @db.Uuid
+  conversacionId String       @map("conversacion_id") @db.Uuid
+  conversacion   Conversacion @relation(fields: [conversacionId], references: [id], onDelete: Cascade)
+
+  autorId String  @map("autor_id") @db.Uuid
+  autor   Usuario @relation(fields: [autorId], references: [id])
+
+  texto     String
+  fechaHora DateTime @default(now()) @map("fecha_hora")
+
+  @@index([conversacionId, fechaHora])
+  @@map("mensaje")
+  @@schema("public")
+}

@@ -1,0 +1,13 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../../generated/prisma"
+}
+
+// `Contacto` (phone/email) lives in the `private` Postgres schema, not `public` --
+// Supabase's PostgREST only exposes `public`/`graphql_public` by default, so this
+// keeps the security-critical table unreachable via the anon-key REST API
+// regardless of RLS. See supabase/migrations/0001_private_schema.sql.
+datasource db {
+  provider = "postgresql"
+  schemas  = ["public", "private"]
+}

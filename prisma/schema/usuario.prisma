@@ -1,0 +1,48 @@
+enum RolUsuario {
+  USUARIO
+  ADMIN
+
+  @@schema("public")
+}
+
+model Usuario {
+  // Same UUID as Supabase's auth.users.id -- no @default, the value is set by
+  // the auth.users -> public.usuario sync trigger (see supabase/migrations).
+  id     String @id @db.Uuid
+  nombre String
+  rol    RolUsuario @default(USUARIO)
+
+  // Additive beyond the client's literal field list (see plan's "Open items to
+  // flag to the client") -- required by the already-confirmed "admin manages
+  // users" feature.
+  suspendido Boolean @default(false)
+
+  creadoEn DateTime @default(now()) @map("creado_en")
+
+  anuncios Anuncio[]
+  contacto Contacto?
+
+  conversacionesInteresado  Conversacion[] @relation("interesado")
+  conversacionesPropietario Conversacion[] @relation("propietario")
+  mensajes                  Mensaje[]
+
+  @@map("usuario")
+  @@schema("public")
+}
+
+// The one table the non-negotiable security requirement is about. Lives in the
+// `private` Postgres schema (see schema.prisma's datasource block) so it is
+// never reachable via Supabase's auto-generated PostgREST API, regardless of
+// RLS. No Server Action outside src/lib/actions/contacto.ts may ever query this
+// model -- see the plan's security section for the full rationale.
+model Contacto {
+  id            String   @id @default(uuid()) @db.Uuid
+  usuarioId     String   @unique @map("usuario_id") @db.Uuid
+  usuario       Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  telefono      String?
+  email         String
+  actualizadoEn DateTime @updatedAt @map("actualizado_en")
+
+  @@map("contacto")
+  @@schema("private")
+}

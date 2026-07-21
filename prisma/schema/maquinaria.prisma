@@ -1,0 +1,65 @@
+enum CategoriaMaquinaria {
+  APARATOLOGIA
+  MOBILIARIO
+  EQUIPAMIENTO
+
+  @@schema("public")
+}
+
+enum EstadoEquipo {
+  NUEVO
+  COMO_NUEVO
+  BUEN_ESTADO
+  REQUIERE_REVISION
+
+  @@schema("public")
+}
+
+enum NivelServicio {
+  BASICO
+  VENTA_PROTEGIDA
+  VENTA_PREMIUM
+
+  @@schema("public")
+}
+
+// Etapa 1 subtype. 1:1 with Anuncio, keyed by the same id (see anuncio.prisma).
+model Maquinaria {
+  anuncioId String  @id @map("anuncio_id") @db.Uuid
+  anuncio   Anuncio @relation(fields: [anuncioId], references: [id], onDelete: Cascade)
+
+  categoria    CategoriaMaquinaria
+  subcategoria String?
+  marca        String
+  modelo       String
+  numeroSerie  String? @map("numero_serie")
+
+  // Additive beyond the client's literal field list (see plan's "Open items
+  // to flag to the client") -- a resale listing needs free-text notes
+  // (maintenance history, accessories included, reason for selling) and the
+  // brief's field table doesn't otherwise provide one; the bidding-stage demo
+  // prototype had this as a `desc` field on every listing.
+  descripcion String? @db.Text
+
+  anio        Int?
+  horasDeUso  Int?     @map("horas_de_uso")
+  beautyScore Decimal? @db.Decimal(3, 1) @map("beauty_score")
+
+  estadoEquipo    EstadoEquipo  @map("estado_equipo")
+  nivelDeServicio NivelServicio @default(BASICO) @map("nivel_de_servicio")
+
+  esMedicoEstetico    Boolean   @default(false) @map("es_medico_estetico")
+  fechaPuestaEnMarcha DateTime? @db.Date @map("fecha_puesta_en_marcha")
+
+  // Storage object paths, not raw files. `video` is public (alongside fotos);
+  // `factura` is a private, owner/admin-only bucket (financial document) --
+  // see supabase/migrations/0004_storage_buckets.sql. Assumption flagged in
+  // the plan since the brief doesn't state video's visibility explicitly.
+  video   String?
+  factura String?
+
+  @@index([categoria])
+  @@index([marca])
+  @@map("maquinaria")
+  @@schema("public")
+}

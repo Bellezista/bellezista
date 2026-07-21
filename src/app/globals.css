@@ -1,0 +1,145 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+/*
+ ---break---
+ */
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Bellezista brand spec (CLAUDE.md section "Visual direction"):
+ * - Gold (#CDA306) is an accent ONLY -- a word, a line, an "eyebrow" label,
+ *   a focus ring. It must NEVER be a solid fill (button, badge, hover
+ *   highlight). Use `text-gold` / `border-gold` / `ring-gold`, never
+ *   `bg-gold` on anything but a deliberate 1-2px accent line.
+ * - The rest of the UI is near-monochrome with light backgrounds, thin
+ *   hairline separators (0.5px), and one solid primary button (soft black)
+ *   per screen. No dark mode was requested -- this is a light-only theme.
+ */
+:root {
+  --background: #fafaf7;
+  --foreground: #2c2c2a;
+
+  --card: #ffffff;
+  --card-foreground: #2c2c2a;
+
+  --popover: #ffffff;
+  --popover-foreground: #2c2c2a;
+
+  /* Primary solid button = soft black, never gold (see brand spec above). */
+  --primary: #2c2c2a;
+  --primary-foreground: #fafaf7;
+
+  --secondary: #f2f0ea;
+  --secondary-foreground: #2c2c2a;
+
+  --muted: #f2f0ea;
+  --muted-foreground: #78746c;
+
+  /* Generic hover/highlight surface used internally by shadcn components --
+   * deliberately NOT gold, so gold never appears as a fill (e.g. a hovered
+   * dropdown/select item). Use the `gold` token below for brand accents. */
+  --accent: #f2f0ea;
+  --accent-foreground: #2c2c2a;
+
+  --destructive: #b3261e;
+  --destructive-foreground: #fafaf7;
+
+  --border: #e7e4dc;
+  --input: #e7e4dc;
+  /* Focus ring is gold: a line, not a fill -- matches the brand spec. */
+  --ring: #cda306;
+
+  /* The literal brand accent color, for deliberate use (text-gold,
+   * border-gold, an eyebrow label, a 1-2px accent line) -- kept separate
+   * from --accent above so it never leaks into hover-fill surfaces. */
+  --gold: #cda306;
+  --gold-foreground: #2c2c2a;
+
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+
+  --radius: 0.625rem;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #2c2c2a;
+  --sidebar-primary: #2c2c2a;
+  --sidebar-primary-foreground: #fafaf7;
+  --sidebar-accent: #f2f0ea;
+  --sidebar-accent-foreground: #2c2c2a;
+  --sidebar-border: #e7e4dc;
+  --sidebar-ring: #cda306;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+
+  --font-sans: var(--font-montserrat);
+  --font-serif: var(--font-editorial);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif;
+  }
+}
