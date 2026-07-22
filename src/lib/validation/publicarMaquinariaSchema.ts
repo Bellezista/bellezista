@@ -10,13 +10,21 @@ import { maquinariaSchema } from "./maquinariaSchema";
 export const publicarMaquinariaSchema = anuncioComunSchema
   .extend(maquinariaSchema.shape)
   .extend({
-    fotos: z.array(z.string()).min(1, "Subí al menos una foto."),
+    fotos: z.array(z.string()).min(1, "Sube al menos una foto."),
     video: z.string().optional(),
     factura: z.string().optional(),
     // No user-facing contact-visibility choice: phone/email are never shown
     // directly, under any circumstance -- that's the non-negotiable security
     // requirement, not a per-listing setting. Contact always goes through
     // internal messaging (see FichaContactoCard).
+
+    // Terms-acceptance checkbox on the final review step -- Manual Visual de
+    // Pantallas' publish wizard (p.8) requires this before "Publicar
+    // anuncio" is enabled, and the wording there is generic/platform-wide,
+    // not specific to the Traspasos module that document otherwise mocks.
+    aceptaCondiciones: z.coerce
+      .boolean()
+      .refine((v) => v === true, "Debes aceptar las condiciones de publicación."),
   });
 
 // z.coerce.number()/z.coerce.boolean() (used for precio, esMedicoEstetico,

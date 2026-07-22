@@ -9,7 +9,7 @@ export default async function AdminUsuariosPage() {
   return (
     <div className="space-y-6">
       <h1 className="font-serif text-2xl font-bold text-foreground">
-        Usuarios
+        Miembros
       </h1>
       <AdminUsuariosTable usuarios={usuarios} />
     </div>

@@ -14,8 +14,8 @@ import {
 export const maquinariaSchema = z.object({
   categoria: z.enum(CategoriaMaquinaria),
   subcategoria: z.string().max(80).optional(),
-  marca: z.string().min(1, "Indicá la marca."),
-  modelo: z.string().min(1, "Indicá el modelo."),
+  marca: z.string().min(1, "Indica la marca."),
+  modelo: z.string().min(1, "Indica el modelo."),
   numeroSerie: z.string().max(80).optional(),
   descripcion: z.string().max(4000).optional(),
   anio: z.coerce.number().int().min(1980).max(2100).optional(),

@@ -37,7 +37,7 @@ export default async function AdminLayout({
             href="/admin/usuarios"
             className="font-medium text-foreground hover:underline"
           >
-            Usuarios
+            Miembros
           </Link>
         </nav>
       </header>

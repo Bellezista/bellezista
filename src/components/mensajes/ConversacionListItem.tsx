@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ImageOff } from "lucide-react";
 import { formatFechaRelativa } from "@/lib/format";
+import { UnreadBadge } from "@/components/layout/UnreadBadge";
 
 interface ConversacionListItemProps {
   conversacion: {
@@ -11,6 +12,7 @@ interface ConversacionListItemProps {
     propietario: { id: string; nombre: string };
     mensajes: { texto: string; fechaHora: Date | string }[];
     fechaUltimaActividad: Date | string;
+    noLeidos: number;
   };
   currentUserId: string;
 }
@@ -60,9 +62,12 @@ export function ConversacionListItem({
         </p>
       </div>
 
-      <span className="shrink-0 text-xs text-muted-foreground">
-        {formatFechaRelativa(conversacion.fechaUltimaActividad)}
-      </span>
+      <div className="flex shrink-0 flex-col items-end gap-1.5">
+        <span className="text-xs text-muted-foreground">
+          {formatFechaRelativa(conversacion.fechaUltimaActividad)}
+        </span>
+        <UnreadBadge count={conversacion.noLeidos} />
+      </div>
     </Link>
   );
 }

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma/client";
 import { createClient } from "@/lib/supabase/server";
-import { EstadoAnuncio, RolUsuario } from "@generated/prisma/client";
+import { EstadoAnuncio, Prisma, RolUsuario } from "@generated/prisma/client";
 
 // Basic admin panel only (manage listings/users) -- advanced backoffice
 // (stats, mass moderation, audit) is explicitly Fase 2, not built here.
@@ -51,7 +51,24 @@ export async function cambiarEstadoAnuncioAdmin(
 
 export async function eliminarAnuncioAdmin(anuncioId: string) {
   await requireAdmin();
-  await prisma.anuncio.delete({ where: { id: anuncioId } });
+
+  try {
+    await prisma.anuncio.delete({ where: { id: anuncioId } });
+  } catch (e) {
+    // Same FK-protection reasoning as eliminarAnuncio in actions/anuncios.ts
+    // -- Conversacion.anuncioId is ON DELETE RESTRICT on purpose.
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2003"
+    ) {
+      return {
+        error:
+          "No se puede eliminar un anuncio con conversaciones activas. Cambia su estado en su lugar.",
+      };
+    }
+    throw e;
+  }
+
   revalidatePath("/admin/anuncios");
   revalidatePath("/catalogo");
 }

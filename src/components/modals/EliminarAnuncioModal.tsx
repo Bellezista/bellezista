@@ -20,7 +20,7 @@ export function EliminarAnuncioModal({
       open={open}
       onOpenChange={onOpenChange}
       title="Eliminar anuncio"
-      description={`¿Seguro que querés eliminar "${anuncioTitulo}"? Esta acción no se puede deshacer.`}
+      description={`¿Seguro que quieres eliminar "${anuncioTitulo}"? Esta acción no se puede deshacer.`}
       confirmLabel="Eliminar"
       destructive
       onConfirm={onConfirm}

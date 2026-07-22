@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/reference data
 /.pnp
 .pnp.*
 .yarn/*
@@ -44,9 +45,3 @@ next-env.d.ts
 # prisma generated client (regenerated via `npx prisma generate`)
 /generated
 .claude/
-
-# internal working docs -- negotiation history and project-management notes,
-# not meant for the client's copy of the repo
-bid.txt
-CLAUDE.md
-BellezistaBriefdeProyectoparaDaniel1.docx

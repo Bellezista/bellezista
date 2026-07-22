@@ -15,6 +15,13 @@ model Conversacion {
 
   fechaUltimaActividad DateTime @default(now()) @map("fecha_ultima_actividad")
 
+  // Read-cursor per participant, not a per-message boolean -- "unread count"
+  // is just "messages by the other participant newer than my cursor", and a
+  // cursor also means opening the thread again always marks everything read
+  // up to now in one write, not one row per message.
+  ultimaLecturaInteresado  DateTime? @map("ultima_lectura_interesado")
+  ultimaLecturaPropietario DateTime? @map("ultima_lectura_propietario")
+
   mensajes Mensaje[]
 
   @@unique([anuncioId, interesadoId])

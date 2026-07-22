@@ -37,7 +37,7 @@ export function PanelStatsRow({ anuncios }: PanelStatsRowProps) {
         >
           <p className="text-sm text-muted-foreground">{stat.label}</p>
           <p className="mt-1 font-serif text-3xl">
-            {stat.value.toLocaleString("es-MX")}
+            {stat.value.toLocaleString("es-ES")}
           </p>
         </div>
       ))}

@@ -39,7 +39,7 @@ export function FichaContactoCard({
       ) : !loggedIn ? (
         <div className="flex flex-col gap-3">
           <p className="text-sm text-muted-foreground">
-            Iniciá sesión para contactar al propietario.
+            Inicia sesión para contactar al propietario.
           </p>
           <Button asChild variant="default" className="w-full">
             <Link href={`/login?next=/anuncios/${anuncioId}`}>

@@ -8,7 +8,7 @@ export default function PublicarPage() {
           Publicar anuncio
         </h1>
         <p className="text-sm text-muted-foreground">
-          Completá los datos de tu equipo en unos pocos pasos.
+          Completa los datos de tu equipo en unos pocos pasos.
         </p>
       </div>
       <PublishStepper />

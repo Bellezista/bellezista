@@ -56,8 +56,12 @@ export function AdminAnunciosTable({ anuncios }: AdminAnunciosTableProps) {
 
   function handleEliminar(anuncioId: string) {
     if (!window.confirm("¿Eliminar este anuncio?")) return;
-    startTransition(() => {
-      eliminarAnuncioAdmin(anuncioId);
+    startTransition(async () => {
+      const resultado = await eliminarAnuncioAdmin(anuncioId);
+      if (resultado?.error) {
+        window.alert(resultado.error);
+        return;
+      }
       router.refresh();
     });
   }

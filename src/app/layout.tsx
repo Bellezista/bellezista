@@ -18,6 +18,13 @@ const editorial = Fraunces({
 export const metadata: Metadata = {
   title: "Bellezista",
   description: "El mundo de la belleza, en un solo lugar",
+  // Chrome's auto-translate injects DOM mutations outside React's control --
+  // when it touches a Radix portal (Select/Dialog), React's own cleanup
+  // later tries to remove a node Translate already moved/replaced, throwing
+  // "Failed to execute 'removeChild'". The whole app is Spanish for a
+  // Spain-market audience, so blocking auto-translate outright is the right
+  // trade here, not just a workaround for a dev-only annoyance.
+  other: { google: "notranslate" },
 };
 
 export default function RootLayout({
@@ -28,6 +35,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
+      translate="no"
       className={`${montserrat.variable} ${editorial.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">

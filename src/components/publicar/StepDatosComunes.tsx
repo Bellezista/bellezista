@@ -49,7 +49,7 @@ export function StepDatosComunes() {
         <Label htmlFor="ciudadProvincia">Ciudad / Provincia</Label>
         <Input
           id="ciudadProvincia"
-          placeholder="Ej: Ciudad de México, CDMX"
+          placeholder="Ej: Barcelona, Cataluña"
           aria-invalid={!!errors.ciudadProvincia}
           {...register("ciudadProvincia")}
         />

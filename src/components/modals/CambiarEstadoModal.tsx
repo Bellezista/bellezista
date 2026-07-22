@@ -68,7 +68,7 @@ export function CambiarEstadoModal({
           onValueChange={(value) => setNuevoEstado(value as EstadoAnuncio)}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Seleccioná un estado" />
+            <SelectValue placeholder="Selecciona un estado" />
           </SelectTrigger>
           <SelectContent>
             {ESTADOS.map((estado) => (

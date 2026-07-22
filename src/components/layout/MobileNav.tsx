@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/layout/Logo";
+import { UnreadBadge } from "@/components/layout/UnreadBadge";
+import { useConteoNoLeidos } from "@/hooks/useConteoNoLeidos";
 import { Button } from "@/components/ui/button";
 
 const NAV_ITEMS = [
@@ -25,6 +28,7 @@ const NAV_ITEMS = [
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { data: noLeidos } = useConteoNoLeidos();
 
   return (
     <div className="md:hidden">
@@ -57,9 +61,7 @@ export function MobileNav() {
         aria-label="Menú de navegación"
       >
         <div className="flex items-center justify-between px-6 py-6">
-          <span className="font-serif text-lg font-bold text-foreground">
-            Bellezista
-          </span>
+          <Logo className="text-lg" />
           <Button
             variant="ghost"
             size="icon"
@@ -90,6 +92,9 @@ export function MobileNav() {
               >
                 <Icon className="size-4 shrink-0" aria-hidden="true" />
                 <span>{item.label}</span>
+                {item.href === "/mensajes" && (
+                  <UnreadBadge count={noLeidos ?? 0} className="ml-auto" />
+                )}
               </Link>
             );
           })}

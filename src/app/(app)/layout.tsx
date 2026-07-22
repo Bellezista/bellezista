@@ -28,7 +28,7 @@ export default async function AppLayout({
       <AppSidebar />
       <div className="flex flex-1 flex-col">
         <AppTopbar
-          userNombre={usuario?.nombre ?? user.email ?? "Usuario"}
+          userNombre={usuario?.nombre ?? user.email ?? "Miembro"}
           mobileNav={<MobileNav />}
         />
         <main className="flex-1 p-4 md:p-8">{children}</main>

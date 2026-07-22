@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin } from "lucide-react";
+import { ArrowRight, MapPin, Wrench } from "lucide-react";
 import type { AnuncioSerializado } from "@/types/anuncio";
 import { maquinariaAdapter } from "@/lib/anuncio/subtype-adapters";
+import { CATEGORIA_MAQUINARIA_LABEL } from "@/lib/anuncio/labels";
 import { formatPrecio } from "@/lib/format";
 import { EstadoTexto } from "@/components/anuncio/EstadoTexto";
 
@@ -26,6 +27,12 @@ export function AnuncioCard({ anuncio }: AnuncioCardProps) {
       className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-200 hover:border-foreground/20 hover:shadow-md"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+        {anuncio.maquinaria && (
+          <span className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-foreground/90 px-2.5 py-1 text-xs font-medium text-background">
+            <Wrench className="size-3" aria-hidden="true" />
+            {CATEGORIA_MAQUINARIA_LABEL[anuncio.maquinaria.categoria]}
+          </span>
+        )}
         {portada ? (
           <Image
             src={portada}
@@ -52,16 +59,30 @@ export function AnuncioCard({ anuncio }: AnuncioCardProps) {
         </div>
 
         {atributos.length > 0 && (
-          <p className="truncate text-sm text-muted-foreground">
-            {atributos.map((atributo) => atributo.value).join(" · ")}
-          </p>
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
+            {atributos.map((atributo) => (
+              <span key={atributo.label} className="truncate">
+                {atributo.label}:{" "}
+                <span className="text-foreground">{atributo.value}</span>
+              </span>
+            ))}
+          </div>
         )}
 
         <div className="mt-1 flex items-center justify-between gap-2">
-          <span className="text-base font-bold text-foreground">
-            {formatPrecio(anuncio.precio.toString())}
-          </span>
-          <EstadoTexto estado={anuncio.estado} />
+          <div>
+            <span className="block text-base font-bold text-foreground">
+              {formatPrecio(anuncio.precio.toString())}
+            </span>
+            <span className="text-xs text-muted-foreground">Precio</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <EstadoTexto estado={anuncio.estado} />
+            <ArrowRight
+              className="size-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </div>
         </div>
       </div>
     </Link>

@@ -35,7 +35,7 @@ export function AdminUsuariosTable({ usuarios }: AdminUsuariosTableProps) {
   if (usuarios.length === 0) {
     return (
       <p className="py-10 text-center text-sm text-muted-foreground">
-        No hay usuarios registrados todavía.
+        No hay miembros registrados todavía.
       </p>
     );
   }
@@ -58,7 +58,7 @@ export function AdminUsuariosTable({ usuarios }: AdminUsuariosTableProps) {
               {usuario.nombre}
             </TableCell>
             <TableCell className="text-muted-foreground">
-              {usuario.rol === "ADMIN" ? "Administrador" : "Usuario"}
+              {usuario.rol === "ADMIN" ? "Administrador" : "Miembro"}
             </TableCell>
             <TableCell
               className={

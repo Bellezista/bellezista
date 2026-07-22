@@ -8,7 +8,7 @@ import {
   publicarMaquinariaSchema,
   type PublicarMaquinariaInput,
 } from "@/lib/validation/publicarMaquinariaSchema";
-import { EstadoAnuncio, TipoAnuncio } from "@generated/prisma/client";
+import { EstadoAnuncio, Prisma, TipoAnuncio } from "@generated/prisma/client";
 // CatalogoFiltros is defined in src/types/anuncio.ts (a plain module, no
 // "use server" directive) and NOT re-exported from here -- client-bundled
 // code must import it from there directly, never from this file (see that
@@ -101,6 +101,7 @@ export async function crearAnuncioMaquinaria(input: PublicarMaquinariaInput) {
     fotos,
     video,
     factura,
+    aceptaCondiciones: _aceptaCondiciones,
     ...maquinariaData
   } = parsed.data;
 
@@ -135,7 +136,7 @@ export async function actualizarAnuncioMaquinaria(
     select: { propietarioId: true },
   });
   if (!existing || existing.propietarioId !== usuarioId) {
-    return { error: "No tenés permiso para editar este anuncio." };
+    return { error: "No tienes permiso para editar este anuncio." };
   }
 
   const parsed = publicarMaquinariaSchema.safeParse(input);
@@ -149,6 +150,7 @@ export async function actualizarAnuncioMaquinaria(
     fotos,
     video,
     factura,
+    aceptaCondiciones: _aceptaCondiciones,
     ...maquinariaData
   } = parsed.data;
 
@@ -179,7 +181,7 @@ export async function cambiarEstadoAnuncio(
     select: { propietarioId: true },
   });
   if (!existing || existing.propietarioId !== usuarioId) {
-    return { error: "No tenés permiso para modificar este anuncio." };
+    return { error: "No tienes permiso para modificar este anuncio." };
   }
   await prisma.anuncio.update({ where: { id: anuncioId }, data: { estado } });
   revalidatePath("/catalogo");
@@ -193,9 +195,29 @@ export async function eliminarAnuncio(anuncioId: string) {
     select: { propietarioId: true },
   });
   if (!existing || existing.propietarioId !== usuarioId) {
-    return { error: "No tenés permiso para eliminar este anuncio." };
+    return { error: "No tienes permiso para eliminar este anuncio." };
   }
-  await prisma.anuncio.delete({ where: { id: anuncioId } });
+
+  try {
+    await prisma.anuncio.delete({ where: { id: anuncioId } });
+  } catch (e) {
+    // Conversacion.anuncioId is ON DELETE RESTRICT, deliberately -- deleting
+    // a listing must never silently wipe out the interesado's side of a
+    // conversation they didn't consent to losing. P2003 = FK constraint
+    // violation (Prisma's code, not a Postgres one), the only realistic
+    // cause of this delete failing.
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2003"
+    ) {
+      return {
+        error:
+          "No puedes eliminar un anuncio con conversaciones activas. Usa \"Cambiar estado\" para retirarlo en su lugar.",
+      };
+    }
+    throw e;
+  }
+
   revalidatePath("/catalogo");
   revalidatePath("/mis-anuncios");
 }

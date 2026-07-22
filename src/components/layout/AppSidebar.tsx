@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 import { CirclePlus, LayoutGrid, List, MessageCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/layout/Logo";
+import { UnreadBadge } from "@/components/layout/UnreadBadge";
+import { useConteoNoLeidos } from "@/hooks/useConteoNoLeidos";
 
 const NAV_ITEMS = [
   { href: "/catalogo", label: "Catálogo", icon: LayoutGrid },
@@ -15,13 +18,12 @@ const NAV_ITEMS = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { data: noLeidos } = useConteoNoLeidos();
 
   return (
     <aside className="hidden md:flex md:w-60 md:flex-col md:border-r md:border-border md:bg-background">
       <div className="flex flex-col gap-1 px-6 py-8">
-        <span className="font-serif text-xl font-bold text-foreground">
-          Bellezista
-        </span>
+        <Logo className="text-xl" />
         <span className="text-xs text-gold">El mundo de la belleza</span>
       </div>
 
@@ -44,6 +46,9 @@ export function AppSidebar() {
             >
               <Icon className="size-4 shrink-0" aria-hidden="true" />
               <span>{item.label}</span>
+              {item.href === "/mensajes" && (
+                <UnreadBadge count={noLeidos ?? 0} className="ml-auto" />
+              )}
             </Link>
           );
         })}

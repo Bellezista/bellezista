@@ -24,7 +24,7 @@ async function main() {
       id: "00000000-0000-0000-0000-000000000001",
       nombre: "Clínica Demo",
       contacto: {
-        create: { email: "demo@bellezista.local", telefono: "555 000 0000" },
+        create: { email: "demo@bellezista.local", telefono: "+34 600 000 000" },
       },
     },
   });
@@ -32,8 +32,8 @@ async function main() {
   const listings = [
     {
       titulo: "Láser Diodo Triwave 3 Longitudes de Onda",
-      precio: 185000,
-      ciudadProvincia: "CDMX",
+      precio: 8900,
+      ciudadProvincia: "Barcelona",
       categoria: CategoriaMaquinaria.APARATOLOGIA,
       marca: "Cocoon",
       modelo: "Triwave 3",
@@ -43,8 +43,8 @@ async function main() {
     },
     {
       titulo: "Radiofrecuencia Multipolar Indiba Style",
-      precio: 96000,
-      ciudadProvincia: "Guadalajara",
+      precio: 4600,
+      ciudadProvincia: "Madrid",
       categoria: CategoriaMaquinaria.APARATOLOGIA,
       marca: "Indiba",
       modelo: "Style",
@@ -54,8 +54,8 @@ async function main() {
     },
     {
       titulo: "Hidrafacial Portátil 6 Pasos",
-      precio: 64000,
-      ciudadProvincia: "Puebla",
+      precio: 2900,
+      ciudadProvincia: "Valencia",
       categoria: CategoriaMaquinaria.EQUIPAMIENTO,
       marca: "Hydra Pro",
       modelo: "6 Pasos",

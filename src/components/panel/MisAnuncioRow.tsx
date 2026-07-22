@@ -54,7 +54,7 @@ export function MisAnuncioRow({
       <TableCell>
         <EstadoTexto estado={anuncio.estado} />
       </TableCell>
-      <TableCell>{anuncio.vistas.toLocaleString("es-MX")}</TableCell>
+      <TableCell>{anuncio.vistas.toLocaleString("es-ES")}</TableCell>
       <TableCell>{anuncio._count.conversaciones}</TableCell>
       <TableCell>{formatPrecio(anuncio.precio.toString())}</TableCell>
       <TableCell>

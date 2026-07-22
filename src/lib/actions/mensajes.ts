@@ -16,9 +16,56 @@ async function requireUsuarioId() {
   return user.id;
 }
 
+// Unread count = messages from the OTHER participant newer than my own
+// read-cursor for that conversation (Conversacion.ultimaLectura{Interesado,
+// Propietario}) -- a cursor per participant, not a boolean per message, so
+// opening a thread marks everything read in one write regardless of how many
+// messages are in it.
+function miCursorDeLectura(
+  conversacion: {
+    interesadoId: string;
+    ultimaLecturaInteresado: Date | null;
+    ultimaLecturaPropietario: Date | null;
+  },
+  usuarioId: string,
+) {
+  return conversacion.interesadoId === usuarioId
+    ? conversacion.ultimaLecturaInteresado
+    : conversacion.ultimaLecturaPropietario;
+}
+
+async function contarNoLeidos<
+  T extends {
+    id: string;
+    interesadoId: string;
+    ultimaLecturaInteresado: Date | null;
+    ultimaLecturaPropietario: Date | null;
+  },
+>(conversaciones: T[], usuarioId: string) {
+  if (conversaciones.length === 0) return new Map<string, number>();
+
+  const mensajesDeOtros = await prisma.mensaje.findMany({
+    where: {
+      conversacionId: { in: conversaciones.map((c) => c.id) },
+      autorId: { not: usuarioId },
+    },
+    select: { conversacionId: true, fechaHora: true },
+  });
+
+  const conteos = new Map<string, number>();
+  for (const conversacion of conversaciones) {
+    const cursor = miCursorDeLectura(conversacion, usuarioId);
+    const noLeidos = mensajesDeOtros.filter(
+      (m) => m.conversacionId === conversacion.id && (!cursor || m.fechaHora > cursor),
+    ).length;
+    conteos.set(conversacion.id, noLeidos);
+  }
+  return conteos;
+}
+
 export async function getConversaciones() {
   const usuarioId = await requireUsuarioId();
-  return prisma.conversacion.findMany({
+  const conversaciones = await prisma.conversacion.findMany({
     where: {
       OR: [{ interesadoId: usuarioId }, { propietarioId: usuarioId }],
     },
@@ -30,6 +77,34 @@ export async function getConversaciones() {
     },
     orderBy: { fechaUltimaActividad: "desc" },
   });
+
+  const noLeidosPorConversacion = await contarNoLeidos(conversaciones, usuarioId);
+  return conversaciones.map((conversacion) => ({
+    ...conversacion,
+    noLeidos: noLeidosPorConversacion.get(conversacion.id) ?? 0,
+  }));
+}
+
+// Total across every conversation -- the sidebar/mobile-nav badge needs this
+// independent of whether the inbox page is even mounted, so it's its own
+// lightweight action (no anuncio/participante includes) rather than derived
+// from getConversaciones().
+export async function getConteoNoLeidos() {
+  const usuarioId = await requireUsuarioId();
+  const conversaciones = await prisma.conversacion.findMany({
+    where: {
+      OR: [{ interesadoId: usuarioId }, { propietarioId: usuarioId }],
+    },
+    select: {
+      id: true,
+      interesadoId: true,
+      ultimaLecturaInteresado: true,
+      ultimaLecturaPropietario: true,
+    },
+  });
+
+  const noLeidosPorConversacion = await contarNoLeidos(conversaciones, usuarioId);
+  return [...noLeidosPorConversacion.values()].reduce((total, n) => total + n, 0);
 }
 
 // Every read/write here re-checks that the calling user is actually a
@@ -63,6 +138,23 @@ export async function getConversacion(conversacionId: string) {
       propietario: { select: { id: true, nombre: true } },
       mensajes: { orderBy: { fechaHora: "asc" }, include: { autor: true } },
     },
+  });
+}
+
+// Called when the thread is opened/updated (see ThreadClient) -- advances
+// only the calling participant's own cursor, so marking your copy read never
+// affects the other participant's unread count.
+export async function marcarConversacionLeida(conversacionId: string) {
+  const usuarioId = await requireUsuarioId();
+  const conversacion = await requireParticipante(conversacionId, usuarioId);
+  if (!conversacion) return;
+
+  const esInteresado = conversacion.interesadoId === usuarioId;
+  await prisma.conversacion.update({
+    where: { id: conversacionId },
+    data: esInteresado
+      ? { ultimaLecturaInteresado: new Date() }
+      : { ultimaLecturaPropietario: new Date() },
   });
 }
 
@@ -101,7 +193,7 @@ export async function iniciarConversacion(anuncioId: string) {
 export async function enviarMensaje(conversacionId: string, input: unknown) {
   const usuarioId = await requireUsuarioId();
   const conversacion = await requireParticipante(conversacionId, usuarioId);
-  if (!conversacion) return { error: "No tenés acceso a esta conversación." };
+  if (!conversacion) return { error: "No tienes acceso a esta conversación." };
 
   const parsed = mensajeSchema.safeParse(input);
   if (!parsed.success) {

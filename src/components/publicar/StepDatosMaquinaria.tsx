@@ -54,7 +54,7 @@ export function StepDatosMaquinaria() {
             render={({ field }) => (
               <Select onValueChange={field.onChange} value={field.value}>
                 <SelectTrigger id="categoria" className="w-full">
-                  <SelectValue placeholder="Elegí una categoría" />
+                  <SelectValue placeholder="Elige una categoría" />
                 </SelectTrigger>
                 <SelectContent>
                   {Object.values(CategoriaMaquinaria).map((categoria) => (
@@ -107,7 +107,14 @@ export function StepDatosMaquinaria() {
             id="anio"
             type="number"
             placeholder="Opcional"
-            {...register("anio", { valueAsNumber: true })}
+            {...register("anio", {
+              // NOT valueAsNumber: true -- an empty optional number input
+              // yields NaN that way (not undefined), and z.coerce.number()
+              // .optional() rejects NaN, silently failing validation with no
+              // visible error since this field isn't part of any step's
+              // trigger() check. Empty -> undefined instead.
+              setValueAs: (v) => (v === "" ? undefined : Number(v)),
+            })}
           />
           <FieldError message={errors.anio?.message} />
         </div>
@@ -118,7 +125,9 @@ export function StepDatosMaquinaria() {
             id="horasDeUso"
             type="number"
             placeholder="Opcional"
-            {...register("horasDeUso", { valueAsNumber: true })}
+            {...register("horasDeUso", {
+              setValueAs: (v) => (v === "" ? undefined : Number(v)),
+            })}
           />
           <FieldError message={errors.horasDeUso?.message} />
         </div>
@@ -131,7 +140,9 @@ export function StepDatosMaquinaria() {
             min={0}
             max={10}
             placeholder="Opcional"
-            {...register("beautyScore", { valueAsNumber: true })}
+            {...register("beautyScore", {
+              setValueAs: (v) => (v === "" ? undefined : Number(v)),
+            })}
           />
           <FieldError message={errors.beautyScore?.message} />
         </div>
@@ -144,7 +155,7 @@ export function StepDatosMaquinaria() {
             render={({ field }) => (
               <Select onValueChange={field.onChange} value={field.value}>
                 <SelectTrigger id="estadoEquipo" className="w-full">
-                  <SelectValue placeholder="Elegí el estado" />
+                  <SelectValue placeholder="Elige el estado" />
                 </SelectTrigger>
                 <SelectContent>
                   {Object.values(EstadoEquipo).map((estado) => (
@@ -167,7 +178,7 @@ export function StepDatosMaquinaria() {
             render={({ field }) => (
               <Select onValueChange={field.onChange} value={field.value}>
                 <SelectTrigger id="nivelDeServicio" className="w-full">
-                  <SelectValue placeholder="Elegí el nivel de servicio" />
+                  <SelectValue placeholder="Elige el nivel de servicio" />
                 </SelectTrigger>
                 <SelectContent>
                   {Object.values(NivelServicio).map((nivel) => (

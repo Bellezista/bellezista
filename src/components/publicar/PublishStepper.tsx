@@ -11,14 +11,15 @@ import {
 import { useCrearAnuncio } from "@/hooks/useCrearAnuncio";
 import { useActualizarAnuncio } from "@/hooks/useActualizarAnuncio";
 import { Button } from "@/components/ui/button";
-import { StepDatosComunes } from "@/components/publicar/StepDatosComunes";
-import { StepDatosMaquinaria } from "@/components/publicar/StepDatosMaquinaria";
+import { StepDatos } from "@/components/publicar/StepDatos";
 import { StepFotos } from "@/components/publicar/StepFotos";
 import { StepRevision } from "@/components/publicar/StepRevision";
 
 // Owns the single react-hook-form instance shared across every step (see the
 // "publicar-steps" fan-out group's files -- each consumes this via
 // useFormContext, none of them call useForm or render their own <form>).
+// 3 steps (datos -> fotos -> revisión), matching Manual Visual de
+// Pantallas' publish wizard shape.
 const STEPS: {
   label: string;
   Component: () => React.JSX.Element;
@@ -26,13 +27,16 @@ const STEPS: {
 }[] = [
   {
     label: "Datos del anuncio",
-    Component: StepDatosComunes,
-    fields: ["titulo", "precio", "ciudadProvincia"],
-  },
-  {
-    label: "Datos del equipo",
-    Component: StepDatosMaquinaria,
-    fields: ["categoria", "marca", "modelo", "estadoEquipo"],
+    Component: StepDatos,
+    fields: [
+      "titulo",
+      "precio",
+      "ciudadProvincia",
+      "categoria",
+      "marca",
+      "modelo",
+      "estadoEquipo",
+    ],
   },
   {
     label: "Fotos y video",
@@ -77,6 +81,7 @@ export function PublishStepper({
       nivelDeServicio: "BASICO",
       esMedicoEstetico: false,
       fotos: [],
+      aceptaCondiciones: false,
       ...defaultValues,
     },
   });
@@ -134,6 +139,11 @@ export function PublishStepper({
 
         {mutation.data && "error" in mutation.data && (
           <p className="text-sm text-destructive">{mutation.data.error}</p>
+        )}
+        {mutation.isError && (
+          <p className="text-sm text-destructive">
+            Ocurrió un error inesperado al publicar. Intenta de nuevo.
+          </p>
         )}
       </form>
     </FormProvider>

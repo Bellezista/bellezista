@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { MisAnuncioSerializado } from "@/types/anuncio";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,11 +22,13 @@ interface MisAnunciosTableProps {
 }
 
 export function MisAnunciosTable({ anuncios }: MisAnunciosTableProps) {
+  const router = useRouter();
   // The id of the anuncio currently targeted by a pending "eliminar" or
   // "cambiar estado" action, plus which of those two modals (if any) is open.
   const [targetId, setTargetId] = useState<string | null>(null);
   const [eliminarOpen, setEliminarOpen] = useState(false);
   const [estadoOpen, setEstadoOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const targetAnuncio = anuncios.find((a) => a.id === targetId) ?? null;
 
@@ -85,8 +88,14 @@ export function MisAnunciosTable({ anuncios }: MisAnunciosTableProps) {
           onOpenChange={setEliminarOpen}
           anuncioTitulo={targetAnuncio.titulo}
           onConfirm={async () => {
-            await eliminarAnuncio(targetAnuncio.id);
+            const resultado = await eliminarAnuncio(targetAnuncio.id);
+            if (resultado?.error) {
+              setError(resultado.error);
+              return;
+            }
+            setError(null);
             setEliminarOpen(false);
+            router.refresh();
           }}
         />
       )}
@@ -98,11 +107,22 @@ export function MisAnunciosTable({ anuncios }: MisAnunciosTableProps) {
           onOpenChange={setEstadoOpen}
           estadoActual={targetAnuncio.estado}
           onConfirm={async (nuevoEstado) => {
-            await cambiarEstadoAnuncio(targetAnuncio.id, nuevoEstado);
+            const resultado = await cambiarEstadoAnuncio(
+              targetAnuncio.id,
+              nuevoEstado
+            );
+            if (resultado?.error) {
+              setError(resultado.error);
+              return;
+            }
+            setError(null);
             setEstadoOpen(false);
+            router.refresh();
           }}
         />
       )}
+
+      {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
     </>
   );
 }

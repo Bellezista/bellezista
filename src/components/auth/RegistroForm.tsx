@@ -51,8 +51,8 @@ export function RegistroForm({ next }: { next: string }) {
   if (confirmacionEnviada) {
     return (
       <p className="text-center text-sm text-muted-foreground">
-        Te enviamos un correo de confirmación. Confirmá tu cuenta y después
-        iniciá sesión.
+        Te enviamos un correo de confirmación. Confirma tu cuenta y después
+        inicia sesión.
       </p>
     );
   }
@@ -97,9 +97,9 @@ export function RegistroForm({ next }: { next: string }) {
         {pending ? "Creando cuenta..." : "Crear cuenta"}
       </Button>
       <p className="text-center text-sm text-muted-foreground">
-        ¿Ya tenés cuenta?{" "}
+        ¿Ya tienes cuenta?{" "}
         <Link href="/login" className="text-foreground underline underline-offset-4">
-          Iniciá sesión
+          Inicia sesión
         </Link>
       </p>
     </form>

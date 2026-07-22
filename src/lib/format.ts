@@ -2,9 +2,9 @@
 // every component instead of each one inventing its own.
 
 export function formatPrecio(precio: number | string): string {
-  return Number(precio).toLocaleString("es-MX", {
+  return Number(precio).toLocaleString("es-ES", {
     style: "currency",
-    currency: "MXN",
+    currency: "EUR",
     maximumFractionDigits: 0,
   });
 }
@@ -21,5 +21,5 @@ export function formatFechaRelativa(fecha: Date | string): string {
   const diffDias = Math.round(diffHoras / 24);
   if (diffDias < 7) return `hace ${diffDias} d`;
 
-  return date.toLocaleDateString("es-MX", { day: "numeric", month: "short" });
+  return date.toLocaleDateString("es-ES", { day: "numeric", month: "short" });
 }

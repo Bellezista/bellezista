@@ -36,7 +36,7 @@ export function MensajeComposer({ conversacionId }: MensajeComposerProps) {
           value={texto}
           onChange={(event) => setTexto(event.target.value)}
           rows={2}
-          placeholder="Escribí un mensaje..."
+          placeholder="Escribe un mensaje..."
           className="flex-1"
         />
         <Button

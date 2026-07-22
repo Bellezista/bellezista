@@ -13,6 +13,7 @@ export type ConversacionConUltimoMensaje = Conversacion & {
   propietario: ParticipanteResumen;
   // getConversaciones() takes(1) without a `select`, so it's the full row.
   mensajes: Mensaje[];
+  noLeidos: number;
 };
 
 export type ConversacionConMensajes = Conversacion & {

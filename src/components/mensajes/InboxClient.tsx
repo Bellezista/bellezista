@@ -16,7 +16,7 @@ export function InboxClient({ currentUserId, initialData }: InboxClientProps) {
   if (conversaciones.length === 0) {
     return (
       <p className="py-10 text-center text-sm text-muted-foreground">
-        Todavía no tenés conversaciones.
+        Todavía no tienes conversaciones.
       </p>
     );
   }
