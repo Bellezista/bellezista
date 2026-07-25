@@ -22,13 +22,15 @@ export default async function PublicLayout({
       })
     : null;
 
+  const isAuthenticated = !!user;
+
   return (
     <div className="flex min-h-screen">
-      <AppSidebar />
+      <AppSidebar isAuthenticated={isAuthenticated} />
       <div className="flex flex-1 flex-col">
         <AppTopbar
           userNombre={usuario?.nombre ?? user?.email ?? null}
-          mobileNav={<MobileNav />}
+          mobileNav={<MobileNav isAuthenticated={isAuthenticated} />}
         />
         <main className="flex-1 p-4 md:p-8">{children}</main>
       </div>

@@ -16,9 +16,9 @@ const NAV_ITEMS = [
   { href: "/mensajes", label: "Mensajes", icon: MessageCircle },
 ] as const;
 
-export function AppSidebar() {
+export function AppSidebar({ isAuthenticated = true }: { isAuthenticated?: boolean }) {
   const pathname = usePathname();
-  const { data: noLeidos } = useConteoNoLeidos();
+  const { data: noLeidos } = useConteoNoLeidos(isAuthenticated);
 
   return (
     <aside className="hidden md:flex md:w-60 md:flex-col md:border-r md:border-border md:bg-background">

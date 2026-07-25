@@ -25,10 +25,10 @@ const NAV_ITEMS = [
   { href: "/mensajes", label: "Mensajes", icon: MessageCircle },
 ] as const;
 
-export function MobileNav() {
+export function MobileNav({ isAuthenticated = true }: { isAuthenticated?: boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const { data: noLeidos } = useConteoNoLeidos();
+  const { data: noLeidos } = useConteoNoLeidos(isAuthenticated);
 
   return (
     <div className="md:hidden">

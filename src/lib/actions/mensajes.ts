@@ -90,7 +90,17 @@ export async function getConversaciones() {
 // lightweight action (no anuncio/participante includes) rather than derived
 // from getConversaciones().
 export async function getConteoNoLeidos() {
-  const usuarioId = await requireUsuarioId();
+  // The AppSidebar/MobileNav shell that shows this badge also renders on the
+  // PUBLIC pages (/catalogo, /anuncios/[id]). A guest simply has no unread
+  // messages, so return 0 -- do NOT redirect("/login") here (via
+  // requireUsuarioId), or the client-side React Query call would bounce
+  // anonymous visitors off those public pages the instant they load.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return 0;
+  const usuarioId = user.id;
   const conversaciones = await prisma.conversacion.findMany({
     where: {
       OR: [{ interesadoId: usuarioId }, { propietarioId: usuarioId }],
