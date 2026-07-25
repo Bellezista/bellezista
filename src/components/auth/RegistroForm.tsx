@@ -16,6 +16,12 @@ export function RegistroForm({ next }: { next: string }) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [confirmacionEnviada, setConfirmacionEnviada] = useState(false);
+  // Correo ya registrado. Supabase oculta si está confirmado o no (protección
+  // anti-enumeración: ambos casos devuelven `identities` vacío), así que no
+  // damos un error sin salida -- ofrecemos reenviar la verificación (funciona
+  // si la cuenta no está confirmada) y el enlace a iniciar sesión.
+  const [cuentaExistente, setCuentaExistente] = useState(false);
+  const [reenviado, setReenviado] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,9 +62,7 @@ export function RegistroForm({ next }: { next: string }) {
     // sesión. Sin este chequeo, un correo ya existente mostraría el mensaje
     // engañoso de "confirmación enviada" en vez de impedir el registro.
     if (data.user && data.user.identities?.length === 0) {
-      setError(
-        "Ya existe una cuenta con este correo electrónico. Inicia sesión.",
-      );
+      setCuentaExistente(true);
       return;
     }
 
@@ -70,6 +74,70 @@ export function RegistroForm({ next }: { next: string }) {
 
     router.push(next);
     router.refresh();
+  }
+
+  async function handleReenviar() {
+    setError(null);
+    setPending(true);
+    const supabase = createClient();
+    const emailRedirectTo = `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(
+      next,
+    )}`;
+    // `resend` reenvía la confirmación si la cuenta existe y NO está
+    // confirmada. Si ya está confirmada, Supabase devuelve error -> guiamos a
+    // iniciar sesión. Reusa el mismo redirect que el alta para que el enlace
+    // vuelva al origen correcto (no a localhost).
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo },
+    });
+    setPending(false);
+    if (resendError) {
+      setError(
+        "Esta cuenta ya está verificada. Inicia sesión con tu contraseña.",
+      );
+      return;
+    }
+    setReenviado(true);
+  }
+
+  if (cuentaExistente) {
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Ya existe una cuenta con{" "}
+          <span className="text-foreground">{email}</span>. Si aún no la has
+          verificado, reenvía el correo de confirmación. Si ya la verificaste,
+          inicia sesión.
+        </p>
+        {error && <p className="text-sm text-destructive">{error}</p>}
+        {reenviado ? (
+          <p className="text-sm text-muted-foreground">
+            Te reenviamos el correo de confirmación. Abre el enlace desde este
+            dispositivo para activar tu cuenta.
+          </p>
+        ) : (
+          <Button
+            type="button"
+            variant="default"
+            className="w-full"
+            disabled={pending}
+            onClick={handleReenviar}
+          >
+            {pending ? "Enviando..." : "Reenviar correo de verificación"}
+          </Button>
+        )}
+        <p className="text-center text-sm text-muted-foreground">
+          <Link
+            href="/login"
+            className="text-foreground underline underline-offset-4"
+          >
+            Inicia sesión
+          </Link>
+        </p>
+      </div>
+    );
   }
 
   if (confirmacionEnviada) {
