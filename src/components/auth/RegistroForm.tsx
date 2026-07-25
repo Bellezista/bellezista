@@ -23,13 +23,25 @@ export function RegistroForm({ next }: { next: string }) {
     setPending(true);
 
     const supabase = createClient();
+    // El enlace de confirmación debe volver al MISMO origen donde el usuario
+    // se registró (producción o local), a la ruta que intercambia el `code`
+    // por una sesión (/api/auth/callback), conservando el `next`. Sin esto,
+    // Supabase usa la Site URL del proyecto como destino y manda al usuario a
+    // la raíz `/` (que no canjea el código) -- por eso el enlace acababa en
+    // http://localhost:3000/?code=... El origen se resuelve en el navegador,
+    // así que en el sitio live es la URL de producción automáticamente.
+    // (Requiere que esa URL esté en la allowlist de Redirect URLs de Supabase.)
+    const emailRedirectTo = `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(
+      next,
+    )}`;
+
     // nombre -> raw_user_meta_data.nombre, leído por el trigger
     // auth.users -> public.usuario (supabase/migrations/0003) para crear la
     // fila de Usuario con ese nombre en vez del fallback (parte local del email).
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { nombre } },
+      options: { data: { nombre }, emailRedirectTo },
     });
 
     setPending(false);
@@ -63,8 +75,8 @@ export function RegistroForm({ next }: { next: string }) {
   if (confirmacionEnviada) {
     return (
       <p className="text-center text-sm text-muted-foreground">
-        Te enviamos un correo de confirmación. Confirma tu cuenta y después
-        inicia sesión.
+        Te enviamos un correo de confirmación. Abre el enlace desde este
+        dispositivo para activar tu cuenta e iniciar sesión.
       </p>
     );
   }
