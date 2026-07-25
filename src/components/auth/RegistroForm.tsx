@@ -38,6 +38,18 @@ export function RegistroForm({ next }: { next: string }) {
       return;
     }
 
+    // Con confirmación de email activada, Supabase NO devuelve error si el
+    // correo ya está registrado (lo oculta para evitar enumeración de
+    // usuarios): devuelve un `user` ficticio con `identities` vacío y sin
+    // sesión. Sin este chequeo, un correo ya existente mostraría el mensaje
+    // engañoso de "confirmación enviada" en vez de impedir el registro.
+    if (data.user && data.user.identities?.length === 0) {
+      setError(
+        "Ya existe una cuenta con este correo electrónico. Inicia sesión.",
+      );
+      return;
+    }
+
     if (!data.session) {
       // Confirmación de email requerida antes de poder iniciar sesión.
       setConfirmacionEnviada(true);
