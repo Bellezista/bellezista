@@ -22,67 +22,59 @@ export function AnuncioCard({ anuncio }: AnuncioCardProps) {
     : [];
 
   return (
-    <Link
-      href={`/anuncios/${anuncio.id}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-200 hover:border-foreground/20 hover:shadow-md"
-    >
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
-        {anuncio.maquinaria && (
-          <span className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-foreground/90 px-2.5 py-1 text-xs font-medium text-background">
-            <Wrench className="size-3" aria-hidden="true" />
-            {CATEGORIA_MAQUINARIA_LABEL[anuncio.maquinaria.categoria]}
-          </span>
-        )}
+    <Link href={`/anuncios/${anuncio.id}`} className="group flex flex-col">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-muted">
         {portada ? (
           <Image
             src={portada}
             alt={anuncio.titulo}
             fill
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-            className="object-cover transition-transform duration-200 group-hover:scale-[1.02]"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <span className="text-sm text-muted-foreground">Sin fotos</span>
+          <div className="flex h-full w-full items-center justify-center gap-2 text-muted-foreground">
+            <Wrench className="size-4" aria-hidden="true" />
+            <span className="text-sm">Sin fotos</span>
           </div>
         )}
       </div>
 
-      <div className="flex flex-col gap-2 border-t border-border p-4">
-        <h3 className="line-clamp-2 font-serif text-base font-semibold text-foreground">
+      <div className="mt-4 flex flex-col gap-1.5">
+        {anuncio.maquinaria && (
+          <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
+            {CATEGORIA_MAQUINARIA_LABEL[anuncio.maquinaria.categoria]}
+          </span>
+        )}
+
+        <h3 className="line-clamp-2 font-serif text-lg leading-snug text-foreground">
           {anuncio.titulo}
         </h3>
 
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
           <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
           <span className="truncate">{anuncio.ciudadProvincia}</span>
+          {atributos[0] && (
+            <>
+              <span aria-hidden="true" className="text-border">
+                &middot;
+              </span>
+              <span className="truncate">{atributos[0].value}</span>
+            </>
+          )}
         </div>
 
-        {atributos.length > 0 && (
-          <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
-            {atributos.map((atributo) => (
-              <span key={atributo.label} className="truncate">
-                {atributo.label}:{" "}
-                <span className="text-foreground">{atributo.value}</span>
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="mt-1 flex items-center justify-between gap-2">
-          <div>
-            <span className="block text-base font-bold text-foreground">
-              {formatPrecio(anuncio.precio.toString())}
-            </span>
-            <span className="text-xs text-muted-foreground">Precio</span>
-          </div>
-          <div className="flex items-center gap-2">
+        <div className="mt-3 flex items-baseline justify-between gap-2 border-t border-border pt-3">
+          <span className="text-lg font-semibold text-foreground">
+            {formatPrecio(anuncio.precio.toString())}
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors group-hover:text-foreground">
             <EstadoTexto estado={anuncio.estado} />
             <ArrowRight
-              className="size-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5"
+              className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
               aria-hidden="true"
             />
-          </div>
+          </span>
         </div>
       </div>
     </Link>

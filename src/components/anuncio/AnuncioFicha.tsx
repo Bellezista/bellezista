@@ -1,5 +1,6 @@
 import type { Anuncio, Maquinaria } from "@generated/prisma/client";
 import { maquinariaAdapter } from "@/lib/anuncio/subtype-adapters";
+import { CATEGORIA_MAQUINARIA_LABEL } from "@/lib/anuncio/labels";
 import { formatPrecio } from "@/lib/format";
 import { FichaGaleria } from "@/components/anuncio/FichaGaleria";
 import { FichaAtributos } from "@/components/anuncio/FichaAtributos";
@@ -35,17 +36,27 @@ export function AnuncioFicha({
       <div>
         <FichaGaleria fotos={anuncio.fotos} titulo={anuncio.titulo} />
 
-        <div className="mt-6 flex flex-wrap items-start justify-between gap-4 border-b border-border pb-6">
+        <div className="mt-8 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
           <div>
-            <h1 className="font-serif text-2xl font-bold text-foreground">
+            <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
+              {CATEGORIA_MAQUINARIA_LABEL[anuncio.maquinaria.categoria]}
+            </span>
+            <h1 className="mt-2 font-serif text-3xl leading-tight text-foreground md:text-4xl">
               {anuncio.titulo}
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {anuncio.ciudadProvincia}
-            </p>
-            <EstadoTexto estado={anuncio.estado} />
+            <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+              <span>{anuncio.ciudadProvincia}</span>
+              {anuncio.estado !== "ACTIVO" && (
+                <>
+                  <span aria-hidden="true" className="text-border">
+                    &middot;
+                  </span>
+                  <EstadoTexto estado={anuncio.estado} />
+                </>
+              )}
+            </div>
           </div>
-          <p className="text-2xl font-bold text-foreground">
+          <p className="font-serif text-3xl text-foreground">
             {formatPrecio(anuncio.precio.toString())}
           </p>
         </div>

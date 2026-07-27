@@ -24,14 +24,21 @@ export function FichaContactoCard({
   esPropioAnuncio,
 }: FichaContactoCardProps) {
   return (
-    <div className="flex flex-col gap-5 rounded-lg border border-border bg-card p-5">
+    <div className="flex flex-col gap-5 rounded-lg border border-border bg-card p-6 lg:sticky lg:top-8">
+      <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
+        Contacto
+      </span>
+
       <div className="flex items-center gap-3">
         <Avatar size="lg">
           <AvatarFallback>{obtenerIniciales(propietarioNombre)}</AvatarFallback>
         </Avatar>
-        <p className="text-sm font-semibold text-foreground">
-          {propietarioNombre}
-        </p>
+        <div>
+          <p className="text-sm font-semibold text-foreground">
+            {propietarioNombre}
+          </p>
+          <p className="text-xs text-muted-foreground">Propietario</p>
+        </div>
       </div>
 
       {esPropioAnuncio ? (
@@ -39,20 +46,35 @@ export function FichaContactoCard({
       ) : !loggedIn ? (
         <div className="flex flex-col gap-3">
           <p className="text-sm text-muted-foreground">
-            Inicia sesión para contactar al propietario.
+            Escribe al propietario para preguntar por este equipo. Inicia
+            sesión para enviar tu mensaje.
           </p>
           <Button asChild variant="default" className="w-full">
             <Link href={`/login?next=/anuncios/${anuncioId}`}>
-              Iniciar sesión
+              Iniciar sesión para contactar
             </Link>
           </Button>
         </div>
       ) : (
-        <form action={iniciarConversacion.bind(null, anuncioId)}>
+        <form
+          action={iniciarConversacion.bind(null, anuncioId)}
+          className="flex flex-col gap-3"
+        >
+          <p className="text-sm text-muted-foreground">
+            Escribe al propietario para preguntar por este equipo.
+          </p>
           <Button type="submit" variant="default" className="w-full">
             Enviar mensaje
           </Button>
         </form>
+      )}
+
+      {!esPropioAnuncio && (
+        <p className="border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+          Por privacidad, el teléfono y el correo no se muestran. Hablaréis
+          dentro de Bellezista y la conversación quedará en tu sección de
+          Mensajes.
+        </p>
       )}
     </div>
   );

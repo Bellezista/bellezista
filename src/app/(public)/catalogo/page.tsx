@@ -21,11 +21,14 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-2xl font-bold text-foreground">
+        <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
+          Maquinaria profesional
+        </span>
+        <h1 className="mt-2 font-serif text-3xl leading-tight text-foreground md:text-4xl">
           Catálogo
         </h1>
-        <p className="text-sm text-muted-foreground">
-          Maquinaria de estética en un solo lugar
+        <p className="mt-1 text-sm text-muted-foreground">
+          Compra y vende equipamiento de estética en un solo lugar.
         </p>
       </div>
       <FiltroBar />
