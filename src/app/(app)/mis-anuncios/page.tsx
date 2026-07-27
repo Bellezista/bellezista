@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client";
 import { getMisAnuncios } from "@/lib/actions/anuncios";
 import { PanelStatsRow } from "@/components/panel/PanelStatsRow";
 import { MisAnunciosTable } from "@/components/panel/MisAnunciosTable";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -28,14 +29,11 @@ export default async function MisAnunciosPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="font-serif text-2xl font-bold text-foreground">
-          Hola, {nombre}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Vistas, mensajes y estado de tus publicaciones
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Tu panel"
+        title={`Hola, ${nombre}`}
+        subtitle="Vistas, mensajes y estado de tus publicaciones."
+      />
       <PanelStatsRow anuncios={anuncios} />
       <MisAnunciosTable anuncios={anuncios} />
     </div>

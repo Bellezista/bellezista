@@ -1,16 +1,14 @@
 import { PublishStepper } from "@/components/publicar/PublishStepper";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 export default function PublicarPage() {
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="font-serif text-2xl font-bold text-foreground">
-          Publicar anuncio
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Completa los datos de tu equipo en unos pocos pasos.
-        </p>
-      </div>
+    <div className="mx-auto max-w-2xl space-y-8">
+      <PageHeader
+        eyebrow="Nuevo anuncio"
+        title="Publicar anuncio"
+        subtitle="Completa los datos de tu equipo en unos pocos pasos."
+      />
       <PublishStepper />
     </div>
   );

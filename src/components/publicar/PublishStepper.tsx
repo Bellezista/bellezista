@@ -109,12 +109,15 @@ export function PublishStepper({
           {STEPS.map((s, i) => (
             <div
               key={s.label}
-              className={`flex-1 border-t-2 pt-2 text-xs font-medium ${
+              className={`flex-1 border-t-2 pt-2 text-xs font-medium transition-colors ${
                 i <= step
-                  ? "border-foreground text-foreground"
+                  ? "border-gold text-foreground"
                   : "border-border text-muted-foreground"
               }`}
             >
+              <span className={i <= step ? "text-gold" : undefined}>
+                {`0${i + 1}`}
+              </span>{" "}
               {s.label}
             </div>
           ))}

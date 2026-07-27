@@ -31,14 +31,11 @@ export function PanelStatsRow({ anuncios }: PanelStatsRowProps) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
       {stats.map((stat) => (
-        <div
-          key={stat.label}
-          className="rounded-lg border border-border p-4"
-        >
-          <p className="text-sm text-muted-foreground">{stat.label}</p>
-          <p className="mt-1 font-serif text-3xl">
+        <div key={stat.label} className="rounded-lg bg-cream p-4">
+          <p className="font-serif text-3xl text-foreground">
             {stat.value.toLocaleString("es-ES")}
           </p>
+          <p className="mt-1 text-sm text-muted-foreground">{stat.label}</p>
         </div>
       ))}
     </div>

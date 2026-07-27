@@ -14,7 +14,9 @@ export default function AuthLayout({
             El mundo de la belleza, en un solo lugar
           </p>
         </div>
-        {children}
+        <div className="rounded-xl bg-card p-6 shadow-[var(--shadow-card)]">
+          {children}
+        </div>
       </div>
     </div>
   );
