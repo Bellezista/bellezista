@@ -27,7 +27,7 @@ export function AppSidebar({
   const { data: noLeidos } = useConteoNoLeidos(isAuthenticated);
 
   return (
-    <aside className="hidden md:flex md:w-60 md:flex-col md:border-r md:border-border md:bg-background">
+    <aside className="hidden md:sticky md:top-0 md:flex md:h-screen md:w-60 md:flex-col md:overflow-y-auto md:border-r md:border-border md:bg-background">
       <div className="flex flex-col gap-1 px-6 py-8">
         <Logo className="text-xl" />
         <span className="text-xs text-gold">El mundo de la belleza</span>

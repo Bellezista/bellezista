@@ -61,10 +61,11 @@
    * near-monochrome palette (client design feedback, Phase 1 review). */
   --cream: #f4efe4;
 
-  /* Soft, diffuse card shadow so listings "float" off the background without
-   * hard borders -- kept low-opacity and warm-toned to stay elegant. */
-  --shadow-card: 0 2px 16px -6px rgba(44, 44, 42, 0.1);
-  --shadow-card-hover: 0 10px 30px -10px rgba(44, 44, 42, 0.16);
+  /* Soft card shadow so listings "float" off the background without hard
+   * borders. Two layers: a 0-offset ambient ring so the shadow reads on all
+   * four sides, plus a downward layer for depth. Warm-toned to stay elegant. */
+  --shadow-card: 0 0 14px rgba(44, 44, 42, 0.08), 0 6px 20px rgba(44, 44, 42, 0.12);
+  --shadow-card-hover: 0 0 18px rgba(44, 44, 42, 0.1), 0 12px 34px rgba(44, 44, 42, 0.17);
 
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
