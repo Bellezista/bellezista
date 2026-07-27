@@ -56,7 +56,7 @@ export function AnuncioFicha({
               )}
             </div>
           </div>
-          <p className="font-serif text-3xl text-foreground">
+          <p className="font-serif text-3xl text-gold">
             {formatPrecio(anuncio.precio.toString())}
           </p>
         </div>

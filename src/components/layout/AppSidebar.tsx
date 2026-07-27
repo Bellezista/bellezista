@@ -16,7 +16,13 @@ const NAV_ITEMS = [
   { href: "/mensajes", label: "Mensajes", icon: MessageCircle },
 ] as const;
 
-export function AppSidebar({ isAuthenticated = true }: { isAuthenticated?: boolean }) {
+export function AppSidebar({
+  isAuthenticated = true,
+  anunciosActivos,
+}: {
+  isAuthenticated?: boolean;
+  anunciosActivos?: number;
+}) {
   const pathname = usePathname();
   const { data: noLeidos } = useConteoNoLeidos(isAuthenticated);
 
@@ -53,6 +59,17 @@ export function AppSidebar({ isAuthenticated = true }: { isAuthenticated?: boole
           );
         })}
       </nav>
+
+      {typeof anunciosActivos === "number" && (
+        <div className="mt-auto px-6 py-6">
+          <p className="text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">
+              {anunciosActivos}
+            </span>{" "}
+            {anunciosActivos === 1 ? "anuncio activo" : "anuncios activos"}
+          </p>
+        </div>
+      )}
     </aside>
   );
 }

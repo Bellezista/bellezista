@@ -70,6 +70,18 @@ export async function getAnuncioById(id: string) {
   });
 }
 
+// Total browsable Maquinaria listings (same set the catalog shows: not
+// RETIRADO). Drives the "X anuncios activos" line in the sidebar so it
+// doesn't read as empty (client design feedback, Phase 1 review).
+export async function contarAnunciosActivos() {
+  return prisma.anuncio.count({
+    where: {
+      tipo: TipoAnuncio.MAQUINARIA,
+      estado: { not: EstadoAnuncio.RETIRADO },
+    },
+  });
+}
+
 export async function getMisAnuncios() {
   const usuarioId = await requireUsuarioId();
   const anuncios = await prisma.anuncio.findMany({

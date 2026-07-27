@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma/client";
+import { contarAnunciosActivos } from "@/lib/actions/anuncios";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { AppTopbar } from "@/components/layout/AppTopbar";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { Footer } from "@/components/layout/Footer";
 
 // proxy.ts already redirects anonymous visitors away from these routes
 // (cheap, cookie-only check) -- this is the real, close-to-the-data check
@@ -23,15 +25,18 @@ export default async function AppLayout({
     select: { nombre: true },
   });
 
+  const anunciosActivos = await contarAnunciosActivos();
+
   return (
     <div className="flex min-h-screen">
-      <AppSidebar />
+      <AppSidebar anunciosActivos={anunciosActivos} />
       <div className="flex flex-1 flex-col">
         <AppTopbar
           userNombre={usuario?.nombre ?? user.email ?? "Miembro"}
           mobileNav={<MobileNav />}
         />
         <main className="flex-1 p-4 md:p-8">{children}</main>
+        <Footer />
       </div>
     </div>
   );

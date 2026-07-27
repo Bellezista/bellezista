@@ -20,7 +20,7 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="rounded-xl bg-cream px-6 py-9 md:px-10 md:py-11">
         <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
           Maquinaria profesional
         </span>

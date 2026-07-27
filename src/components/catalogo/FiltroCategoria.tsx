@@ -30,9 +30,9 @@ export function FiltroCategoria() {
 
   const claseBoton = (activo: boolean) =>
     cn(
-      "border-b-2 pb-2 text-sm whitespace-nowrap transition-colors",
+      "pb-2 text-sm whitespace-nowrap border-b-[3px] transition-colors",
       activo
-        ? "border-foreground font-semibold text-foreground"
+        ? "border-gold font-bold text-foreground"
         : "border-transparent text-muted-foreground hover:text-foreground"
     );
 

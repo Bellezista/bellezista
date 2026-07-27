@@ -1,8 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma/client";
+import { contarAnunciosActivos } from "@/lib/actions/anuncios";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { AppTopbar } from "@/components/layout/AppTopbar";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { Footer } from "@/components/layout/Footer";
 
 // Same shell as (app)/layout.tsx, but no auth redirect -- /catalogo and
 // /anuncios/[id] are public (see proxy.ts). Shows a "Iniciar sesión" link
@@ -23,16 +25,21 @@ export default async function PublicLayout({
     : null;
 
   const isAuthenticated = !!user;
+  const anunciosActivos = await contarAnunciosActivos();
 
   return (
     <div className="flex min-h-screen">
-      <AppSidebar isAuthenticated={isAuthenticated} />
+      <AppSidebar
+        isAuthenticated={isAuthenticated}
+        anunciosActivos={anunciosActivos}
+      />
       <div className="flex flex-1 flex-col">
         <AppTopbar
           userNombre={usuario?.nombre ?? user?.email ?? null}
           mobileNav={<MobileNav isAuthenticated={isAuthenticated} />}
         />
         <main className="flex-1 p-4 md:p-8">{children}</main>
+        <Footer />
       </div>
     </div>
   );

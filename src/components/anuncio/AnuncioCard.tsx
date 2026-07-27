@@ -22,8 +22,11 @@ export function AnuncioCard({ anuncio }: AnuncioCardProps) {
     : [];
 
   return (
-    <Link href={`/anuncios/${anuncio.id}`} className="group flex flex-col">
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-muted">
+    <Link
+      href={`/anuncios/${anuncio.id}`}
+      className="group flex flex-col overflow-hidden rounded-xl bg-card shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-card-hover)]"
+    >
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
         {portada ? (
           <Image
             src={portada}
@@ -40,7 +43,7 @@ export function AnuncioCard({ anuncio }: AnuncioCardProps) {
         )}
       </div>
 
-      <div className="mt-4 flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1.5 p-5">
         {anuncio.maquinaria && (
           <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
             {CATEGORIA_MAQUINARIA_LABEL[anuncio.maquinaria.categoria]}
@@ -65,7 +68,7 @@ export function AnuncioCard({ anuncio }: AnuncioCardProps) {
         </div>
 
         <div className="mt-3 flex items-baseline justify-between gap-2 border-t border-border pt-3">
-          <span className="text-lg font-semibold text-foreground">
+          <span className="font-serif text-xl text-gold">
             {formatPrecio(anuncio.precio.toString())}
           </span>
           <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors group-hover:text-foreground">

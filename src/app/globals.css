@@ -56,6 +56,16 @@
   --gold: #cda306;
   --gold-foreground: #2c2c2a;
 
+  /* Very soft cream, a touch warmer/deeper than the page background -- used
+   * for header bands and the footer to add depth without leaving the
+   * near-monochrome palette (client design feedback, Phase 1 review). */
+  --cream: #f4efe4;
+
+  /* Soft, diffuse card shadow so listings "float" off the background without
+   * hard borders -- kept low-opacity and warm-toned to stay elegant. */
+  --shadow-card: 0 2px 16px -6px rgba(44, 44, 42, 0.1);
+  --shadow-card-hover: 0 10px 30px -10px rgba(44, 44, 42, 0.16);
+
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -102,6 +112,7 @@
 
   --color-gold: var(--gold);
   --color-gold-foreground: var(--gold-foreground);
+  --color-cream: var(--cream);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
