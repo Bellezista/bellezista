@@ -1,9 +1,18 @@
 "use client";
 
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { PROVINCIA_DESTACADA, PROVINCIAS_ORDENADAS } from "@/lib/provincias";
 import type { PublicarMaquinariaFormInput } from "@/lib/validation/publicarMaquinariaSchema";
 
 function FieldError({ message }: { message?: string }) {
@@ -13,9 +22,14 @@ function FieldError({ message }: { message?: string }) {
 
 export function StepDatosComunes() {
   const {
+    control,
     register,
     formState: { errors },
   } = useFormContext<PublicarMaquinariaFormInput>();
+
+  const restoProvincias = PROVINCIAS_ORDENADAS.filter(
+    (p) => p !== PROVINCIA_DESTACADA,
+  );
 
   return (
     <div className="space-y-6">
@@ -46,12 +60,28 @@ export function StepDatosComunes() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="ciudadProvincia">Ciudad / Provincia</Label>
-        <Input
-          id="ciudadProvincia"
-          placeholder="Ej: Barcelona, Cataluña"
-          aria-invalid={!!errors.ciudadProvincia}
-          {...register("ciudadProvincia")}
+        <Label htmlFor="ciudadProvincia">Provincia</Label>
+        <Controller
+          control={control}
+          name="ciudadProvincia"
+          render={({ field }) => (
+            <Select onValueChange={field.onChange} value={field.value}>
+              <SelectTrigger id="ciudadProvincia" className="w-full">
+                <SelectValue placeholder="Elige la provincia" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={PROVINCIA_DESTACADA}>
+                  {PROVINCIA_DESTACADA}
+                </SelectItem>
+                <SelectSeparator />
+                {restoProvincias.map((provincia) => (
+                  <SelectItem key={provincia} value={provincia}>
+                    {provincia}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         />
         <FieldError message={errors.ciudadProvincia?.message} />
       </div>

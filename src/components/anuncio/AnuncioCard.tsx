@@ -9,13 +9,16 @@ import { EstadoTexto } from "@/components/anuncio/EstadoTexto";
 
 interface AnuncioCardProps {
   anuncio: AnuncioSerializado;
+  // Above-the-fold cards (the first row) opt in to eager loading + preload so
+  // the first image isn't lazy-loaded as the LCP element. Set by AnuncioGrid.
+  priority?: boolean;
 }
 
 // Reusable catalog card. Kept subtype-agnostic on purpose: it only ever
 // touches Maquinaria through maquinariaAdapter.getAtributosCard, so adding
 // Traspasos/Talent/Oferta subtypes in Fase 2 means a new adapter, not a
 // change here (see src/lib/anuncio/subtype-adapters.ts).
-export function AnuncioCard({ anuncio }: AnuncioCardProps) {
+export function AnuncioCard({ anuncio, priority = false }: AnuncioCardProps) {
   const portada = anuncio.fotos[0];
   const atributos = anuncio.maquinaria
     ? maquinariaAdapter.getAtributosCard(anuncio.maquinaria).slice(0, 2)
@@ -33,6 +36,7 @@ export function AnuncioCard({ anuncio }: AnuncioCardProps) {
             alt={anuncio.titulo}
             fill
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            priority={priority}
             className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
           />
         ) : (

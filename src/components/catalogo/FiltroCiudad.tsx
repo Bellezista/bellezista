@@ -1,50 +1,61 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { PROVINCIA_DESTACADA, PROVINCIAS_ORDENADAS } from "@/lib/provincias";
 
-// ciudad_provincia is free text on Anuncio, so this filters by a partial,
-// case-insensitive match server-side -- same debounce-then-push pattern as
-// FiltroMarca / BuscadorInput.
+// The platform targets Spain, so ciudad_provincia is filtered from a fixed
+// province list (Barcelona featured first) instead of free text. Selecting a
+// province pushes it to the `ciudad` URL param, matched server-side against
+// ciudad_provincia (contains, case-insensitive).
+const TODAS = "__todas__";
+
 export function FiltroCiudad() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [value, setValue] = useState(searchParams.get("ciudad") ?? "");
-  const esPrimerRender = useRef(true);
+  const actual = searchParams.get("ciudad") ?? TODAS;
 
-  useEffect(() => {
-    if (esPrimerRender.current) {
-      esPrimerRender.current = false;
-      return;
+  function seleccionar(value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value && value !== TODAS) {
+      params.set("ciudad", value);
+    } else {
+      params.delete("ciudad");
     }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }
 
-    const timeout = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (value) {
-        params.set("ciudad", value);
-      } else {
-        params.delete("ciudad");
-      }
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    }, 400);
-
-    return () => clearTimeout(timeout);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  const resto = PROVINCIAS_ORDENADAS.filter((p) => p !== PROVINCIA_DESTACADA);
 
   return (
     <div className="flex w-full flex-col gap-1.5">
-      <Label htmlFor="filtro-ciudad">Ciudad / Provincia</Label>
-      <Input
-        id="filtro-ciudad"
-        type="text"
-        value={value}
-        onChange={(event) => setValue(event.target.value)}
-        placeholder="Ej. Ciudad de México..."
-      />
+      <Label htmlFor="filtro-ciudad">Provincia</Label>
+      <Select value={actual} onValueChange={seleccionar}>
+        <SelectTrigger id="filtro-ciudad" className="w-full">
+          <SelectValue placeholder="Todas las provincias" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={TODAS}>Todas las provincias</SelectItem>
+          <SelectItem value={PROVINCIA_DESTACADA}>
+            {PROVINCIA_DESTACADA}
+          </SelectItem>
+          <SelectSeparator />
+          {resto.map((provincia) => (
+            <SelectItem key={provincia} value={provincia}>
+              {provincia}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }
