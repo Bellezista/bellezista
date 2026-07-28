@@ -28,10 +28,10 @@ export function AppSidebar({
 
   return (
     <aside className="hidden md:sticky md:top-0 md:flex md:h-screen md:w-60 md:flex-col md:overflow-y-auto md:border-r md:border-border md:bg-background">
-      <div className="flex flex-col gap-1 px-6 py-8">
+      <Link href="/" className="flex flex-col gap-1 px-6 py-8" aria-label="Ir al inicio">
         <Logo className="text-xl" />
         <span className="text-xs text-gold">El mundo de la belleza</span>
-      </div>
+      </Link>
 
       <nav className="flex flex-1 flex-col gap-1 px-3">
         {NAV_ITEMS.map((item) => {

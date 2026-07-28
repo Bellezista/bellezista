@@ -61,7 +61,13 @@ export function MobileNav({ isAuthenticated = true }: { isAuthenticated?: boolea
         aria-label="Menú de navegación"
       >
         <div className="flex items-center justify-between px-6 py-6">
-          <Logo className="text-lg" />
+          <Link
+            href="/"
+            onClick={() => setOpen(false)}
+            aria-label="Ir al inicio"
+          >
+            <Logo className="text-lg" />
+          </Link>
           <Button
             variant="ghost"
             size="icon"

@@ -14,7 +14,7 @@ export function Footer() {
   const anio = new Date().getFullYear();
 
   return (
-    <footer className="mt-16 border-t-2 border-gold bg-foreground text-background">
+    <footer className="border-t-2 border-gold bg-foreground text-background">
       <div className="flex flex-col-reverse gap-3 px-4 py-6 sm:flex-row sm:items-center sm:justify-between md:px-8">
         <p className="text-xs text-background/60">&copy; {anio} Bellezista</p>
 

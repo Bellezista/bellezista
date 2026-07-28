@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Logo } from "@/components/layout/Logo";
 
 export default function AuthLayout({
@@ -8,7 +9,9 @@ export default function AuthLayout({
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <h1>
-            <Logo className="text-2xl" />
+            <Link href="/" aria-label="Ir al inicio">
+              <Logo className="text-2xl" />
+            </Link>
           </h1>
           <p className="mt-1 text-sm text-gold">
             El mundo de la belleza, en un solo lugar
