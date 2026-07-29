@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 export const dynamic = "force-dynamic";
 
 const HERO_IMG =
-  "https://tcskwxcxfklukekmhttl.supabase.co/storage/v1/object/public/fotos-video/site/hero-salon.jpg";
+  "https://tcskwxcxfklukekmhttl.supabase.co/storage/v1/object/public/fotos-video/site/hero.png";
 
 // Signature editorial pillars -- numbered (01/02/03) as the recurring "personality"
 // motif across the luxury design pass.
@@ -44,13 +44,15 @@ export default async function LandingPage() {
       <section className="relative isolate flex min-h-[88vh] flex-col">
         <Image
           src={HERO_IMG}
-          alt="Centro de estética profesional"
+          alt="Recepción de un centro de estética profesional"
           fill
           priority
           sizes="100vw"
           className="-z-10 object-cover"
         />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-foreground/90 via-foreground/70 to-foreground/40" />
+        {/* Warm, gold-toned overlay (client reference: SoluciónOK). Warm brown
+            instead of neutral black so the hero reads luxurious, not cold. */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#241a12]/92 via-[#241a12]/72 to-[#241a12]/30" />
 
         {/* Nav */}
         <header className="flex items-center justify-between px-6 py-6 md:px-12">
@@ -88,7 +90,11 @@ export default async function LandingPage() {
               altura del sector.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-6">
-              <Button asChild size="lg" className="h-12 px-8 text-sm">
+              <Button
+                asChild
+                size="lg"
+                className="h-12 rounded-full bg-gold px-8 text-sm font-semibold text-foreground hover:bg-gold/90"
+              >
                 <Link href="/catalogo">Explorar el catálogo</Link>
               </Button>
               <Link
