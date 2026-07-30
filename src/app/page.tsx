@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { getAnunciosMaquinaria } from "@/lib/actions/anuncios";
 import { AnuncioCard } from "@/components/anuncio/AnuncioCard";
+import { HeroTabs } from "@/components/landing/HeroTabs";
 import { Footer } from "@/components/layout/Footer";
 import { Logo } from "@/components/layout/Logo";
 import { Button } from "@/components/ui/button";
@@ -85,34 +86,17 @@ export default async function LandingPage() {
               El mundo de la belleza, en un solo lugar.
             </h1>
             <p className="mt-6 max-w-lg text-base leading-relaxed text-background/80 md:text-lg">
-              Compra y vende maquinaria de estética entre profesionales. Con
-              contacto seguro, sin exponer tus datos y con una experiencia a la
-              altura del sector.
+              Traspasos, maquinaria, talento y ofertas para el sector de la
+              belleza. Con contacto seguro y sin exponer tus datos.
             </p>
-            <div className="mt-9 flex flex-wrap items-center gap-6">
-              <Button
-                asChild
-                size="lg"
-                className="h-12 rounded-full bg-gold px-8 text-sm font-semibold text-foreground hover:bg-gold/90"
-              >
-                <Link href="/catalogo">Explorar el catálogo</Link>
-              </Button>
-              <Link
-                href="/publicar"
-                className="text-sm text-background underline decoration-gold underline-offset-4 transition-colors hover:text-gold"
-              >
-                Publicar un anuncio
-              </Link>
-            </div>
+            <HeroTabs />
           </div>
         </div>
 
-        {/* Thin gold rule -- signature detail */}
-        <div className="h-0.5 w-full bg-gold" />
       </section>
 
       {/* Pillars */}
-      <section className="px-6 py-20 md:px-12 md:py-28">
+      <section className="px-6 pb-20 pt-12 md:px-12 md:pb-28 md:pt-16">
         <div className="mx-auto max-w-6xl">
           <span className="text-xs font-medium uppercase tracking-[0.24em] text-gold">
             Por qué Bellezista
