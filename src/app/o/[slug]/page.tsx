@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BackButton } from "./BackButton";
 
 // Isolated public offer landing (Ofertas module). Deliberately NOT inside the
 // (public)/(app) shells -- no sidebar, topbar, menu or search. A consumer lands
@@ -37,8 +36,7 @@ export default function OfertaLandingPage() {
   const badge = o.vigencia === "diaria" ? "Oferta hoy" : "Oferta esta semana";
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center bg-muted px-4 py-10">
-      <BackButton />
+    <main className="flex min-h-screen items-center justify-center bg-muted px-4 py-10">
       <div className="w-full max-w-sm overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
         {/* Imagen + badge */}
         <div className="relative aspect-[16/10] w-full">
