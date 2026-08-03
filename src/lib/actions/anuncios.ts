@@ -8,6 +8,10 @@ import {
   publicarMaquinariaSchema,
   type PublicarMaquinariaInput,
 } from "@/lib/validation/publicarMaquinariaSchema";
+import {
+  publicarTraspasoSchema,
+  type PublicarTraspasoInput,
+} from "@/lib/validation/publicarTraspasoSchema";
 import { EstadoAnuncio, Prisma, TipoAnuncio } from "@generated/prisma/client";
 // CatalogoFiltros is defined in src/types/anuncio.ts (a plain module, no
 // "use server" directive) and NOT re-exported from here -- client-bundled
@@ -68,6 +72,36 @@ export async function getAnuncioById(id: string) {
     where: { id },
     include: { maquinaria: true, traspaso: true, propietario: true },
   });
+}
+
+// Traspasos catalog. Same shape as getAnunciosMaquinaria but filtered to the
+// TRASPASO subtype, with traspaso-specific filters (tipo de negocio, precio
+// range). ciudad/q reuse the shared parent-field filters.
+export async function getAnunciosTraspaso(filtros: CatalogoFiltros = {}) {
+  const anuncios = await prisma.anuncio.findMany({
+    where: {
+      tipo: TipoAnuncio.TRASPASO,
+      estado: { not: EstadoAnuncio.RETIRADO },
+      ...(filtros.ciudad && {
+        ciudadProvincia: { contains: filtros.ciudad, mode: "insensitive" },
+      }),
+      ...(filtros.q && {
+        titulo: { contains: filtros.q, mode: "insensitive" },
+      }),
+      ...((filtros.precioMin != null || filtros.precioMax != null) && {
+        precio: {
+          ...(filtros.precioMin != null && { gte: filtros.precioMin }),
+          ...(filtros.precioMax != null && { lte: filtros.precioMax }),
+        },
+      }),
+      ...(filtros.tipoNegocio && {
+        traspaso: { tipoNegocio: filtros.tipoNegocio as never },
+      }),
+    },
+    include: { maquinaria: true, traspaso: true },
+    orderBy: { creadoEn: "desc" },
+  });
+  return serializeAnuncios(anuncios);
 }
 
 // Total browsable Maquinaria listings (same set the catalog shows: not
@@ -179,6 +213,81 @@ export async function actualizarAnuncioMaquinaria(
   });
 
   revalidatePath("/catalogo");
+  revalidatePath("/mis-anuncios");
+  revalidatePath(`/anuncios/${anuncioId}`);
+  return { id: anuncioId };
+}
+
+export async function crearAnuncioTraspaso(input: PublicarTraspasoInput) {
+  const usuarioId = await requireUsuarioId();
+  const parsed = publicarTraspasoSchema.safeParse(input);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Datos inválidos." };
+  }
+  const {
+    titulo,
+    precio,
+    ciudadProvincia,
+    fotos,
+    aceptaCondiciones: _aceptaCondiciones,
+    ...traspasoData
+  } = parsed.data;
+
+  const anuncio = await prisma.anuncio.create({
+    data: {
+      tipo: TipoAnuncio.TRASPASO,
+      titulo,
+      precio,
+      ciudadProvincia,
+      fotos,
+      propietarioId: usuarioId,
+      traspaso: { create: { ...traspasoData } },
+    },
+  });
+
+  revalidatePath("/traspasos");
+  revalidatePath("/mis-anuncios");
+  return { id: anuncio.id };
+}
+
+export async function actualizarAnuncioTraspaso(
+  anuncioId: string,
+  input: PublicarTraspasoInput,
+) {
+  const usuarioId = await requireUsuarioId();
+  const existing = await prisma.anuncio.findUnique({
+    where: { id: anuncioId },
+    select: { propietarioId: true },
+  });
+  if (!existing || existing.propietarioId !== usuarioId) {
+    return { error: "No tienes permiso para editar este anuncio." };
+  }
+
+  const parsed = publicarTraspasoSchema.safeParse(input);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Datos inválidos." };
+  }
+  const {
+    titulo,
+    precio,
+    ciudadProvincia,
+    fotos,
+    aceptaCondiciones: _aceptaCondiciones,
+    ...traspasoData
+  } = parsed.data;
+
+  await prisma.anuncio.update({
+    where: { id: anuncioId },
+    data: {
+      titulo,
+      precio,
+      ciudadProvincia,
+      fotos,
+      traspaso: { update: { ...traspasoData } },
+    },
+  });
+
+  revalidatePath("/traspasos");
   revalidatePath("/mis-anuncios");
   revalidatePath(`/anuncios/${anuncioId}`);
   return { id: anuncioId };

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 // Selecting a tab swaps the primary CTA to that service.
 const MODULOS = [
   { key: "maquinaria", label: "Maquinaria", href: "/catalogo", activo: true },
-  { key: "traspasos", label: "Traspasos", href: null, activo: false },
+  { key: "traspasos", label: "Traspasos", href: "/traspasos", activo: true },
   { key: "talento", label: "Talento", href: null, activo: false },
   { key: "ofertas", label: "Ofertas", href: null, activo: false },
 ] as const;

@@ -9,6 +9,7 @@ import {
   List,
   Menu,
   MessageCircle,
+  Store,
   X,
 } from "lucide-react";
 
@@ -19,7 +20,8 @@ import { useConteoNoLeidos } from "@/hooks/useConteoNoLeidos";
 import { Button } from "@/components/ui/button";
 
 const NAV_ITEMS = [
-  { href: "/catalogo", label: "Catálogo", icon: LayoutGrid },
+  { href: "/catalogo", label: "Maquinaria", icon: LayoutGrid },
+  { href: "/traspasos", label: "Traspasos", icon: Store },
   { href: "/publicar", label: "Publicar anuncio", icon: CirclePlus },
   { href: "/mis-anuncios", label: "Mis anuncios", icon: List },
   { href: "/mensajes", label: "Mensajes", icon: MessageCircle },

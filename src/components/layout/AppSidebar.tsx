@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CirclePlus, LayoutGrid, List, MessageCircle } from "lucide-react";
+import { CirclePlus, LayoutGrid, List, MessageCircle, Store } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/layout/Logo";
@@ -10,7 +10,8 @@ import { UnreadBadge } from "@/components/layout/UnreadBadge";
 import { useConteoNoLeidos } from "@/hooks/useConteoNoLeidos";
 
 const NAV_ITEMS = [
-  { href: "/catalogo", label: "Catálogo", icon: LayoutGrid },
+  { href: "/catalogo", label: "Maquinaria", icon: LayoutGrid },
+  { href: "/traspasos", label: "Traspasos", icon: Store },
   { href: "/publicar", label: "Publicar anuncio", icon: CirclePlus },
   { href: "/mis-anuncios", label: "Mis anuncios", icon: List },
   { href: "/mensajes", label: "Mensajes", icon: MessageCircle },
