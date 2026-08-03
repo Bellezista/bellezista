@@ -26,7 +26,7 @@ async function requireAdmin() {
 export async function listAnunciosAdmin() {
   await requireAdmin();
   return prisma.anuncio.findMany({
-    include: { maquinaria: true, propietario: { select: { nombre: true } } },
+    include: { maquinaria: true, traspaso: true, propietario: { select: { nombre: true } } },
     orderBy: { creadoEn: "desc" },
   });
 }

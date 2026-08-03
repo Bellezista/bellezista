@@ -2,8 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MapPin, Wrench } from "lucide-react";
 import type { AnuncioSerializado } from "@/types/anuncio";
-import { maquinariaAdapter } from "@/lib/anuncio/subtype-adapters";
-import { CATEGORIA_MAQUINARIA_LABEL } from "@/lib/anuncio/labels";
+import { atributosCardDe, categoriaLabelDe } from "@/lib/anuncio/subtype-adapters";
 import { formatPrecio } from "@/lib/format";
 import { EstadoTexto } from "@/components/anuncio/EstadoTexto";
 
@@ -20,9 +19,8 @@ interface AnuncioCardProps {
 // change here (see src/lib/anuncio/subtype-adapters.ts).
 export function AnuncioCard({ anuncio, priority = false }: AnuncioCardProps) {
   const portada = anuncio.fotos[0];
-  const atributos = anuncio.maquinaria
-    ? maquinariaAdapter.getAtributosCard(anuncio.maquinaria).slice(0, 2)
-    : [];
+  const atributos = atributosCardDe(anuncio).slice(0, 2);
+  const categoria = categoriaLabelDe(anuncio);
 
   return (
     <Link
@@ -48,9 +46,9 @@ export function AnuncioCard({ anuncio, priority = false }: AnuncioCardProps) {
       </div>
 
       <div className="flex flex-col gap-1.5 p-5">
-        {anuncio.maquinaria && (
+        {categoria && (
           <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
-            {CATEGORIA_MAQUINARIA_LABEL[anuncio.maquinaria.categoria]}
+            {categoria}
           </span>
         )}
 

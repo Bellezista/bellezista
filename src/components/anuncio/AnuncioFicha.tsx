@@ -1,6 +1,9 @@
-import type { Anuncio, Maquinaria } from "@generated/prisma/client";
-import { maquinariaAdapter } from "@/lib/anuncio/subtype-adapters";
-import { CATEGORIA_MAQUINARIA_LABEL } from "@/lib/anuncio/labels";
+import type { Anuncio, Maquinaria, Traspaso } from "@generated/prisma/client";
+import {
+  atributosFichaDe,
+  categoriaLabelDe,
+  descripcionDe,
+} from "@/lib/anuncio/subtype-adapters";
 import { formatPrecio } from "@/lib/format";
 import { FichaGaleria } from "@/components/anuncio/FichaGaleria";
 import { FichaAtributos } from "@/components/anuncio/FichaAtributos";
@@ -10,6 +13,7 @@ import { EstadoTexto } from "@/components/anuncio/EstadoTexto";
 interface AnuncioFichaProps {
   anuncio: Anuncio & {
     maquinaria: Maquinaria | null;
+    traspaso: Traspaso | null;
     propietario: { nombre: string };
   };
   loggedIn: boolean;
@@ -25,10 +29,9 @@ export function AnuncioFicha({
   loggedIn,
   currentUserId,
 }: AnuncioFichaProps) {
-  if (!anuncio.maquinaria) return null;
-
-  const atributos = maquinariaAdapter.getAtributosFicha(anuncio.maquinaria);
-  const descripcion = maquinariaAdapter.getDescripcion(anuncio.maquinaria);
+  const atributos = atributosFichaDe(anuncio);
+  const descripcion = descripcionDe(anuncio);
+  const categoria = categoriaLabelDe(anuncio);
   const esPropioAnuncio = currentUserId === anuncio.propietarioId;
 
   return (
@@ -38,9 +41,11 @@ export function AnuncioFicha({
 
         <div className="mt-8 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
           <div>
-            <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
-              {CATEGORIA_MAQUINARIA_LABEL[anuncio.maquinaria.categoria]}
-            </span>
+            {categoria && (
+              <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
+                {categoria}
+              </span>
+            )}
             <h1 className="mt-2 font-serif text-3xl leading-tight text-foreground md:text-4xl">
               {anuncio.titulo}
             </h1>

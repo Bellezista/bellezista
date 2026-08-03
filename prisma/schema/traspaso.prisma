@@ -1,0 +1,50 @@
+// Business-type of a traspaso listing. Exact list confirmed by the client.
+enum TipoNegocioTraspaso {
+  CENTRO_ESTETICA
+  PELUQUERIA
+  BARBERIA
+  CLINICA_MEDICINA_ESTETICA
+  OTRAS_CLINICAS
+  SALON_MANICURA
+  SALON_MASAJES
+  SALON_BELLEZA
+  OTROS
+
+  @@schema("public")
+}
+
+// Who is publishing. Drives the free-vs-paid model (particulares can publish
+// free; profesionales/inmobiliarias move to subscription plans in a later
+// phase). Kept on the subtype so it doesn't touch the shared Anuncio table.
+enum TipoAnuncianteTraspaso {
+  PARTICULAR
+  PROFESIONAL
+  INMOBILIARIA
+
+  @@schema("public")
+}
+
+// Fase 2 subtype: business-transfer listings. 1:1 with Anuncio, keyed by the
+// same id (class-table inheritance, see anuncio.prisma). The traspaso price,
+// ciudad/provincia, fotos, estado and propietario all live on the parent
+// Anuncio -- only the traspaso-specific fields live here.
+model Traspaso {
+  anuncioId String  @id @map("anuncio_id") @db.Uuid
+  anuncio   Anuncio @relation(fields: [anuncioId], references: [id], onDelete: Cascade)
+
+  tipoNegocio    TipoNegocioTraspaso    @map("tipo_negocio")
+  tipoAnunciante TipoAnuncianteTraspaso @default(PARTICULAR) @map("tipo_anunciante")
+
+  descripcion String? @db.Text
+
+  // What a buyer actually looks at (from the client's Traspasos screen spec).
+  metrosCuadrados Int?     @map("metros_cuadrados")
+  cabinas         Int?
+  personal        Int? // empleados / personal a subrogar
+  alquilerMensual Decimal? @db.Decimal(12, 2) @map("alquiler_mensual")
+  incluyeLicencia Boolean  @default(false) @map("incluye_licencia")
+
+  @@index([tipoNegocio])
+  @@map("traspaso")
+  @@schema("public")
+}

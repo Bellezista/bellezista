@@ -57,7 +57,7 @@ export async function getAnunciosMaquinaria(filtros: CatalogoFiltros = {}) {
         },
       }),
     },
-    include: { maquinaria: true },
+    include: { maquinaria: true, traspaso: true },
     orderBy: { creadoEn: "desc" },
   });
   return serializeAnuncios(anuncios);
@@ -66,7 +66,7 @@ export async function getAnunciosMaquinaria(filtros: CatalogoFiltros = {}) {
 export async function getAnuncioById(id: string) {
   return prisma.anuncio.findUnique({
     where: { id },
-    include: { maquinaria: true, propietario: true },
+    include: { maquinaria: true, traspaso: true, propietario: true },
   });
 }
 
@@ -88,6 +88,7 @@ export async function getMisAnuncios() {
     where: { propietarioId: usuarioId },
     include: {
       maquinaria: true,
+      traspaso: true,
       _count: { select: { conversaciones: true } },
     },
     orderBy: { creadoEn: "desc" },

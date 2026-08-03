@@ -9,6 +9,7 @@
 import type {
   Anuncio,
   Maquinaria,
+  Traspaso,
   Usuario,
 } from "@generated/prisma/client";
 
@@ -17,9 +18,18 @@ export interface CatalogoFiltros {
   marca?: string;
   ciudad?: string;
   q?: string;
+  // Traspasos-specific filters (ignored by the Maquinaria catalog).
+  tipoNegocio?: string;
+  precioMin?: number;
+  precioMax?: number;
 }
 
-export type AnuncioConMaquinaria = Anuncio & { maquinaria: Maquinaria | null };
+// Named "ConMaquinaria" for historical reasons; now carries every 1:1 subtype
+// (both nullable -- exactly one is set, per the row's `tipo`).
+export type AnuncioConMaquinaria = Anuncio & {
+  maquinaria: Maquinaria | null;
+  traspaso: Traspaso | null;
+};
 
 export type AnuncioConDetallePropietario = AnuncioConMaquinaria & {
   propietario: Usuario;
@@ -41,9 +51,14 @@ type MaquinariaSerializada = Omit<Maquinaria, "beautyScore"> & {
   beautyScore: number | null;
 };
 
+type TraspasoSerializado = Omit<Traspaso, "alquilerMensual"> & {
+  alquilerMensual: number | null;
+};
+
 export type AnuncioSerializado = Omit<Anuncio, "precio"> & {
   precio: number;
   maquinaria: MaquinariaSerializada | null;
+  traspaso: TraspasoSerializado | null;
 };
 
 export type MisAnuncioSerializado = AnuncioSerializado & {
@@ -66,6 +81,15 @@ export function serializeAnuncio(
           beautyScore:
             anuncio.maquinaria.beautyScore != null
               ? Number(anuncio.maquinaria.beautyScore)
+              : null,
+        }
+      : null,
+    traspaso: anuncio.traspaso
+      ? {
+          ...anuncio.traspaso,
+          alquilerMensual:
+            anuncio.traspaso.alquilerMensual != null
+              ? Number(anuncio.traspaso.alquilerMensual)
               : null,
         }
       : null,

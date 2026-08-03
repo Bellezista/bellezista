@@ -6,6 +6,8 @@ import type {
   EstadoEquipo,
   EstadoAnuncio,
   NivelServicio,
+  TipoNegocioTraspaso,
+  TipoAnuncianteTraspaso,
 } from "@generated/prisma/client";
 
 // Display labels in the exact Spanish wording from the client's brief
@@ -38,4 +40,25 @@ export const ESTADO_ANUNCIO_LABEL: Record<EstadoAnuncio, string> = {
   RESERVADO: "Reservado",
   VENDIDO: "Vendido",
   RETIRADO: "Retirado",
+};
+
+export const TIPO_NEGOCIO_TRASPASO_LABEL: Record<TipoNegocioTraspaso, string> = {
+  CENTRO_ESTETICA: "Centro de estética",
+  PELUQUERIA: "Peluquería",
+  BARBERIA: "Barbería",
+  CLINICA_MEDICINA_ESTETICA: "Clínica de medicina estética",
+  OTRAS_CLINICAS: "Otras clínicas",
+  SALON_MANICURA: "Salón de manicura",
+  SALON_MASAJES: "Salón de masajes",
+  SALON_BELLEZA: "Salón de belleza",
+  OTROS: "Otros",
+};
+
+export const TIPO_ANUNCIANTE_TRASPASO_LABEL: Record<
+  TipoAnuncianteTraspaso,
+  string
+> = {
+  PARTICULAR: "Particular",
+  PROFESIONAL: "Profesional",
+  INMOBILIARIA: "Inmobiliaria",
 };

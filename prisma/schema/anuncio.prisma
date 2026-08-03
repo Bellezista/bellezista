@@ -1,6 +1,7 @@
 enum TipoAnuncio {
   MAQUINARIA
-  // Fase 2 additions (not built in Etapa 1): TRASPASO, TALENT, OFERTA.
+  TRASPASO
+  // Fase 2 additions still pending: TALENT, OFERTA.
   // Adding a case here + a new 1:1 subtype table + a new subtype-adapter is
   // the whole extension path -- see src/lib/anuncio/subtype-adapters.ts.
 
@@ -43,7 +44,8 @@ model Anuncio {
   actualizadoEn DateTime @updatedAt @map("actualizado_en")
 
   maquinaria Maquinaria?
-  // Fase 2: traspaso Traspaso? -- added here with zero impact on existing rows/columns.
+  traspaso   Traspaso?
+  // Fase 2 remaining: talent Talent?, oferta Oferta? -- same additive pattern.
 
   conversaciones Conversacion[]
   operaciones    Operacion[]
