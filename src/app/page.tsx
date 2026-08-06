@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { getAnunciosMaquinaria } from "@/lib/actions/anuncios";
+import { getAnunciosMaquinaria, getAnunciosTraspaso } from "@/lib/actions/anuncios";
+import type { AnuncioSerializado } from "@/types/anuncio";
 import { AnuncioCard } from "@/components/anuncio/AnuncioCard";
 import { HeroTabs } from "@/components/landing/HeroTabs";
 import { Footer } from "@/components/layout/Footer";
@@ -37,7 +38,15 @@ const PILARES = [
 ];
 
 export default async function LandingPage() {
-  const destacados = (await getAnunciosMaquinaria()).slice(0, 3);
+  // One featured listing per live module, so the home shows the breadth of the
+  // platform. Talento/Ofertas join this list automatically once they ship.
+  const [maquinaria, traspaso] = await Promise.all([
+    getAnunciosMaquinaria(),
+    getAnunciosTraspaso(),
+  ]);
+  const destacados: AnuncioSerializado[] = [maquinaria[0], traspaso[0]].filter(
+    (a): a is AnuncioSerializado => a != null,
+  );
 
   return (
     <>
@@ -125,21 +134,13 @@ export default async function LandingPage() {
       {destacados.length > 0 && (
         <section className="bg-cream px-6 py-20 md:px-12 md:py-28">
           <div className="mx-auto max-w-6xl">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <span className="text-xs font-medium uppercase tracking-[0.24em] text-gold">
-                  Destacados
-                </span>
-                <h2 className="mt-3 font-serif text-3xl leading-tight text-foreground md:text-4xl">
-                  Equipos seleccionados
-                </h2>
-              </div>
-              <Link
-                href="/catalogo"
-                className="text-sm text-foreground underline decoration-gold underline-offset-4 transition-colors hover:text-gold"
-              >
-                Ver todo el catálogo
-              </Link>
+            <div>
+              <span className="text-xs font-medium uppercase tracking-[0.24em] text-gold">
+                Destacados
+              </span>
+              <h2 className="mt-3 font-serif text-3xl leading-tight text-foreground md:text-4xl">
+                Una selección de cada sección
+              </h2>
             </div>
 
             <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">

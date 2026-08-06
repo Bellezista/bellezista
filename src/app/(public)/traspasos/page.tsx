@@ -1,9 +1,13 @@
+import Image from "next/image";
 import { getAnunciosTraspaso } from "@/lib/actions/anuncios";
 import type { CatalogoFiltros } from "@/types/anuncio";
 import { FiltroTraspasoBar } from "@/components/catalogo/FiltroTraspasoBar";
 import { TraspasoCatalogoClient } from "@/components/catalogo/TraspasoCatalogoClient";
 
 export const dynamic = "force-dynamic";
+
+const HEADER_IMG =
+  "https://tcskwxcxfklukekmhttl.supabase.co/storage/v1/object/public/fotos-video/site/hero-salon.jpg";
 
 function numParam(v: string | string[] | undefined): number | undefined {
   if (typeof v !== "string") return undefined;
@@ -26,17 +30,31 @@ export default async function TraspasosPage(props: PageProps<"/traspasos">) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl bg-cream px-6 py-9 md:px-10 md:py-11">
-        <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
-          Traspaso de negocios
-        </span>
-        <h1 className="mt-2 font-serif text-3xl leading-tight text-foreground md:text-4xl">
-          Traspasos
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Compra y traspasa negocios del sector de la belleza en España.
-        </p>
-      </div>
+      <section className="relative isolate overflow-hidden rounded-xl">
+        <Image
+          src={HEADER_IMG}
+          alt="Negocio del sector de la belleza"
+          fill
+          priority
+          sizes="100vw"
+          className="-z-10 object-cover"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#262420]/85 via-[#262420]/65 to-[#262420]/35" />
+        <div className="px-6 py-12 md:px-10 md:py-16">
+          <span className="text-xs font-medium uppercase tracking-[0.2em] text-gold">
+            Traspaso de negocios
+          </span>
+          <h1 className="mt-2 font-serif text-3xl leading-tight text-background md:text-4xl">
+            Traspasos
+          </h1>
+          <p className="mt-2 font-serif text-lg italic text-gold md:text-xl">
+            Tu próxima gran oportunidad empieza aquí
+          </p>
+          <p className="mt-2 max-w-md text-sm text-background/80">
+            Compra y traspasa negocios del sector de la belleza en España.
+          </p>
+        </div>
+      </section>
       <FiltroTraspasoBar />
       <TraspasoCatalogoClient filtros={filtros} initialData={anuncios} />
     </div>
