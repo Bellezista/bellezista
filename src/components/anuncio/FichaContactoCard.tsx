@@ -8,6 +8,9 @@ interface FichaContactoCardProps {
   propietarioNombre: string;
   loggedIn: boolean;
   esPropioAnuncio: boolean;
+  // Traspaso confidentiality: hide the owner's name/initials until the
+  // interested party has contacted (see the ficha page).
+  identidadOculta?: boolean;
 }
 
 function obtenerIniciales(nombre: string): string {
@@ -22,7 +25,12 @@ export function FichaContactoCard({
   propietarioNombre,
   loggedIn,
   esPropioAnuncio,
+  identidadOculta = false,
 }: FichaContactoCardProps) {
+  const nombreMostrado = identidadOculta
+    ? "Anunciante confidencial"
+    : propietarioNombre;
+
   return (
     <div className="flex flex-col gap-5 rounded-lg border border-border bg-card p-6 lg:sticky lg:top-8">
       <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
@@ -31,13 +39,17 @@ export function FichaContactoCard({
 
       <div className="flex items-center gap-3">
         <Avatar size="lg">
-          <AvatarFallback>{obtenerIniciales(propietarioNombre)}</AvatarFallback>
+          <AvatarFallback>
+            {identidadOculta ? "?" : obtenerIniciales(propietarioNombre)}
+          </AvatarFallback>
         </Avatar>
         <div>
           <p className="text-sm font-semibold text-foreground">
-            {propietarioNombre}
+            {nombreMostrado}
           </p>
-          <p className="text-xs text-muted-foreground">Propietario</p>
+          <p className="text-xs text-muted-foreground">
+            {identidadOculta ? "Datos confidenciales" : "Propietario"}
+          </p>
         </div>
       </div>
 
@@ -71,9 +83,9 @@ export function FichaContactoCard({
 
       {!esPropioAnuncio && (
         <p className="border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
-          Por privacidad, el teléfono y el correo no se muestran. Hablaréis
-          dentro de Bellezista y la conversación quedará en tu sección de
-          Mensajes.
+          {identidadOculta
+            ? "Este traspaso es confidencial. El nombre y la ubicación exacta del negocio se muestran cuando contactas. El teléfono y el correo nunca se comparten."
+            : "Por privacidad, el teléfono y el correo no se muestran. Hablaréis dentro de Bellezista y la conversación quedará en tu sección de Mensajes."}
         </p>
       )}
     </div>

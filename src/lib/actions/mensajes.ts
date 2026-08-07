@@ -16,6 +16,24 @@ async function requireUsuarioId() {
   return user.id;
 }
 
+// Has the current user already contacted this listing (started a conversation
+// as the interested party)? Used by the Traspaso confidentiality tier to reveal
+// the owner's identity only after login + contact. Returns false for guests.
+export async function tieneConversacionConAnuncio(
+  anuncioId: string,
+): Promise<boolean> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+  const conv = await prisma.conversacion.findFirst({
+    where: { anuncioId, interesadoId: user.id },
+    select: { id: true },
+  });
+  return conv !== null;
+}
+
 // Unread count = messages from the OTHER participant newer than my own
 // read-cursor for that conversation (Conversacion.ultimaLectura{Interesado,
 // Propietario}) -- a cursor per participant, not a boolean per message, so

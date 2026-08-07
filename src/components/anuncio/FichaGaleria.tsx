@@ -7,14 +7,28 @@ import { cn } from "@/lib/utils";
 interface FichaGaleriaProps {
   fotos: string[];
   titulo: string;
+  confidencial?: boolean;
 }
 
-export function FichaGaleria({ fotos, titulo }: FichaGaleriaProps) {
+function BadgeConfidencial() {
+  return (
+    <span className="absolute left-3 top-3 z-10 rounded-md bg-cream px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-foreground">
+      Confidencial
+    </span>
+  );
+}
+
+export function FichaGaleria({
+  fotos,
+  titulo,
+  confidencial = false,
+}: FichaGaleriaProps) {
   const [seleccionada, setSeleccionada] = useState(0);
 
   if (fotos.length === 0) {
     return (
-      <div className="flex aspect-[4/3] w-full items-center justify-center rounded-lg bg-muted">
+      <div className="relative flex aspect-[4/3] w-full items-center justify-center rounded-lg bg-muted">
+        {confidencial && <BadgeConfidencial />}
         <span className="text-sm text-muted-foreground">Sin fotos</span>
       </div>
     );
@@ -25,6 +39,7 @@ export function FichaGaleria({ fotos, titulo }: FichaGaleriaProps) {
   return (
     <div className="flex flex-col gap-3">
       <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-muted">
+        {confidencial && <BadgeConfidencial />}
         <Image
           src={fotoActual}
           alt={titulo}

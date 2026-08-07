@@ -18,6 +18,10 @@ interface AnuncioFichaProps {
   };
   loggedIn: boolean;
   currentUserId?: string;
+  // Traspaso confidentiality tier: `confidencial` shows the badge + hides the
+  // exact zone; `identidadOculta` also hides the owner's name until contact.
+  confidencial?: boolean;
+  identidadOculta?: boolean;
 }
 
 // Composes the ficha sub-components from the "ficha" fan-out group. This is
@@ -28,6 +32,8 @@ export function AnuncioFicha({
   anuncio,
   loggedIn,
   currentUserId,
+  confidencial = false,
+  identidadOculta = false,
 }: AnuncioFichaProps) {
   const atributos = atributosFichaDe(anuncio);
   const descripcion = descripcionDe(anuncio);
@@ -37,7 +43,11 @@ export function AnuncioFicha({
   return (
     <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
       <div>
-        <FichaGaleria fotos={anuncio.fotos} titulo={anuncio.titulo} />
+        <FichaGaleria
+          fotos={anuncio.fotos}
+          titulo={anuncio.titulo}
+          confidencial={confidencial}
+        />
 
         <div className="mt-8 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
           <div>
@@ -50,7 +60,10 @@ export function AnuncioFicha({
               {anuncio.titulo}
             </h1>
             <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-              <span>{anuncio.ciudadProvincia}</span>
+              <span>
+                {anuncio.ciudadProvincia}
+                {confidencial && " · zona a confirmar"}
+              </span>
               {anuncio.estado !== "ACTIVO" && (
                 <>
                   <span aria-hidden="true" className="text-border">
@@ -77,6 +90,7 @@ export function AnuncioFicha({
           propietarioNombre={anuncio.propietario.nombre}
           loggedIn={loggedIn}
           esPropioAnuncio={esPropioAnuncio}
+          identidadOculta={identidadOculta}
         />
       </div>
     </div>

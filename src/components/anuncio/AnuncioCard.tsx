@@ -28,6 +28,11 @@ export function AnuncioCard({ anuncio, priority = false }: AnuncioCardProps) {
       className="group flex flex-col overflow-hidden rounded-xl bg-card shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-card-hover)]"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+        {anuncio.tipo === "TRASPASO" && (
+          <span className="absolute left-3 top-3 z-10 rounded-md bg-cream px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-foreground">
+            Confidencial
+          </span>
+        )}
         {portada ? (
           <Image
             src={portada}
