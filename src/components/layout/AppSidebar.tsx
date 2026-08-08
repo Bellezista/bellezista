@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CirclePlus, LayoutGrid, List, MessageCircle, Store } from "lucide-react";
@@ -28,9 +29,9 @@ export function AppSidebar({
   const { data: noLeidos } = useConteoNoLeidos(isAuthenticated);
 
   return (
-    <aside className="hidden md:sticky md:top-0 md:flex md:h-screen md:w-60 md:flex-col md:overflow-y-auto md:border-r md:border-border md:bg-background">
+    <aside className="hidden text-background md:sticky md:top-0 md:flex md:h-screen md:w-60 md:flex-col md:overflow-y-auto md:border-r md:border-white/10 md:bg-foreground">
       <Link href="/" className="flex flex-col gap-1 px-6 py-8" aria-label="Ir al inicio">
-        <Logo className="text-xl" />
+        <Logo className="text-xl text-background" />
         <span className="text-xs text-gold">El mundo de la belleza</span>
       </Link>
 
@@ -41,30 +42,37 @@ export function AppSidebar({
           const Icon = item.icon;
 
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg border-l-2 border-transparent px-3 py-2 text-sm transition-colors",
-                isActive
-                  ? "border-l-gold bg-muted font-semibold text-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            <Fragment key={item.href}>
+              <Link
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg border-l-2 border-transparent px-3 py-2 text-sm transition-colors",
+                  isActive
+                    ? "border-l-gold bg-gold/10 font-semibold text-gold"
+                    : "text-background/75 hover:bg-white/5 hover:text-background",
+                )}
+              >
+                <Icon className="size-4 shrink-0" aria-hidden="true" />
+                <span>{item.label}</span>
+                {item.href === "/mensajes" && (
+                  <UnreadBadge
+                    count={noLeidos ?? 0}
+                    className="ml-auto bg-background text-foreground"
+                  />
+                )}
+              </Link>
+              {item.href === "/traspasos" && (
+                <div className="mx-3 h-px bg-white/10" aria-hidden="true" />
               )}
-            >
-              <Icon className="size-4 shrink-0" aria-hidden="true" />
-              <span>{item.label}</span>
-              {item.href === "/mensajes" && (
-                <UnreadBadge count={noLeidos ?? 0} className="ml-auto" />
-              )}
-            </Link>
+            </Fragment>
           );
         })}
       </nav>
 
       {typeof anunciosActivos === "number" && (
         <div className="mt-auto px-6 py-6">
-          <p className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">
+          <p className="text-xs text-background/60">
+            <span className="font-medium text-background">
               {anunciosActivos}
             </span>{" "}
             {anunciosActivos === 1 ? "anuncio activo" : "anuncios activos"}

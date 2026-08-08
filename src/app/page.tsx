@@ -33,7 +33,7 @@ const PILARES = [
     n: "03",
     titulo: "Todo en un lugar",
     texto:
-      "Compra y vende maquinaria hoy. Muy pronto, traspasos de negocios, talento y ofertas.",
+      "Compra y vende maquinaria y traspasa negocios de belleza hoy. Muy pronto, talento y ofertas.",
   },
 ];
 
