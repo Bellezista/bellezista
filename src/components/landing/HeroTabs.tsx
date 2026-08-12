@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 const MODULOS = [
   { key: "maquinaria", label: "Maquinaria", href: "/catalogo", activo: true },
   { key: "traspasos", label: "Traspasos", href: "/traspasos", activo: true },
-  { key: "talento", label: "Talento", href: null, activo: false },
+  { key: "talento", label: "Talento", href: "/talento", activo: true },
   { key: "ofertas", label: "Ofertas", href: null, activo: false },
 ] as const;
 

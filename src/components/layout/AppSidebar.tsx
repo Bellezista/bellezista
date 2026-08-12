@@ -3,7 +3,15 @@
 import { Fragment } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CirclePlus, LayoutGrid, List, MessageCircle, Store } from "lucide-react";
+import {
+  CirclePlus,
+  FileText,
+  LayoutGrid,
+  List,
+  MessageCircle,
+  Store,
+  Users,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/layout/Logo";
@@ -13,7 +21,9 @@ import { useConteoNoLeidos } from "@/hooks/useConteoNoLeidos";
 const NAV_ITEMS = [
   { href: "/catalogo", label: "Maquinaria", icon: LayoutGrid },
   { href: "/traspasos", label: "Traspasos", icon: Store },
+  { href: "/talento", label: "Talento", icon: Users },
   { href: "/publicar", label: "Publicar anuncio", icon: CirclePlus },
+  { href: "/talento/mi-cv", label: "Mi CV", icon: FileText },
   { href: "/mis-anuncios", label: "Mis anuncios", icon: List },
   { href: "/mensajes", label: "Mensajes", icon: MessageCircle },
 ] as const;
@@ -61,7 +71,7 @@ export function AppSidebar({
                   />
                 )}
               </Link>
-              {item.href === "/traspasos" && (
+              {item.href === "/talento" && (
                 <div className="mx-3 h-px bg-white/10" aria-hidden="true" />
               )}
             </Fragment>

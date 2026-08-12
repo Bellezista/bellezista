@@ -1,0 +1,63 @@
+// Puesto / rol que busca el trabajador. Lista propuesta (por confirmar con el
+// cliente) para el sector belleza.
+enum PuestoTalento {
+  ESTETICISTA
+  PELUQUERO
+  BARBERO
+  MANICURISTA
+  MAQUILLADOR
+  MASAJISTA
+  RECEPCIONISTA
+  OTROS
+
+  @@schema("public")
+}
+
+enum JornadaTalento {
+  COMPLETA
+  PARCIAL
+  INDIFERENTE
+
+  @@schema("public")
+}
+
+enum DisponibilidadTalento {
+  INMEDIATA
+  EN_DOS_SEMANAS
+  EN_UN_MES
+  A_CONVENIR
+
+  @@schema("public")
+}
+
+// Bellezista Talent: a candidate CV bank, NOT an Anuncio subtype. Workers fill
+// one standardized CV (one per worker, hence @unique); business owners browse
+// them and pay to access the full profile/contact (paywall added with Stripe).
+// No price, no estado, no Conversacion -- so it lives outside the Anuncio model.
+model Cv {
+  id        String  @id @default(uuid()) @db.Uuid
+  usuarioId String  @unique @map("usuario_id") @db.Uuid
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  puesto         PuestoTalento
+  provincia      String
+  aniosExperiencia Int                  @map("anios_experiencia")
+  jornada        JornadaTalento        @default(INDIFERENTE)
+  disponibilidad DisponibilidadTalento @default(A_CONVENIR)
+
+  formacion    String? // titulación / formación
+  habilidades  String? // especialidades
+  presentacion String? @db.Text // "sobre mí"
+  foto         String?
+
+  // Whether the CV appears in the talento catalog. Workers can hide it.
+  visible Boolean @default(true)
+
+  creadoEn      DateTime @default(now()) @map("creado_en")
+  actualizadoEn DateTime @updatedAt @map("actualizado_en")
+
+  @@index([puesto])
+  @@index([provincia])
+  @@map("cv")
+  @@schema("public")
+}

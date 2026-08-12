@@ -5,11 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   CirclePlus,
+  FileText,
   LayoutGrid,
   List,
   Menu,
   MessageCircle,
   Store,
+  Users,
   X,
 } from "lucide-react";
 
@@ -22,7 +24,9 @@ import { Button } from "@/components/ui/button";
 const NAV_ITEMS = [
   { href: "/catalogo", label: "Maquinaria", icon: LayoutGrid },
   { href: "/traspasos", label: "Traspasos", icon: Store },
+  { href: "/talento", label: "Talento", icon: Users },
   { href: "/publicar", label: "Publicar anuncio", icon: CirclePlus },
+  { href: "/talento/mi-cv", label: "Mi CV", icon: FileText },
   { href: "/mis-anuncios", label: "Mis anuncios", icon: List },
   { href: "/mensajes", label: "Mensajes", icon: MessageCircle },
 ] as const;

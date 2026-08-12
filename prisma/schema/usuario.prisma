@@ -21,6 +21,7 @@ model Usuario {
 
   anuncios Anuncio[]
   contacto Contacto?
+  cv       Cv?
 
   conversacionesInteresado  Conversacion[] @relation("interesado")
   conversacionesPropietario Conversacion[] @relation("propietario")

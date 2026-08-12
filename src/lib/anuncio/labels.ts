@@ -8,6 +8,9 @@ import type {
   NivelServicio,
   TipoNegocioTraspaso,
   TipoAnuncianteTraspaso,
+  PuestoTalento,
+  JornadaTalento,
+  DisponibilidadTalento,
 } from "@generated/prisma/client";
 
 // Display labels in the exact Spanish wording from the client's brief
@@ -61,4 +64,31 @@ export const TIPO_ANUNCIANTE_TRASPASO_LABEL: Record<
   PARTICULAR: "Particular",
   PROFESIONAL: "Profesional",
   INMOBILIARIA: "Inmobiliaria",
+};
+
+export const PUESTO_TALENTO_LABEL: Record<PuestoTalento, string> = {
+  ESTETICISTA: "Esteticista",
+  PELUQUERO: "Peluquero/a",
+  BARBERO: "Barbero/a",
+  MANICURISTA: "Manicurista",
+  MAQUILLADOR: "Maquillador/a",
+  MASAJISTA: "Masajista",
+  RECEPCIONISTA: "Recepcionista",
+  OTROS: "Otros",
+};
+
+export const JORNADA_TALENTO_LABEL: Record<JornadaTalento, string> = {
+  COMPLETA: "Jornada completa",
+  PARCIAL: "Media jornada",
+  INDIFERENTE: "Indiferente",
+};
+
+export const DISPONIBILIDAD_TALENTO_LABEL: Record<
+  DisponibilidadTalento,
+  string
+> = {
+  INMEDIATA: "Inmediata",
+  EN_DOS_SEMANAS: "En dos semanas",
+  EN_UN_MES: "En un mes",
+  A_CONVENIR: "A convenir",
 };
