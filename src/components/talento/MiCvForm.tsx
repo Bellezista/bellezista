@@ -1,12 +1,19 @@
 "use client";
 
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import {
+  Controller,
+  FormProvider,
+  useForm,
+  useFormContext,
+  useWatch,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   cvSchema,
   type CvInput,
   type CvFormInput,
+  type CvTecnicaInput,
 } from "@/lib/validation/cvSchema";
 import {
   PuestoTalento,
@@ -18,9 +25,11 @@ import {
   JORNADA_TALENTO_LABEL,
   DISPONIBILIDAD_TALENTO_LABEL,
 } from "@/lib/anuncio/labels";
+import { tecnicasDePuesto } from "@/lib/talento/cv-tecnicas";
 import { PROVINCIA_DESTACADA, PROVINCIAS_ORDENADAS } from "@/lib/provincias";
 import { useGuardarCv } from "@/hooks/useGuardarCv";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,6 +54,86 @@ const RESTO_PROVINCIAS = PROVINCIAS_ORDENADAS.filter(
   (p) => p !== PROVINCIA_DESTACADA,
 );
 
+// Bloque específico según el puesto seleccionado: checklist de técnicas, cada
+// una con años de experiencia. Se guarda solo lo marcado (presencia = "sabe").
+function TecnicasBlock() {
+  const { control, setValue } = useFormContext<CvFormInput>();
+  const puesto = useWatch({ control, name: "puesto" }) as
+    | PuestoTalento
+    | undefined;
+  const tecnicas = (useWatch({ control, name: "tecnicas" }) ??
+    []) as CvTecnicaInput[];
+
+  const defs = puesto ? tecnicasDePuesto(puesto) : [];
+  if (!puesto || defs.length === 0) return null;
+
+  const seleccion = new Map(tecnicas.map((t) => [t.key, t]));
+
+  function toggle(key: string, checked: boolean) {
+    const resto = tecnicas.filter((t) => t.key !== key);
+    const next = checked
+      ? [...resto, { key, anios: seleccion.get(key)?.anios ?? 0 }]
+      : resto;
+    setValue("tecnicas", next, { shouldDirty: true });
+  }
+
+  function setAnios(key: string, anios: number) {
+    setValue(
+      "tecnicas",
+      tecnicas.map((t) => (t.key === key ? { ...t, anios } : t)),
+      { shouldDirty: true },
+    );
+  }
+
+  return (
+    <div className="space-y-3 rounded-xl border border-border bg-cream/50 p-5">
+      <div>
+        <h2 className="font-serif text-lg text-foreground">
+          Técnicas y aparatología
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Marca las que dominas e indica tus años de experiencia con cada una.
+        </p>
+      </div>
+      <ul className="divide-y divide-border">
+        {defs.map((def) => {
+          const sel = seleccion.get(def.key);
+          const marcada = Boolean(sel);
+          return (
+            <li
+              key={def.key}
+              className="flex flex-wrap items-center gap-3 py-2.5"
+            >
+              <label className="flex flex-1 items-center gap-3 text-sm text-foreground">
+                <Checkbox
+                  checked={marcada}
+                  onCheckedChange={(v) => toggle(def.key, v === true)}
+                />
+                <span>{def.label}</span>
+              </label>
+              {marcada && (
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    min={0}
+                    value={sel?.anios ?? 0}
+                    onChange={(e) =>
+                      setAnios(def.key, Number(e.target.value) || 0)
+                    }
+                    className="h-9 w-20"
+                    aria-label={`Años de experiencia con ${def.label}`}
+                  />
+                  <span className="text-xs text-muted-foreground">años</span>
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 export function MiCvForm({
   defaultValues,
 }: {
@@ -54,8 +143,9 @@ export function MiCvForm({
   const methods = useForm<CvFormInput, unknown, CvInput>({
     resolver: zodResolver(cvSchema),
     defaultValues: {
-      jornada: JornadaTalento.INDIFERENTE,
+      jornada: JornadaTalento.POR_HORAS,
       disponibilidad: DisponibilidadTalento.A_CONVENIR,
+      tecnicas: [],
       ...defaultValues,
     },
   });
@@ -183,31 +273,48 @@ export function MiCvForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="formacion">Formación</Label>
+          <Label htmlFor="expectativaSalarial">
+            Expectativa salarial{" "}
+            <span className="text-muted-foreground">(opcional)</span>
+          </Label>
           <Input
-            id="formacion"
-            placeholder="Titulación, cursos, certificaciones..."
-            {...register("formacion")}
+            id="expectativaSalarial"
+            placeholder="Ej: 1.200 – 1.500 € / mes"
+            {...register("expectativaSalarial")}
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="habilidades">Habilidades y especialidades</Label>
-          <Input
-            id="habilidades"
-            placeholder="Ej: depilación láser, coloración, uñas acrílicas..."
-            {...register("habilidades")}
-          />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="titulacion">Titulación / formación reglada</Label>
+            <Input
+              id="titulacion"
+              placeholder="Ej: Grado superior en Estética"
+              {...register("titulacion")}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="cursos">Cursos o certificaciones</Label>
+            <Input
+              id="cursos"
+              placeholder="Ej: láser diodo, microblading, extensiones..."
+              {...register("cursos")}
+            />
+          </div>
         </div>
 
+        <TecnicasBlock />
+
         <div className="space-y-2">
-          <Label htmlFor="presentacion">Sobre mí</Label>
+          <Label htmlFor="presentacion">Presentación</Label>
           <Textarea
             id="presentacion"
-            rows={5}
-            placeholder="Cuéntale al negocio quién eres y qué buscas."
+            rows={4}
+            maxLength={300}
+            placeholder="Preséntate en pocas líneas: motivación y estilo de trabajo (máx. 300 caracteres)."
             {...register("presentacion")}
           />
+          <FieldError message={errors.presentacion?.message} />
         </div>
 
         {guardar.data && "error" in guardar.data && (

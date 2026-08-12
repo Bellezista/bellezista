@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma/client";
 import { createClient } from "@/lib/supabase/server";
 import { cvSchema, type CvInput } from "@/lib/validation/cvSchema";
+import { tecnicasDePuesto } from "@/lib/talento/cv-tecnicas";
 import type { TalentoFiltros } from "@/types/talento";
 
 async function requireUsuarioId() {
@@ -29,7 +30,8 @@ export async function getCvs(filtros: TalentoFiltros = {}) {
       ...(filtros.q && {
         OR: [
           { presentacion: { contains: filtros.q, mode: "insensitive" } },
-          { habilidades: { contains: filtros.q, mode: "insensitive" } },
+          { titulacion: { contains: filtros.q, mode: "insensitive" } },
+          { cursos: { contains: filtros.q, mode: "insensitive" } },
         ],
       }),
     },
@@ -49,29 +51,54 @@ export async function getCvs(filtros: TalentoFiltros = {}) {
 export async function getCvById(id: string) {
   return prisma.cv.findUnique({
     where: { id },
-    include: { usuario: { select: { nombre: true } } },
+    include: {
+      usuario: { select: { nombre: true } },
+      tecnicas: { orderBy: { tecnica: "asc" } },
+    },
   });
 }
 
 export async function getMiCv() {
   const usuarioId = await requireUsuarioId();
-  return prisma.cv.findUnique({ where: { usuarioId } });
+  return prisma.cv.findUnique({
+    where: { usuarioId },
+    include: { tecnicas: true },
+  });
 }
 
 // One CV per worker -- upsert keyed by usuarioId, so "create" and "edit" are
-// the same flow.
+// the same flow. The technique block is replaced wholesale on each save and
+// filtered to the keys valid for the selected puesto.
 export async function guardarMiCv(input: CvInput) {
   const usuarioId = await requireUsuarioId();
   const parsed = cvSchema.safeParse(input);
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Datos inválidos." };
   }
-  const data = parsed.data;
+  const { tecnicas, ...scalars } = parsed.data;
 
-  const cv = await prisma.cv.upsert({
-    where: { usuarioId },
-    create: { ...data, usuarioId },
-    update: { ...data },
+  const clavesValidas = new Set(
+    tecnicasDePuesto(scalars.puesto).map((t) => t.key),
+  );
+  const tecnicasLimpias = tecnicas.filter((t) => clavesValidas.has(t.key));
+
+  const cv = await prisma.$transaction(async (tx) => {
+    const guardado = await tx.cv.upsert({
+      where: { usuarioId },
+      create: { ...scalars, usuarioId },
+      update: { ...scalars },
+    });
+    await tx.cvTecnica.deleteMany({ where: { cvId: guardado.id } });
+    if (tecnicasLimpias.length > 0) {
+      await tx.cvTecnica.createMany({
+        data: tecnicasLimpias.map((t) => ({
+          cvId: guardado.id,
+          tecnica: t.key,
+          anios: t.anios,
+        })),
+      });
+    }
+    return guardado;
   });
 
   revalidatePath("/talento");

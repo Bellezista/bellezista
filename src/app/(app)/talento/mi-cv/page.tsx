@@ -13,10 +13,12 @@ export default async function MiCvPage() {
         aniosExperiencia: cv.aniosExperiencia,
         jornada: cv.jornada,
         disponibilidad: cv.disponibilidad,
-        formacion: cv.formacion ?? undefined,
-        habilidades: cv.habilidades ?? undefined,
+        expectativaSalarial: cv.expectativaSalarial ?? undefined,
+        titulacion: cv.titulacion ?? undefined,
+        cursos: cv.cursos ?? undefined,
         presentacion: cv.presentacion ?? undefined,
         foto: cv.foto ?? undefined,
+        tecnicas: cv.tecnicas.map((t) => ({ key: t.tecnica, anios: t.anios })),
       }
     : undefined;
 

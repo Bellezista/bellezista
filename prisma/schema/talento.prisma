@@ -1,5 +1,5 @@
-// Puesto / rol que busca el trabajador. Lista propuesta (por confirmar con el
-// cliente) para el sector belleza.
+// Puesto / rol que busca el trabajador. Definido con el cliente para el sector
+// belleza; cada puesto abre su propio bloque de técnicas (ver cv-tecnicas.ts).
 enum PuestoTalento {
   ESTETICISTA
   PELUQUERO
@@ -16,15 +16,15 @@ enum PuestoTalento {
 enum JornadaTalento {
   COMPLETA
   PARCIAL
-  INDIFERENTE
+  POR_HORAS
 
   @@schema("public")
 }
 
 enum DisponibilidadTalento {
   INMEDIATA
-  EN_DOS_SEMANAS
-  EN_UN_MES
+  CON_PREAVISO
+  FINES_DE_SEMANA
   A_CONVENIR
 
   @@schema("public")
@@ -39,16 +39,20 @@ model Cv {
   usuarioId String  @unique @map("usuario_id") @db.Uuid
   usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
-  puesto         PuestoTalento
-  provincia      String
-  aniosExperiencia Int                  @map("anios_experiencia")
-  jornada        JornadaTalento        @default(INDIFERENTE)
-  disponibilidad DisponibilidadTalento @default(A_CONVENIR)
+  puesto           PuestoTalento
+  provincia        String
+  aniosExperiencia Int                   @map("anios_experiencia")
+  jornada          JornadaTalento        @default(POR_HORAS)
+  disponibilidad   DisponibilidadTalento @default(A_CONVENIR)
 
-  formacion    String? // titulación / formación
-  habilidades  String? // especialidades
-  presentacion String? @db.Text // "sobre mí"
-  foto         String?
+  expectativaSalarial String? @map("expectativa_salarial") // rango, opcional
+  titulacion          String? // titulación / formación reglada
+  cursos              String? // cursos o certificaciones específicas
+  presentacion        String? @db.Text // texto breve de presentación (~300)
+  foto                String?
+
+  // Bloque específico según puesto: checklist de técnicas / aparatología.
+  tecnicas CvTecnica[]
 
   // Whether the CV appears in the talento catalog. Workers can hide it.
   visible Boolean @default(true)
@@ -59,5 +63,23 @@ model Cv {
   @@index([puesto])
   @@index([provincia])
   @@map("cv")
+  @@schema("public")
+}
+
+// One row per technique the worker declares knowing, within the block that
+// matches their puesto. The technique catalog (keys + labels + which puesto)
+// lives in code (cv-tecnicas.ts), not the DB, so it stays easy to extend.
+model CvTecnica {
+  id    String @id @default(uuid()) @db.Uuid
+  cvId  String @map("cv_id") @db.Uuid
+  cv    Cv     @relation(fields: [cvId], references: [id], onDelete: Cascade)
+
+  tecnica String // clave de la técnica (p. ej. "balayage")
+  anios   Int    @default(0) @map("anios")
+
+  @@unique([cvId, tecnica])
+  @@index([cvId])
+  @@index([tecnica])
+  @@map("cv_tecnica")
   @@schema("public")
 }

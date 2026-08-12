@@ -4,6 +4,7 @@ import { Lock } from "lucide-react";
 import { getCvById } from "@/lib/actions/talento";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import { labelTecnica } from "@/lib/talento/cv-tecnicas";
 import {
   PUESTO_TALENTO_LABEL,
   JORNADA_TALENTO_LABEL,
@@ -52,26 +53,59 @@ export default async function CvDetallePage(props: PageProps<"/talento/[id]">) {
               {cv.usuario.nombre}
             </p>
           </div>
-          {cv.formacion && (
+          {cv.expectativaSalarial && (
             <div>
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Formación
+                Expectativa salarial
               </p>
-              <p className="text-sm text-foreground">{cv.formacion}</p>
+              <p className="text-sm text-foreground">
+                {cv.expectativaSalarial}
+              </p>
             </div>
           )}
-          {cv.habilidades && (
+          {cv.titulacion && (
             <div>
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Habilidades
+                Titulación
               </p>
-              <p className="text-sm text-foreground">{cv.habilidades}</p>
+              <p className="text-sm text-foreground">{cv.titulacion}</p>
+            </div>
+          )}
+          {cv.cursos && (
+            <div>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                Cursos y certificaciones
+              </p>
+              <p className="text-sm text-foreground">{cv.cursos}</p>
+            </div>
+          )}
+          {cv.tecnicas.length > 0 && (
+            <div>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                Técnicas y aparatología
+              </p>
+              <ul className="mt-1 flex flex-wrap gap-2">
+                {cv.tecnicas.map((t) => (
+                  <li
+                    key={t.id}
+                    className="rounded-full border border-border bg-muted px-3 py-1 text-xs text-foreground"
+                  >
+                    {labelTecnica(t.tecnica)}
+                    {t.anios > 0 && (
+                      <span className="text-muted-foreground">
+                        {" "}
+                        · {t.anios} {t.anios === 1 ? "año" : "años"}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
           {cv.presentacion && (
             <div>
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Sobre mí
+                Presentación
               </p>
               <p className="text-sm leading-relaxed text-foreground">
                 {cv.presentacion}

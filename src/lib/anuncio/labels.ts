@@ -80,7 +80,7 @@ export const PUESTO_TALENTO_LABEL: Record<PuestoTalento, string> = {
 export const JORNADA_TALENTO_LABEL: Record<JornadaTalento, string> = {
   COMPLETA: "Jornada completa",
   PARCIAL: "Media jornada",
-  INDIFERENTE: "Indiferente",
+  POR_HORAS: "Por horas",
 };
 
 export const DISPONIBILIDAD_TALENTO_LABEL: Record<
@@ -88,7 +88,7 @@ export const DISPONIBILIDAD_TALENTO_LABEL: Record<
   string
 > = {
   INMEDIATA: "Inmediata",
-  EN_DOS_SEMANAS: "En dos semanas",
-  EN_UN_MES: "En un mes",
+  CON_PREAVISO: "Con preaviso",
+  FINES_DE_SEMANA: "Fines de semana",
   A_CONVENIR: "A convenir",
 };
