@@ -54,6 +54,9 @@ model Cv {
   // Bloque específico según puesto: checklist de técnicas / aparatología.
   tecnicas CvTecnica[]
 
+  // Business owners who have paid to unlock this CV's full profile.
+  desbloqueos CvDesbloqueo[]
+
   // Whether the CV appears in the talento catalog. Workers can hide it.
   visible Boolean @default(true)
 
@@ -81,5 +84,57 @@ model CvTecnica {
   @@index([cvId])
   @@index([tecnica])
   @@map("cv_tecnica")
+  @@schema("public")
+}
+
+// Pay-to-access: a business owner unlocks a CV, gaining permanent access to its
+// full profile (formación, técnicas, presentación, nombre) and the internal
+// messaging with the candidate. Granted either by a direct Stripe payment or by
+// spending a "bono" credit.
+model CvDesbloqueo {
+  id        String  @id @default(uuid()) @db.Uuid
+  usuarioId String  @map("usuario_id") @db.Uuid
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  cvId      String  @map("cv_id") @db.Uuid
+  cv        Cv      @relation(fields: [cvId], references: [id], onDelete: Cascade)
+
+  creadoEn DateTime @default(now()) @map("creado_en")
+
+  @@unique([usuarioId, cvId])
+  @@index([usuarioId])
+  @@index([cvId])
+  @@map("cv_desbloqueo")
+  @@schema("public")
+}
+
+// Prepaid unlock credits from buying a "bono de varios desbloqueos". One row per
+// owner; saldo is decremented each time a credit is spent to unlock a CV.
+model TalentoCredito {
+  usuarioId String  @id @map("usuario_id") @db.Uuid
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  saldo     Int     @default(0)
+
+  actualizadoEn DateTime @updatedAt @map("actualizado_en")
+
+  @@map("talento_credito")
+  @@schema("public")
+}
+
+// Ledger of processed Stripe checkout sessions -- gives idempotency (a retried
+// webhook can't double-grant) and a basic audit trail of Talento payments.
+model TalentoPago {
+  id              String  @id @default(uuid()) @db.Uuid
+  stripeSessionId String  @unique @map("stripe_session_id")
+  usuarioId       String  @map("usuario_id") @db.Uuid
+  tipo            String // "individual" | "bono"
+  cvId            String? @map("cv_id") @db.Uuid
+  creditos        Int     @default(0)
+  importe         Int     @default(0) // céntimos
+  moneda          String  @default("eur")
+
+  creadoEn DateTime @default(now()) @map("creado_en")
+
+  @@index([usuarioId])
+  @@map("talento_pago")
   @@schema("public")
 }

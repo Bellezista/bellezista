@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getCvs } from "@/lib/actions/talento";
+import { confirmarSesionCheckout } from "@/lib/talento/otorgar";
+import { createClient } from "@/lib/supabase/server";
 import type { TalentoFiltros } from "@/types/talento";
 import { FiltroTalentoBar } from "@/components/talento/FiltroTalentoBar";
 import { TalentoCatalogoClient } from "@/components/talento/TalentoCatalogoClient";
@@ -8,6 +10,19 @@ export const dynamic = "force-dynamic";
 
 export default async function TalentoPage(props: PageProps<"/talento">) {
   const params = await props.searchParams;
+
+  // Confirm a bono purchase returning from Stripe (grants credits even before
+  // the webhook lands / is configured).
+  const sessionId =
+    typeof params.session_id === "string" ? params.session_id : null;
+  if (sessionId) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) await confirmarSesionCheckout(sessionId, user.id);
+  }
+
   const filtros: TalentoFiltros = {
     puesto: typeof params.puesto === "string" ? params.puesto : undefined,
     // FiltroCiudad (reused) writes the `ciudad` param -> maps to provincia here.

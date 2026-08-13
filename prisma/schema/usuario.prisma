@@ -23,6 +23,11 @@ model Usuario {
   contacto Contacto?
   cv       Cv?
 
+  // Talento pay-to-access: CVs this user (a business owner) has unlocked, plus
+  // their balance of prepaid "bono" unlock credits.
+  desbloquesCv    CvDesbloqueo[]
+  talentoCredito  TalentoCredito?
+
   conversacionesInteresado  Conversacion[] @relation("interesado")
   conversacionesPropietario Conversacion[] @relation("propietario")
   mensajes                  Mensaje[]

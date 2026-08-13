@@ -2,8 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Lock } from "lucide-react";
 import { getCvById } from "@/lib/actions/talento";
+import {
+  estaDesbloqueado,
+  getMiSaldoCreditos,
+} from "@/lib/actions/talentoPagos";
+import { confirmarSesionCheckout } from "@/lib/talento/otorgar";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import { DesbloquearCta } from "@/components/talento/DesbloquearCta";
 import { labelTecnica } from "@/lib/talento/cv-tecnicas";
 import {
   PUESTO_TALENTO_LABEL,
@@ -13,6 +19,7 @@ import {
 
 export default async function CvDetallePage(props: PageProps<"/talento/[id]">) {
   const { id } = await props.params;
+  const sp = await props.searchParams;
   const cv = await getCvById(id);
   if (!cv || !cv.visible) notFound();
 
@@ -22,10 +29,18 @@ export default async function CvDetallePage(props: PageProps<"/talento/[id]">) {
   } = await supabase.auth.getUser();
   const esPropio = user?.id === cv.usuarioId;
 
+  // Confirm the payment straight from the success redirect, so access is granted
+  // even if the webhook hasn't landed yet (and works before it's configured).
+  const sessionId = typeof sp?.session_id === "string" ? sp.session_id : null;
+  if (user && !esPropio && sessionId) {
+    await confirmarSesionCheckout(sessionId, user.id);
+  }
+
   // Full profile + name + contact are gated behind the pay-to-access paywall.
-  // The owner always sees their own CV. Everyone else sees the teaser + the
-  // unlock prompt (the actual payment lands with Stripe).
-  const desbloqueado = esPropio;
+  // The owner always sees their own CV; a business owner sees it once unlocked.
+  const desbloqueado =
+    esPropio || (user ? await estaDesbloqueado(user.id, cv.id) : false);
+  const saldoCreditos = user && !esPropio ? await getMiSaldoCreditos() : 0;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -119,7 +134,7 @@ export default async function CvDetallePage(props: PageProps<"/talento/[id]">) {
           )}
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-8 text-center">
+        <div className="flex flex-col items-center gap-5 rounded-xl border border-border bg-card p-8 text-center">
           <span className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
             <Lock className="size-5" aria-hidden="true" />
           </span>
@@ -128,14 +143,20 @@ export default async function CvDetallePage(props: PageProps<"/talento/[id]">) {
               Perfil confidencial
             </p>
             <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-              Desbloquea este CV para ver el perfil completo, la formación y
-              contactar con el candidato.
+              Desbloquea este CV para ver el perfil completo, la formación y las
+              técnicas del candidato.
             </p>
           </div>
-          <Button disabled>Desbloquear (próximamente)</Button>
-          <p className="text-xs text-muted-foreground">
-            El acceso de pago a los CVs estará disponible muy pronto.
-          </p>
+          {sp?.pago === "cancel" && (
+            <p className="text-sm text-muted-foreground">
+              Has cancelado el pago. Puedes intentarlo de nuevo cuando quieras.
+            </p>
+          )}
+          <DesbloquearCta
+            cvId={cv.id}
+            isAuthenticated={Boolean(user)}
+            saldoCreditos={saldoCreditos}
+          />
         </div>
       )}
     </div>
