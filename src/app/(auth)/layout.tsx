@@ -21,7 +21,12 @@ export default function AuthLayout({
           sizes="50vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#262420]/80 via-[#262420]/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#262420]/80 via-[#262420]/30 to-[#262420]/20" />
+        <div className="absolute left-0 top-0 p-10">
+          <Link href="/" aria-label="Ir al inicio">
+            <Logo className="text-2xl text-background" />
+          </Link>
+        </div>
         <div className="absolute inset-x-0 bottom-0 p-10">
           <p className="font-serif text-3xl italic leading-tight text-background">
             Tu próxima oportunidad empieza aquí
