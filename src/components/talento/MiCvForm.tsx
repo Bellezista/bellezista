@@ -1,5 +1,8 @@
 "use client";
 
+import { type ChangeEvent, useState } from "react";
+import Image from "next/image";
+import { Loader2, X } from "lucide-react";
 import {
   Controller,
   FormProvider,
@@ -19,14 +22,17 @@ import {
   PuestoTalento,
   JornadaTalento,
   DisponibilidadTalento,
+  ExpectativaSalarial,
 } from "@generated/prisma/enums";
 import {
   PUESTO_TALENTO_LABEL,
   JORNADA_TALENTO_LABEL,
   DISPONIBILIDAD_TALENTO_LABEL,
+  EXPECTATIVA_SALARIAL_LABEL,
 } from "@/lib/anuncio/labels";
 import { tecnicasDePuesto } from "@/lib/talento/cv-tecnicas";
 import { PROVINCIA_DESTACADA, PROVINCIAS_ORDENADAS } from "@/lib/provincias";
+import { createClient } from "@/lib/supabase/client";
 import { useGuardarCv } from "@/hooks/useGuardarCv";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -50,9 +56,88 @@ function FieldError({ message }: { message?: string }) {
 const PUESTOS = Object.values(PuestoTalento);
 const JORNADAS = Object.values(JornadaTalento);
 const DISPONIBILIDADES = Object.values(DisponibilidadTalento);
+const EXPECTATIVAS = Object.values(ExpectativaSalarial);
 const RESTO_PROVINCIAS = PROVINCIAS_ORDENADAS.filter(
   (p) => p !== PROVINCIA_DESTACADA,
 );
+
+// Single-photo uploader for the candidate. Same Storage pattern as the publish
+// wizard (public fotos-video bucket, path prefixed with the user's id for RLS).
+function FotoCandidato() {
+  const { setValue, watch } = useFormContext<CvFormInput>();
+  const foto = watch("foto");
+  const [subiendo, setSubiendo] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setError(null);
+    setSubiendo(true);
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sesión expirada.");
+      const ext = file.name.split(".").pop();
+      const path = `${user.id}/${crypto.randomUUID()}${ext ? `.${ext}` : ""}`;
+      const { error: upErr } = await supabase.storage
+        .from("fotos-video")
+        .upload(path, file);
+      if (upErr) throw upErr;
+      const { data } = supabase.storage.from("fotos-video").getPublicUrl(path);
+      setValue("foto", data.publicUrl, { shouldDirty: true });
+    } catch {
+      setError("No se pudo subir la foto. Intenta de nuevo.");
+    } finally {
+      setSubiendo(false);
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <Label htmlFor="foto-input">Foto (opcional)</Label>
+      <div className="flex items-center gap-4">
+        <div className="relative size-20 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
+          {foto ? (
+            <Image src={foto} alt="Foto del candidato" fill sizes="80px" className="object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+              Sin foto
+            </div>
+          )}
+          {subiendo && (
+            <div className="absolute inset-0 flex items-center justify-center bg-background/70">
+              <Loader2 className="size-5 animate-spin text-muted-foreground" />
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col gap-2">
+          <Input
+            id="foto-input"
+            type="file"
+            accept="image/*"
+            disabled={subiendo}
+            onChange={handleChange}
+            className="max-w-xs"
+          />
+          {foto && (
+            <button
+              type="button"
+              onClick={() => setValue("foto", undefined, { shouldDirty: true })}
+              className="inline-flex w-fit items-center gap-1 text-xs text-muted-foreground hover:text-destructive"
+            >
+              <X className="size-3" aria-hidden="true" /> Quitar foto
+            </button>
+          )}
+        </div>
+      </div>
+      {error && <p className="text-xs text-destructive">{error}</p>}
+    </div>
+  );
+}
 
 // Bloque específico según el puesto seleccionado: checklist de técnicas, cada
 // una con años de experiencia. Se guarda solo lo marcado (presencia = "sabe").
@@ -163,6 +248,18 @@ export function MiCvForm({
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <FotoCandidato />
+
+        <div className="space-y-2">
+          <Label htmlFor="nombre">Nombre</Label>
+          <Input
+            id="nombre"
+            placeholder="Tu nombre y apellidos"
+            {...register("nombre")}
+          />
+          <FieldError message={errors.nombre?.message} />
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="puesto">Puesto</Label>
@@ -277,10 +374,23 @@ export function MiCvForm({
             Expectativa salarial{" "}
             <span className="text-muted-foreground">(opcional)</span>
           </Label>
-          <Input
-            id="expectativaSalarial"
-            placeholder="Ej: 1.200 – 1.500 € / mes"
-            {...register("expectativaSalarial")}
+          <Controller
+            control={control}
+            name="expectativaSalarial"
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} value={field.value}>
+                <SelectTrigger id="expectativaSalarial" className="w-full">
+                  <SelectValue placeholder="Elige un rango" />
+                </SelectTrigger>
+                <SelectContent>
+                  {EXPECTATIVAS.map((e) => (
+                    <SelectItem key={e} value={e}>
+                      {EXPECTATIVA_SALARIAL_LABEL[e]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           />
         </div>
 

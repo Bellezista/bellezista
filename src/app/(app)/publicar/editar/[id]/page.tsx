@@ -68,7 +68,7 @@ export default async function EditarAnuncioPage(
       alquilerMensual: traspaso.alquilerMensual
         ? Number(traspaso.alquilerMensual)
         : undefined,
-      incluyeLicencia: traspaso.incluyeLicencia,
+      tipoLicencia: traspaso.tipoLicencia ?? undefined,
     };
     return (
       <div className="mx-auto max-w-2xl space-y-8">

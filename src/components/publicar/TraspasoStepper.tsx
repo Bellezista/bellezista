@@ -57,7 +57,6 @@ export function TraspasoStepper({
     resolver: zodResolver(publicarTraspasoSchema),
     defaultValues: {
       tipoAnunciante: TipoAnuncianteTraspaso.PARTICULAR,
-      incluyeLicencia: false,
       fotos: [],
       aceptaCondiciones: false,
       ...defaultValues,

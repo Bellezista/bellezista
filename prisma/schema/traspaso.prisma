@@ -24,6 +24,18 @@ enum TipoAnuncianteTraspaso {
   @@schema("public")
 }
 
+// Type of licence transferred with the business. Every traspaso includes a
+// licence, so it's a type (not a yes/no) -- list confirmed by the client.
+enum TipoLicenciaTraspaso {
+  SALON_BELLEZA
+  CENTRO_ESTETICA
+  PELUQUERIA
+  SANITARIA
+  OTROS
+
+  @@schema("public")
+}
+
 // Fase 2 subtype: business-transfer listings. 1:1 with Anuncio, keyed by the
 // same id (class-table inheritance, see anuncio.prisma). The traspaso price,
 // ciudad/provincia, fotos, estado and propietario all live on the parent
@@ -42,7 +54,7 @@ model Traspaso {
   cabinas         Int?
   personal        Int? // empleados / personal a subrogar
   alquilerMensual Decimal? @db.Decimal(12, 2) @map("alquiler_mensual")
-  incluyeLicencia Boolean  @default(false) @map("incluye_licencia")
+  tipoLicencia    TipoLicenciaTraspaso? @map("tipo_licencia")
 
   @@index([tipoNegocio])
   @@map("traspaso")

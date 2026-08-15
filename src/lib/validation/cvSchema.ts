@@ -3,6 +3,7 @@ import {
   PuestoTalento,
   JornadaTalento,
   DisponibilidadTalento,
+  ExpectativaSalarial,
 } from "@generated/prisma/enums";
 
 // One declared technique within the puesto's block: its presence means the
@@ -14,6 +15,7 @@ export const cvTecnicaSchema = z.object({
 
 // Standardized CV fields (Talento) — client spec CV_Estandar_Talento_Bellezista.
 export const cvSchema = z.object({
+  nombre: z.string().min(2, "Indica tu nombre."),
   puesto: z.enum(PuestoTalento),
   provincia: z.string().min(2, "Indica tu provincia."),
   aniosExperiencia: z.coerce
@@ -24,7 +26,7 @@ export const cvSchema = z.object({
   disponibilidad: z
     .enum(DisponibilidadTalento)
     .default(DisponibilidadTalento.A_CONVENIR),
-  expectativaSalarial: z.string().max(80).optional(),
+  expectativaSalarial: z.enum(ExpectativaSalarial).optional(),
   titulacion: z.string().max(500).optional(),
   cursos: z.string().max(500).optional(),
   presentacion: z.string().max(300, "Máximo 300 caracteres.").optional(),

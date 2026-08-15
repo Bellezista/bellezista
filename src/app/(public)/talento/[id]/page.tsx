@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Lock } from "lucide-react";
@@ -15,6 +16,7 @@ import {
   PUESTO_TALENTO_LABEL,
   JORNADA_TALENTO_LABEL,
   DISPONIBILIDAD_TALENTO_LABEL,
+  EXPECTATIVA_SALARIAL_LABEL,
 } from "@/lib/anuncio/labels";
 
 export default async function CvDetallePage(props: PageProps<"/talento/[id]">) {
@@ -60,13 +62,26 @@ export default async function CvDetallePage(props: PageProps<"/talento/[id]">) {
 
       {desbloqueado ? (
         <div className="space-y-5 rounded-xl border border-border bg-card p-6">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              Candidato
-            </p>
-            <p className="text-lg font-semibold text-foreground">
-              {cv.usuario.nombre}
-            </p>
+          <div className="flex items-center gap-4">
+            {cv.foto && (
+              <div className="relative size-16 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
+                <Image
+                  src={cv.foto}
+                  alt={cv.nombre ?? "Candidato"}
+                  fill
+                  sizes="64px"
+                  className="object-cover"
+                />
+              </div>
+            )}
+            <div>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                Candidato
+              </p>
+              <p className="text-lg font-semibold text-foreground">
+                {cv.nombre ?? cv.usuario.nombre}
+              </p>
+            </div>
           </div>
           {cv.expectativaSalarial && (
             <div>
@@ -74,7 +89,7 @@ export default async function CvDetallePage(props: PageProps<"/talento/[id]">) {
                 Expectativa salarial
               </p>
               <p className="text-sm text-foreground">
-                {cv.expectativaSalarial}
+                {EXPECTATIVA_SALARIAL_LABEL[cv.expectativaSalarial]}
               </p>
             </div>
           )}

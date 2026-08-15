@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
   TipoNegocioTraspaso,
   TipoAnuncianteTraspaso,
+  TipoLicenciaTraspaso,
 } from "@generated/prisma/enums";
 
 // Empty number inputs arrive as "" or NaN (react-hook-form valueAsNumber);
@@ -27,7 +28,7 @@ export const traspasoSchema = z.object({
   cabinas: numeroOpcional(z.coerce.number().int().min(0)),
   personal: numeroOpcional(z.coerce.number().int().min(0)),
   alquilerMensual: numeroOpcional(z.coerce.number().min(0)),
-  incluyeLicencia: z.coerce.boolean().default(false),
+  tipoLicencia: z.enum(TipoLicenciaTraspaso).optional(),
 });
 
 export type TraspasoInput = z.infer<typeof traspasoSchema>;

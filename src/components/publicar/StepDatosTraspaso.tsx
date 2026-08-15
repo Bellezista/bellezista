@@ -5,7 +5,6 @@ import { Controller, useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -18,10 +17,12 @@ import { PROVINCIA_DESTACADA, PROVINCIAS_ORDENADAS } from "@/lib/provincias";
 import {
   TIPO_NEGOCIO_TRASPASO_LABEL,
   TIPO_ANUNCIANTE_TRASPASO_LABEL,
+  TIPO_LICENCIA_TRASPASO_LABEL,
 } from "@/lib/anuncio/labels";
 import {
   TipoNegocioTraspaso,
   TipoAnuncianteTraspaso,
+  TipoLicenciaTraspaso,
 } from "@generated/prisma/enums";
 import type { PublicarTraspasoFormInput } from "@/lib/validation/publicarTraspasoSchema";
 
@@ -192,21 +193,26 @@ export function StepDatosTraspaso() {
             {...register("alquilerMensual", { valueAsNumber: true })}
           />
         </div>
-        <div className="flex items-center gap-2 pt-8">
+        <div className="space-y-2">
+          <Label htmlFor="tipoLicencia">Tipo de licencia</Label>
           <Controller
             control={control}
-            name="incluyeLicencia"
+            name="tipoLicencia"
             render={({ field }) => (
-              <Checkbox
-                id="incluyeLicencia"
-                checked={Boolean(field.value)}
-                onCheckedChange={field.onChange}
-              />
+              <Select onValueChange={field.onChange} value={field.value}>
+                <SelectTrigger id="tipoLicencia" className="w-full">
+                  <SelectValue placeholder="Elige el tipo de licencia" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(TipoLicenciaTraspaso).map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {TIPO_LICENCIA_TRASPASO_LABEL[t]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
           />
-          <Label htmlFor="incluyeLicencia" className="font-normal">
-            Incluye cesión de licencia
-          </Label>
         </div>
       </div>
 

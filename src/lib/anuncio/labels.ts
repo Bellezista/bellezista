@@ -8,9 +8,11 @@ import type {
   NivelServicio,
   TipoNegocioTraspaso,
   TipoAnuncianteTraspaso,
+  TipoLicenciaTraspaso,
   PuestoTalento,
   JornadaTalento,
   DisponibilidadTalento,
+  ExpectativaSalarial,
 } from "@generated/prisma/client";
 
 // Display labels in the exact Spanish wording from the client's brief
@@ -91,4 +93,22 @@ export const DISPONIBILIDAD_TALENTO_LABEL: Record<
   CON_PREAVISO: "Con preaviso",
   FINES_DE_SEMANA: "Fines de semana",
   A_CONVENIR: "A convenir",
+};
+
+export const TIPO_LICENCIA_TRASPASO_LABEL: Record<
+  TipoLicenciaTraspaso,
+  string
+> = {
+  SALON_BELLEZA: "Licencia de salón de belleza",
+  CENTRO_ESTETICA: "Centro de estética",
+  PELUQUERIA: "Peluquería",
+  SANITARIA: "Licencia sanitaria",
+  OTROS: "Otros",
+};
+
+export const EXPECTATIVA_SALARIAL_LABEL: Record<ExpectativaSalarial, string> = {
+  SEGUN_CONVENIO: "Según convenio",
+  R_1200_1500: "1.200 - 1.500 €",
+  R_1500_1800: "1.500 - 1.800 €",
+  R_1800_MAS: "Más de 1.800 €",
 };

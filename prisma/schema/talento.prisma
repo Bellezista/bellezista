@@ -30,6 +30,16 @@ enum DisponibilidadTalento {
   @@schema("public")
 }
 
+// Salary expectation as fixed ranges (client request) instead of free text.
+enum ExpectativaSalarial {
+  SEGUN_CONVENIO
+  R_1200_1500
+  R_1500_1800
+  R_1800_MAS
+
+  @@schema("public")
+}
+
 // Bellezista Talent: a candidate CV bank, NOT an Anuncio subtype. Workers fill
 // one standardized CV (one per worker, hence @unique); business owners browse
 // them and pay to access the full profile/contact (paywall added with Stripe).
@@ -39,13 +49,14 @@ model Cv {
   usuarioId String  @unique @map("usuario_id") @db.Uuid
   usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
+  nombre           String? // nombre del candidato (mostrado tras el desbloqueo)
   puesto           PuestoTalento
   provincia        String
   aniosExperiencia Int                   @map("anios_experiencia")
   jornada          JornadaTalento        @default(POR_HORAS)
   disponibilidad   DisponibilidadTalento @default(A_CONVENIR)
 
-  expectativaSalarial String? @map("expectativa_salarial") // rango, opcional
+  expectativaSalarial ExpectativaSalarial? @map("expectativa_salarial")
   titulacion          String? // titulación / formación reglada
   cursos              String? // cursos o certificaciones específicas
   presentacion        String? @db.Text // texto breve de presentación (~300)

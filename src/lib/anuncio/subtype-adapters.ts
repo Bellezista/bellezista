@@ -11,6 +11,7 @@ import {
   ESTADO_EQUIPO_LABEL,
   TIPO_NEGOCIO_TRASPASO_LABEL,
   TIPO_ANUNCIANTE_TRASPASO_LABEL,
+  TIPO_LICENCIA_TRASPASO_LABEL,
 } from "./labels";
 
 // The reusable-component pattern the bid was won on: one card, one ficha, and
@@ -129,10 +130,12 @@ export const traspasoAdapter: SubtypeAdapter<TraspasoLike> = {
         value: `${Number(t.alquilerMensual).toLocaleString("es-ES")} €`,
       });
     }
-    atributos.push({
-      label: "Licencia incluida",
-      value: t.incluyeLicencia ? "Sí" : "No",
-    });
+    if (t.tipoLicencia) {
+      atributos.push({
+        label: "Tipo de licencia",
+        value: TIPO_LICENCIA_TRASPASO_LABEL[t.tipoLicencia],
+      });
+    }
     return atributos;
   },
   getDescripcion(t) {

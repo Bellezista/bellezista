@@ -8,6 +8,7 @@ export default async function MiCvPage() {
 
   const defaultValues: Partial<CvFormInput> | undefined = cv
     ? {
+        nombre: cv.nombre ?? undefined,
         puesto: cv.puesto,
         provincia: cv.provincia,
         aniosExperiencia: cv.aniosExperiencia,
