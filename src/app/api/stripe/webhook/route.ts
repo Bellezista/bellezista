@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { stripe, STRIPE_WEBHOOK_SECRET } from "@/lib/stripe/server";
 import { otorgarAccesoDesdeSesion } from "@/lib/talento/otorgar";
+import { otorgarDestacadoDesdeSesion } from "@/lib/anuncio/destacado";
 
 // Stripe webhook for Talento payments. Grants the unlock (individual) or adds
 // bono credits once a Checkout Session is paid. The raw body is required for
@@ -32,7 +33,12 @@ export async function POST(request: Request) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     if (session.payment_status === "paid") {
-      await otorgarAccesoDesdeSesion(session);
+      // Route by the payment type set in the Checkout metadata.
+      if (session.metadata?.tipo === "destacado") {
+        await otorgarDestacadoDesdeSesion(session);
+      } else {
+        await otorgarAccesoDesdeSesion(session); // Talento (individual/bono)
+      }
     }
   }
 

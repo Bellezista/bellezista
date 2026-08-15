@@ -57,6 +57,8 @@ type TraspasoSerializado = Omit<Traspaso, "alquilerMensual"> & {
 
 export type AnuncioSerializado = Omit<Anuncio, "precio"> & {
   precio: number;
+  // True while destacadoHasta is in the future (paid featured listing).
+  destacado: boolean;
   maquinaria: MaquinariaSerializada | null;
   traspaso: TraspasoSerializado | null;
 };
@@ -75,6 +77,9 @@ export function serializeAnuncio(
   return {
     ...anuncio,
     precio: Number(anuncio.precio),
+    destacado:
+      anuncio.destacadoHasta != null &&
+      anuncio.destacadoHasta.getTime() > Date.now(),
     maquinaria: anuncio.maquinaria
       ? {
           ...anuncio.maquinaria,

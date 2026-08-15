@@ -40,6 +40,10 @@ model Anuncio {
   // already-confirmed "user panel shows view counts" feature.
   vistas Int @default(0)
 
+  // Paid "destacado": the listing is featured (gold frame, sorted first) while
+  // this timestamp is in the future. Null / past = not featured.
+  destacadoHasta DateTime? @map("destacado_hasta")
+
   creadoEn      DateTime @default(now()) @map("creado_en")
   actualizadoEn DateTime @updatedAt @map("actualizado_en")
 
@@ -49,9 +53,33 @@ model Anuncio {
 
   conversaciones Conversacion[]
   operaciones    Operacion[]
+  pagos          PagoAnuncio[]
 
   @@index([tipo, estado])
   @@index([ciudadProvincia])
   @@map("anuncio")
+  @@schema("public")
+}
+
+// Ledger of simple one-off anuncio payments (destacado, Kit Traspaso). Gives
+// idempotency (unique stripe_session_id) and a basic audit trail. The commission
+// -with-retention flow uses Operacion instead; this is only for simple checkouts.
+model PagoAnuncio {
+  id              String  @id @default(uuid()) @db.Uuid
+  stripeSessionId String  @unique @map("stripe_session_id")
+  anuncioId       String  @map("anuncio_id") @db.Uuid
+  anuncio         Anuncio @relation(fields: [anuncioId], references: [id], onDelete: Cascade)
+  usuarioId       String  @map("usuario_id") @db.Uuid
+
+  tipo    String // "destacado" | "kit_traspaso"
+  importe Int    @default(0) // céntimos
+  moneda  String @default("eur")
+  dias    Int?   // duración del destacado, en días
+
+  creadoEn DateTime @default(now()) @map("creado_en")
+
+  @@index([anuncioId])
+  @@index([usuarioId])
+  @@map("pago_anuncio")
   @@schema("public")
 }

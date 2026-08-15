@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 // the home reads as a multi-service platform from day one (client request).
 // Selecting a tab swaps the primary CTA to that service.
 const MODULOS = [
-  { key: "maquinaria", label: "Maquinaria", href: "/catalogo", activo: true },
   { key: "traspasos", label: "Traspasos", href: "/traspasos", activo: true },
+  { key: "maquinaria", label: "Maquinaria", href: "/catalogo", activo: true },
   { key: "talento", label: "Empleo & Talento", href: "/talento", activo: true },
   { key: "ofertas", label: "Ofertas", href: null, activo: false },
 ] as const;
@@ -67,12 +67,14 @@ export function HeroTabs() {
             {modulo.label} · próximamente
           </Button>
         )}
-        <Link
-          href="/publicar"
-          className="text-sm text-background underline decoration-gold underline-offset-4 transition-colors hover:text-gold"
+        <Button
+          asChild
+          size="lg"
+          variant="outline"
+          className="h-12 rounded-full border-gold bg-transparent px-8 text-sm font-semibold text-gold hover:bg-gold hover:text-foreground"
         >
-          Publicar un anuncio
-        </Link>
+          <Link href="/publicar">Publicar un anuncio</Link>
+        </Button>
       </div>
     </div>
   );

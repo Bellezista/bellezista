@@ -23,7 +23,12 @@ export function AnuncioGrid({ anuncios }: AnuncioGridProps) {
       {anuncios.map((anuncio, index) => (
         // The first row (up to 3 on desktop) is above the fold -- eager-load
         // those so the LCP image isn't lazy-loaded; the rest stay lazy.
-        <AnuncioCard key={anuncio.id} anuncio={anuncio} priority={index < 3} />
+        <AnuncioCard
+          key={anuncio.id}
+          anuncio={anuncio}
+          priority={index < 3}
+          destacado={anuncio.destacado}
+        />
       ))}
     </div>
   );

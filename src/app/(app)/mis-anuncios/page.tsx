@@ -1,17 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma/client";
 import { getMisAnuncios } from "@/lib/actions/anuncios";
+import { confirmarDestacado } from "@/lib/anuncio/destacado";
 import { PanelStatsRow } from "@/components/panel/PanelStatsRow";
 import { MisAnunciosTable } from "@/components/panel/MisAnunciosTable";
 import { PageHeader } from "@/components/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
 
-export default async function MisAnunciosPage() {
-  // getMisAnuncios already returns serialized (Decimal-free) data -- see
-  // src/lib/actions/anuncios.ts for why that lives in the action itself.
-  const anuncios = await getMisAnuncios();
-
+export default async function MisAnunciosPage(
+  props: PageProps<"/mis-anuncios">,
+) {
   // AppLayout already fetches nombre for the topbar, but doesn't pass it
   // down to pages -- re-fetching here is the same one-line query, not worth
   // threading through a layout->page prop just to avoid it.
@@ -19,6 +18,19 @@ export default async function MisAnunciosPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Confirm a destacado purchase returning from Stripe, before loading the
+  // list, so it shows as featured right away.
+  const sp = await props.searchParams;
+  const sessionId =
+    typeof sp.session_id === "string" ? sp.session_id : null;
+  if (user && sessionId) {
+    await confirmarDestacado(sessionId, user.id);
+  }
+
+  // getMisAnuncios already returns serialized (Decimal-free) data -- see
+  // src/lib/actions/anuncios.ts for why that lives in the action itself.
+  const anuncios = await getMisAnuncios();
   const usuario = user
     ? await prisma.usuario.findUnique({
         where: { id: user.id },

@@ -69,6 +69,22 @@ export default async function LandingPage() {
 
   return (
     <>
+      {/* Publish notice bar -- a visible call-to-action to place an ad. On-brand
+          (cream band, gold only as the accent button, never as background). */}
+      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-b border-border bg-cream px-4 py-3.5 text-center">
+        <span className="text-sm font-medium text-foreground sm:text-base">
+          ¿Tienes maquinaria, un traspaso o buscas empleo? Publícalo gratis en
+          Bellezista.
+        </span>
+        <Button
+          asChild
+          size="sm"
+          className="rounded-full bg-gold px-6 font-semibold text-foreground hover:bg-gold/90"
+        >
+          <Link href="/publicar">Publicar un anuncio</Link>
+        </Button>
+      </div>
+
       {/* Hero */}
       <section className="relative isolate flex min-h-[88vh] flex-col">
         <Image

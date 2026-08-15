@@ -62,7 +62,11 @@ export async function getAnunciosMaquinaria(filtros: CatalogoFiltros = {}) {
       }),
     },
     include: { maquinaria: true, traspaso: true },
-    orderBy: { creadoEn: "desc" },
+    // Featured (destacado) listings first, then newest.
+    orderBy: [
+      { destacadoHasta: { sort: "desc", nulls: "last" } },
+      { creadoEn: "desc" },
+    ],
   });
   return serializeAnuncios(anuncios);
 }
@@ -108,7 +112,11 @@ export async function getAnunciosTraspaso(filtros: CatalogoFiltros = {}) {
       }),
     },
     include: { maquinaria: true, traspaso: true },
-    orderBy: { creadoEn: "desc" },
+    // Featured (destacado) listings first, then newest.
+    orderBy: [
+      { destacadoHasta: { sort: "desc", nulls: "last" } },
+      { creadoEn: "desc" },
+    ],
   });
   return serializeAnuncios(anuncios);
 }

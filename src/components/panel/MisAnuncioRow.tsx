@@ -1,12 +1,14 @@
 "use client";
 
+import { useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ImageOff } from "lucide-react";
+import { ImageOff, Star } from "lucide-react";
 import type { MisAnuncioSerializado } from "@/types/anuncio";
 import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { EstadoTexto } from "@/components/anuncio/EstadoTexto";
+import { crearCheckoutDestacado } from "@/lib/actions/destacado";
 import { formatPrecio } from "@/lib/format";
 
 interface MisAnuncioRowProps {
@@ -23,6 +25,18 @@ export function MisAnuncioRow({
   onCambiarEstadoClick,
 }: MisAnuncioRowProps) {
   const foto = anuncio.fotos[0];
+  const [destacarPending, startDestacar] = useTransition();
+
+  function handleDestacar() {
+    startDestacar(async () => {
+      const res = await crearCheckoutDestacado(anuncio.id);
+      if (res.url) window.location.href = res.url;
+    });
+  }
+
+  const destacadoHasta = anuncio.destacadoHasta
+    ? new Date(anuncio.destacadoHasta).toLocaleDateString("es-ES")
+    : null;
 
   return (
     <TableRow>
@@ -44,7 +58,15 @@ export function MisAnuncioRow({
             )}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-medium">{anuncio.titulo}</p>
+            <div className="flex items-center gap-2">
+              <p className="truncate font-medium">{anuncio.titulo}</p>
+              {anuncio.destacado && (
+                <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-gold px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-foreground">
+                  <Star className="size-3" aria-hidden="true" />
+                  Destacado
+                </span>
+              )}
+            </div>
             <p className="truncate text-sm text-muted-foreground">
               {anuncio.ciudadProvincia}
             </p>
@@ -59,6 +81,18 @@ export function MisAnuncioRow({
       <TableCell>{formatPrecio(anuncio.precio.toString())}</TableCell>
       <TableCell>
         <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-gold text-gold hover:bg-gold hover:text-foreground"
+            disabled={destacarPending}
+            onClick={handleDestacar}
+            title={
+              destacadoHasta ? `Destacado hasta ${destacadoHasta}` : undefined
+            }
+          >
+            {anuncio.destacado ? "Renovar destacado" : "Destacar"}
+          </Button>
           <Button asChild variant="outline" size="sm">
             <Link href={`/publicar/editar/${anuncio.id}`}>Editar</Link>
           </Button>
