@@ -27,8 +27,11 @@ export async function actualizarMiContacto(input: {
   email: string;
 }) {
   const usuarioId = await requireUsuarioId();
-  await prisma.contacto.update({
+  // Upsert: a user who never published has no Contacto row yet, so a plain
+  // update would throw when they save from their profile.
+  await prisma.contacto.upsert({
     where: { usuarioId },
-    data: { telefono: input.telefono, email: input.email },
+    create: { usuarioId, telefono: input.telefono, email: input.email },
+    update: { telefono: input.telefono, email: input.email },
   });
 }

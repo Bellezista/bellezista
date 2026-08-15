@@ -1,20 +1,6 @@
 import Link from "next/link";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-
-function obtenerIniciales(nombre: string) {
-  const partes = nombre.trim().split(/\s+/).filter(Boolean);
-
-  if (partes.length === 0) {
-    return "?";
-  }
-
-  if (partes.length === 1) {
-    return partes[0].slice(0, 2).toUpperCase();
-  }
-
-  return `${partes[0][0]}${partes[partes.length - 1][0]}`.toUpperCase();
-}
+import { UserMenu } from "@/components/layout/UserMenu";
 
 export function AppTopbar({
   userNombre,
@@ -32,12 +18,7 @@ export function AppTopbar({
 
       <div className="flex flex-1 items-center justify-end gap-3">
         {userNombre ? (
-          <>
-            <span className="text-sm text-foreground">{userNombre}</span>
-            <Avatar>
-              <AvatarFallback>{obtenerIniciales(userNombre)}</AvatarFallback>
-            </Avatar>
-          </>
+          <UserMenu userNombre={userNombre} />
         ) : (
           <Button asChild variant="outline" size="sm">
             <Link href="/login">Iniciar sesión</Link>
