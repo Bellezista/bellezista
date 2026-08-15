@@ -25,7 +25,7 @@ export function PanelStatsRow({ anuncios }: PanelStatsRowProps) {
     { label: "Anuncios publicados", value: total },
     { label: "Anuncios activos", value: activos },
     { label: "Vistas totales", value: vistas },
-    { label: "Mensajes recibidos", value: mensajes },
+    { label: "Contactos recibidos", value: mensajes },
   ];
 
   return (

@@ -1,5 +1,9 @@
+import { after } from "next/server";
 import { notFound } from "next/navigation";
-import { getAnuncioById } from "@/lib/actions/anuncios";
+import {
+  getAnuncioById,
+  registrarVistaAnuncio,
+} from "@/lib/actions/anuncios";
 import { tieneConversacionConAnuncio } from "@/lib/actions/mensajes";
 import { createClient } from "@/lib/supabase/server";
 import { AnuncioFicha } from "@/components/anuncio/AnuncioFicha";
@@ -21,6 +25,12 @@ export default async function AnuncioDetallePage(
   // the owner. Maquinaria has no such tier.
   const esTraspaso = anuncio.tipo === "TRASPASO";
   const esPropio = user?.id === anuncio.propietarioId;
+
+  // Count a view for the owner's stats -- not the owner's own visits. Deferred
+  // with after() so it doesn't block the response.
+  if (!esPropio) {
+    after(() => registrarVistaAnuncio(id).catch(() => {}));
+  }
   const haContactado =
     esTraspaso && !esPropio && user
       ? await tieneConversacionConAnuncio(anuncio.id)

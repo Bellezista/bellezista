@@ -74,6 +74,15 @@ export async function getAnuncioById(id: string) {
   });
 }
 
+// Basic view counter for the owner's panel. Fire-and-forget from the ficha via
+// after(), so it never adds latency to the page and a failure is silent.
+export async function registrarVistaAnuncio(id: string) {
+  await prisma.anuncio.update({
+    where: { id },
+    data: { vistas: { increment: 1 } },
+  });
+}
+
 // Traspasos catalog. Same shape as getAnunciosMaquinaria but filtered to the
 // TRASPASO subtype, with traspaso-specific filters (tipo de negocio, precio
 // range). ciudad/q reuse the shared parent-field filters.

@@ -64,7 +64,7 @@ export function MisAnunciosTable({ anuncios }: MisAnunciosTableProps) {
               <TableHead>Anuncio</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead>Vistas</TableHead>
-              <TableHead>Mensajes</TableHead>
+              <TableHead>Contactos</TableHead>
               <TableHead>Precio</TableHead>
               <TableHead>Acciones</TableHead>
             </TableRow>
