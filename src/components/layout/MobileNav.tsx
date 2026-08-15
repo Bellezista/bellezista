@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 const NAV_ITEMS = [
   { href: "/traspasos", label: "Traspasos", icon: Store },
   { href: "/catalogo", label: "Maquinaria", icon: LayoutGrid },
-  { href: "/talento", label: "Talento", icon: Users },
+  { href: "/talento", label: "Empleo & Talento", icon: Users },
   { href: "/publicar", label: "Publicar anuncio", icon: CirclePlus },
   { href: "/talento/mi-cv", label: "Mi CV", icon: FileText },
   { href: "/mis-anuncios", label: "Mis anuncios", icon: List },

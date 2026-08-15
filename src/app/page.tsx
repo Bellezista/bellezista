@@ -1,9 +1,11 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { getAnunciosMaquinaria, getAnunciosTraspaso } from "@/lib/actions/anuncios";
-import type { AnuncioSerializado } from "@/types/anuncio";
+import { getCvs } from "@/lib/actions/talento";
 import { AnuncioCard } from "@/components/anuncio/AnuncioCard";
+import { CvCard } from "@/components/talento/CvCard";
 import { HeroTabs } from "@/components/landing/HeroTabs";
 import { Footer } from "@/components/layout/Footer";
 import { Logo } from "@/components/layout/Logo";
@@ -40,13 +42,30 @@ const PILARES = [
 export default async function LandingPage() {
   // One featured listing per live module, so the home shows the breadth of the
   // platform. Talento/Ofertas join this list automatically once they ship.
-  const [maquinaria, traspaso] = await Promise.all([
+  const [maquinaria, traspaso, cvs] = await Promise.all([
     getAnunciosMaquinaria(),
     getAnunciosTraspaso(),
+    getCvs(),
   ]);
-  const destacados: AnuncioSerializado[] = [maquinaria[0], traspaso[0]].filter(
-    (a): a is AnuncioSerializado => a != null,
-  );
+
+  // One framed pick per live section, in menu order (Traspasos, Maquinaria,
+  // Talento). Each section only shows if it has something to feature.
+  type Seccion = { titulo: string; node: ReactNode };
+  const seccionesRaw: (Seccion | undefined)[] = [
+    traspaso[0] && {
+      titulo: "Traspaso de negocios",
+      node: <AnuncioCard anuncio={traspaso[0]} priority />,
+    },
+    maquinaria[0] && {
+      titulo: "Venta de maquinaria",
+      node: <AnuncioCard anuncio={maquinaria[0]} priority />,
+    },
+    cvs[0] && {
+      titulo: "Búsqueda de talento",
+      node: <CvCard cv={cvs[0]} />,
+    },
+  ].map((s) => s || undefined);
+  const secciones = seccionesRaw.filter((s): s is Seccion => Boolean(s));
 
   return (
     <>
@@ -131,8 +150,8 @@ export default async function LandingPage() {
       </section>
 
       {/* Featured listings */}
-      {destacados.length > 0 && (
-        <section className="bg-cream px-6 py-20 md:px-12 md:py-28">
+      {secciones.length > 0 && (
+        <section className="bg-background px-6 py-20 md:px-12 md:py-28">
           <div className="mx-auto max-w-6xl">
             <div>
               <span className="text-xs font-medium uppercase tracking-[0.24em] text-gold">
@@ -144,28 +163,76 @@ export default async function LandingPage() {
             </div>
 
             <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {destacados.map((anuncio, i) => (
-                <AnuncioCard key={anuncio.id} anuncio={anuncio} priority={i < 3} />
+              {secciones.map((seccion) => (
+                <div
+                  key={seccion.titulo}
+                  className="overflow-hidden rounded-2xl border border-border bg-cream"
+                >
+                  <div className="border-b border-border px-5 py-3">
+                    <span className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">
+                      {seccion.titulo}
+                    </span>
+                  </div>
+                  <div className="p-4">{seccion.node}</div>
+                </div>
               ))}
             </div>
           </div>
         </section>
       )}
 
-      {/* Closing CTA -- dark moment */}
-      <section className="bg-foreground px-6 py-20 text-background md:px-12 md:py-24">
-        <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="max-w-xl font-serif text-3xl leading-tight md:text-4xl">
-              ¿Tienes equipo profesional para vender?
-            </h2>
-            <p className="mt-3 max-w-md text-background/75">
-              Publícalo hoy y llega a compradores del sector en toda España.
-            </p>
+      {/* Closing CTA -- dark moment, premium publish invitation */}
+      <section className="bg-foreground px-6 py-20 text-background md:px-12 md:py-28">
+        <div className="mx-auto max-w-6xl">
+          <span className="text-xs font-semibold uppercase tracking-[0.24em] text-gold">
+            Publica en Bellezista
+          </span>
+          <div className="mt-4 flex flex-col items-start gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 className="max-w-xl font-serif text-3xl leading-tight md:text-4xl">
+                Tu próximo cliente está en Bellezista
+              </h2>
+              <p className="mt-3 max-w-md text-background/75">
+                Vende tu maquinaria, traspasa tu negocio o publica tu CV. Llega
+                a todo el sector de la belleza en España.
+              </p>
+            </div>
+            <Button
+              asChild
+              size="lg"
+              className="h-12 shrink-0 rounded-full bg-gold px-8 text-sm font-semibold text-foreground hover:bg-gold/90"
+            >
+              <Link href="/publicar">Publicar ahora</Link>
+            </Button>
           </div>
-          <Button asChild size="lg" variant="secondary" className="h-12 px-8 text-sm">
-            <Link href="/publicar">Publicar un anuncio</Link>
-          </Button>
+
+          <div className="mt-12 grid gap-8 border-t border-white/15 pt-10 sm:grid-cols-3">
+            {[
+              {
+                titulo: "Publicar es gratis",
+                texto:
+                  "Empieza sin coste y destaca tu anuncio cuando quieras.",
+              },
+              {
+                titulo: "Todo el sector, en un sitio",
+                texto:
+                  "Compradores y profesionales de la belleza de toda España.",
+              },
+              {
+                titulo: "Gestión sencilla",
+                texto:
+                  "Controla tus anuncios, tus vistas y tus contactos desde tu panel.",
+              },
+            ].map((b, i) => (
+              <div key={b.titulo}>
+                <p className="font-serif text-2xl text-gold">
+                  0{i + 1}
+                </p>
+                <p className="mt-2 font-medium text-background">{b.titulo}</p>
+                <p className="mt-1 text-sm text-background/70">{b.texto}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

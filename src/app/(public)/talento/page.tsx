@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCvs } from "@/lib/actions/talento";
 import { confirmarSesionCheckout } from "@/lib/talento/otorgar";
 import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/button";
 import type { TalentoFiltros } from "@/types/talento";
 import { FiltroTalentoBar } from "@/components/talento/FiltroTalentoBar";
 import { TalentoCatalogoClient } from "@/components/talento/TalentoCatalogoClient";
@@ -54,7 +55,7 @@ export default async function TalentoPage(props: PageProps<"/talento">) {
               Bolsa de empleo
             </span>
             <h1 className="mt-2 font-serif text-3xl leading-tight text-background md:text-4xl">
-              Talento
+              Empleo &amp; Talento
             </h1>
             <p className="mt-2 font-serif text-lg italic text-gold md:text-xl">
               Los profesionales que tu negocio merece
@@ -63,12 +64,13 @@ export default async function TalentoPage(props: PageProps<"/talento">) {
               Encuentra profesionales de la belleza para tu negocio.
             </p>
           </div>
-          <Link
-            href="/talento/mi-cv"
-            className="text-sm text-background underline decoration-gold underline-offset-4 transition-colors hover:text-gold"
+          <Button
+            asChild
+            size="lg"
+            className="h-12 rounded-full bg-gold px-8 text-sm font-semibold text-foreground hover:bg-gold/90"
           >
-            Publicar mi CV
-          </Link>
+            <Link href="/talento/mi-cv">Publicar mi CV</Link>
+          </Button>
         </div>
       </section>
       <FiltroTalentoBar />

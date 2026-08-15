@@ -58,12 +58,16 @@ export function FichaContactoCard({
       ) : !loggedIn ? (
         <div className="flex flex-col gap-3">
           <p className="text-sm text-muted-foreground">
-            Escribe al propietario para preguntar por este equipo. Inicia
-            sesión para enviar tu mensaje.
+            Escribe al propietario y pregúntale lo que necesites. Inicia sesión
+            para enviar tu mensaje.
           </p>
-          <Button asChild variant="default" className="w-full">
+          <Button
+            asChild
+            size="lg"
+            className="h-12 w-full rounded-full bg-gold text-sm font-semibold text-foreground hover:bg-gold/90"
+          >
             <Link href={`/login?next=/anuncios/${anuncioId}`}>
-              Iniciar sesión para contactar
+              Enviar mensaje al propietario
             </Link>
           </Button>
         </div>
@@ -73,10 +77,14 @@ export function FichaContactoCard({
           className="flex flex-col gap-3"
         >
           <p className="text-sm text-muted-foreground">
-            Escribe al propietario para preguntar por este equipo.
+            Escribe al propietario y pregúntale lo que necesites.
           </p>
-          <Button type="submit" variant="default" className="w-full">
-            Enviar mensaje
+          <Button
+            type="submit"
+            size="lg"
+            className="h-12 w-full rounded-full bg-gold text-sm font-semibold text-foreground hover:bg-gold/90"
+          >
+            Enviar mensaje al propietario
           </Button>
         </form>
       )}
