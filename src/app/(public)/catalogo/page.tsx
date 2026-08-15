@@ -7,7 +7,7 @@ import { CatalogoClient } from "@/components/catalogo/CatalogoClient";
 export const dynamic = "force-dynamic";
 
 const HEADER_IMG =
-  "https://tcskwxcxfklukekmhttl.supabase.co/storage/v1/object/public/fotos-video/site/hero-maquinaria-equipo.jpg";
+  "https://tcskwxcxfklukekmhttl.supabase.co/storage/v1/object/public/fotos-video/site/hero-maquinaria-equipo3.jpg";
 
 export default async function CatalogoPage(props: PageProps<"/catalogo">) {
   const params = await props.searchParams;
