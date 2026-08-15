@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -40,7 +41,14 @@ export function FiltroCiudad() {
     <div className="flex w-full flex-col gap-1.5">
       <Label htmlFor="filtro-ciudad">Provincia</Label>
       <Select value={actual} onValueChange={seleccionar}>
-        <SelectTrigger id="filtro-ciudad" className="w-full">
+        <SelectTrigger
+          id="filtro-ciudad"
+          className={cn(
+            "w-full",
+            actual !== TODAS &&
+              "border-gold/50 bg-cream font-medium text-foreground",
+          )}
+        >
           <SelectValue placeholder="Todas las provincias" />
         </SelectTrigger>
         <SelectContent>

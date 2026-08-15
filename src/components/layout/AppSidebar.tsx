@@ -19,8 +19,8 @@ import { UnreadBadge } from "@/components/layout/UnreadBadge";
 import { useConteoNoLeidos } from "@/hooks/useConteoNoLeidos";
 
 const NAV_ITEMS = [
-  { href: "/catalogo", label: "Maquinaria", icon: LayoutGrid },
   { href: "/traspasos", label: "Traspasos", icon: Store },
+  { href: "/catalogo", label: "Maquinaria", icon: LayoutGrid },
   { href: "/talento", label: "Talento", icon: Users },
   { href: "/publicar", label: "Publicar anuncio", icon: CirclePlus },
   { href: "/talento/mi-cv", label: "Mi CV", icon: FileText },

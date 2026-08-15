@@ -1,6 +1,8 @@
 import Image from "next/image";
+import Link from "next/link";
 import { getAnunciosTraspaso } from "@/lib/actions/anuncios";
 import type { CatalogoFiltros } from "@/types/anuncio";
+import { Button } from "@/components/ui/button";
 import { FiltroTraspasoBar } from "@/components/catalogo/FiltroTraspasoBar";
 import { TraspasoCatalogoClient } from "@/components/catalogo/TraspasoCatalogoClient";
 
@@ -53,6 +55,13 @@ export default async function TraspasosPage(props: PageProps<"/traspasos">) {
           <p className="mt-2 max-w-md text-sm text-background/80">
             Compra y traspasa negocios del sector de la belleza en España.
           </p>
+          <Button
+            asChild
+            size="lg"
+            className="mt-6 h-12 rounded-full bg-gold px-8 text-sm font-semibold text-foreground hover:bg-gold/90"
+          >
+            <Link href="/publicar/traspaso">Quiero publicar un anuncio</Link>
+          </Button>
         </div>
       </section>
       <FiltroTraspasoBar />

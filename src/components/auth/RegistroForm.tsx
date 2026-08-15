@@ -130,7 +130,7 @@ export function RegistroForm({ next }: { next: string }) {
         )}
         <p className="text-center text-sm text-muted-foreground">
           <Link
-            href="/login"
+            href={`/login?next=${encodeURIComponent(next)}`}
             className="text-foreground underline underline-offset-4"
           >
             Inicia sesión
@@ -151,6 +151,14 @@ export function RegistroForm({ next }: { next: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-1">
+        <h2 className="font-serif text-2xl leading-tight text-foreground">
+          Crea tu cuenta
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Únete a Bellezista, el marketplace del sector de la belleza.
+        </p>
+      </div>
       <div className="space-y-1.5">
         <Label htmlFor="nombre">Nombre</Label>
         <Input
@@ -190,7 +198,10 @@ export function RegistroForm({ next }: { next: string }) {
       </Button>
       <p className="text-center text-sm text-muted-foreground">
         ¿Ya tienes cuenta?{" "}
-        <Link href="/login" className="text-foreground underline underline-offset-4">
+        <Link
+          href={`/login?next=${encodeURIComponent(next)}`}
+          className="text-foreground underline underline-offset-4"
+        >
           Inicia sesión
         </Link>
       </p>

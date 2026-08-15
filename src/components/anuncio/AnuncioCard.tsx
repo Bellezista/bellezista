@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, MapPin, Wrench } from "lucide-react";
+import { ArrowRight, MapPin, Star, Wrench } from "lucide-react";
 import type { AnuncioSerializado } from "@/types/anuncio";
+import { cn } from "@/lib/utils";
 import { atributosCardDe, categoriaLabelDe } from "@/lib/anuncio/subtype-adapters";
 import { formatPrecio } from "@/lib/format";
 import { EstadoTexto } from "@/components/anuncio/EstadoTexto";
@@ -11,13 +12,20 @@ interface AnuncioCardProps {
   // Above-the-fold cards (the first row) opt in to eager loading + preload so
   // the first image isn't lazy-loaded as the LCP element. Set by AnuncioGrid.
   priority?: boolean;
+  // Destacado/premium listings get a gold frame + badge so they stand out in
+  // the catalog at a glance (wired to the paid feature in Mis anuncios).
+  destacado?: boolean;
 }
 
 // Reusable catalog card. Kept subtype-agnostic on purpose: it only ever
 // touches Maquinaria through maquinariaAdapter.getAtributosCard, so adding
 // Traspasos/Talent/Oferta subtypes in Fase 2 means a new adapter, not a
 // change here (see src/lib/anuncio/subtype-adapters.ts).
-export function AnuncioCard({ anuncio, priority = false }: AnuncioCardProps) {
+export function AnuncioCard({
+  anuncio,
+  priority = false,
+  destacado = false,
+}: AnuncioCardProps) {
   const portada = anuncio.fotos[0];
   const atributos = atributosCardDe(anuncio).slice(0, 2);
   const categoria = categoriaLabelDe(anuncio);
@@ -25,9 +33,20 @@ export function AnuncioCard({ anuncio, priority = false }: AnuncioCardProps) {
   return (
     <Link
       href={`/anuncios/${anuncio.id}`}
-      className="group flex flex-col overflow-hidden rounded-xl bg-card shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-card-hover)]"
+      className={cn(
+        "group flex flex-col overflow-hidden rounded-xl bg-card shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-card-hover)]",
+        destacado
+          ? "border-2 border-gold"
+          : "border border-foreground/15",
+      )}
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+        {destacado && (
+          <span className="absolute right-3 top-3 z-10 inline-flex items-center gap-1 rounded-md bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-foreground">
+            <Star className="size-3" aria-hidden="true" />
+            Destacado
+          </span>
+        )}
         {anuncio.tipo === "TRASPASO" && (
           <span className="absolute left-3 top-3 z-10 rounded-md bg-cream px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-foreground">
             Confidencial

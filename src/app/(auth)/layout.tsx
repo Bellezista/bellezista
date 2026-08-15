@@ -17,8 +17,9 @@ export default function AuthLayout({
             El mundo de la belleza, en un solo lugar
           </p>
         </div>
-        <div className="rounded-xl bg-card p-6 shadow-[var(--shadow-card)]">
-          {children}
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
+          <div className="h-1.5 bg-gold" aria-hidden="true" />
+          <div className="p-6">{children}</div>
         </div>
       </div>
     </div>

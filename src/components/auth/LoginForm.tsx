@@ -37,6 +37,14 @@ export function LoginForm({ next }: { next: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-1">
+        <h2 className="font-serif text-2xl leading-tight text-foreground">
+          Bienvenido de nuevo
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Entra para publicar y gestionar tus anuncios.
+        </p>
+      </div>
       <div className="space-y-1.5">
         <Label htmlFor="email">Correo electrónico</Label>
         <Input
@@ -65,7 +73,10 @@ export function LoginForm({ next }: { next: string }) {
       </Button>
       <p className="text-center text-sm text-muted-foreground">
         ¿No tienes cuenta?{" "}
-        <Link href="/registro" className="text-foreground underline underline-offset-4">
+        <Link
+          href={`/registro?next=${encodeURIComponent(next)}`}
+          className="text-foreground underline underline-offset-4"
+        >
           Registrate
         </Link>
       </p>
