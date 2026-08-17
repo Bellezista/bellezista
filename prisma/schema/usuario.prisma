@@ -28,7 +28,8 @@ model Usuario {
   desbloquesCv    CvDesbloqueo[]
   talentoCredito  TalentoCredito?
 
-  kitsTraspaso KitTraspaso[]
+  kitsTraspaso       KitTraspaso[]
+  solicitudesGestion SolicitudGestion[]
 
   conversacionesInteresado  Conversacion[] @relation("interesado")
   conversacionesPropietario Conversacion[] @relation("propietario")

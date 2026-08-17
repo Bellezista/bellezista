@@ -1,7 +1,7 @@
 "use client";
 
 import { Controller, useFormContext } from "react-hook-form";
-import { Sparkles } from "lucide-react";
+import { GestionBcnBanner } from "@/components/publicar/GestionBcnBanner";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -111,27 +111,7 @@ export function StepDatosTraspaso() {
         </div>
       </div>
 
-      {mostrarGestionBcn && (
-        <div className="flex items-start gap-3 rounded-xl border border-gold/40 bg-gold/10 p-4">
-          <Sparkles
-            className="mt-0.5 size-5 shrink-0 text-gold"
-            aria-hidden="true"
-          />
-          <div className="space-y-1">
-            <p className="font-serif text-base text-foreground">
-              ¡Estás en Barcelona!
-            </p>
-            <p className="text-sm leading-relaxed text-foreground">
-              Puedes contar con asesoría profesional gratuita para vender tu
-              negocio, sin ningún coste para ti. Nos encargamos de todo
-              —búsqueda de comprador, negociación y documentación— y recibes
-              íntegro el precio que pides por tu negocio: nuestros honorarios se
-              añaden al precio que ve el comprador, no se descuentan de lo que tú
-              recibes.
-            </p>
-          </div>
-        </div>
-      )}
+      {mostrarGestionBcn && <GestionBcnBanner />}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">

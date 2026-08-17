@@ -89,3 +89,23 @@ model KitTraspaso {
   @@map("kit_traspaso")
   @@schema("public")
 }
+
+// Lead captured when a Barcelona particular requests SoluciónOK's free
+// professional management of their traspaso (10% a éxito, added on top of the
+// seller's price). SoluciónOK follows up by hand.
+model SolicitudGestion {
+  id        String  @id @default(uuid()) @db.Uuid
+  usuarioId String  @map("usuario_id") @db.Uuid
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  titulo    String?
+  precio    Decimal? @db.Decimal(12, 2)
+  provincia String?
+  estado    String   @default("pendiente") // pendiente | contactado
+
+  creadoEn DateTime @default(now()) @map("creado_en")
+
+  @@index([usuarioId])
+  @@map("solicitud_gestion")
+  @@schema("public")
+}
