@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 
 export default function PublicarMaquinariaPage() {
   return (
-    <div className="mx-auto max-w-2xl space-y-8">
+    <div className="mx-auto max-w-3xl space-y-8">
       <PageHeader
         eyebrow="Nuevo anuncio"
         title="Publicar maquinaria"

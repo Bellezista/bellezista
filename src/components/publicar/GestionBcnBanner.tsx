@@ -61,37 +61,47 @@ export function GestionBcnBanner() {
 
   return (
     <div className="overflow-hidden rounded-xl border border-gold/40 bg-gold/10">
-      <div className="flex flex-col gap-4 p-5 md:flex-row md:items-center md:gap-6 md:p-6">
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold">
-          <Sparkles className="size-6" aria-hidden="true" />
-        </span>
-
-        <div className="flex-1 space-y-1.5">
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">
-            Asesoría profesional gratuita · Barcelona
-          </span>
-          <p className="font-serif text-xl leading-tight text-foreground">
+      <div className="flex flex-col md:flex-row">
+        {/* Message zone */}
+        <div className="flex-1 p-6 md:p-7">
+          <div className="flex items-center gap-2.5">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold">
+              <Sparkles className="size-5" aria-hidden="true" />
+            </span>
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">
+              Asesoría profesional gratuita · Barcelona
+            </span>
+          </div>
+          <p className="mt-3 font-serif text-xl leading-tight text-foreground md:text-2xl">
             Deja que un experto venda tu negocio, sin coste para ti
           </p>
-          <p className="text-sm leading-relaxed text-foreground">
+          <p className="mt-2 text-sm leading-relaxed text-foreground">
             Nos encargamos de todo —búsqueda de comprador, negociación y
             documentación— y recibes íntegro el precio que pides por tu negocio:
             nuestros honorarios se añaden al precio que ve el comprador, no se
             descuentan de lo que tú recibes.
           </p>
-          {error && <p className="text-sm text-destructive">{error}</p>}
         </div>
 
-        <Button
-          type="button"
-          size="lg"
-          disabled={pending}
-          onClick={solicitar}
-          className="h-12 shrink-0 rounded-full bg-gold px-6 text-sm font-semibold text-foreground hover:bg-gold/90"
-        >
-          <BadgeCheck className="size-4" aria-hidden="true" />
-          {pending ? "Enviando..." : "Solicitar ayuda de un profesional"}
-        </Button>
+        {/* CTA zone */}
+        <div className="flex flex-col justify-center gap-2 border-t border-gold/30 bg-gold/15 p-6 md:w-80 md:shrink-0 md:border-l md:border-t-0">
+          <Button
+            type="button"
+            size="lg"
+            disabled={pending}
+            onClick={solicitar}
+            className="h-12 w-full rounded-full bg-gold text-sm font-semibold text-foreground hover:bg-gold/90"
+          >
+            <BadgeCheck className="size-4" aria-hidden="true" />
+            {pending ? "Enviando..." : "Solicitar ayuda profesional"}
+          </Button>
+          <p className="text-center text-xs text-foreground/70">
+            Sin compromiso. Te contactamos nosotros.
+          </p>
+          {error && (
+            <p className="text-center text-sm text-destructive">{error}</p>
+          )}
+        </div>
       </div>
     </div>
   );

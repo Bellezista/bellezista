@@ -45,7 +45,7 @@ export default async function EditarAnuncioPage(
       factura: maquinaria.factura ?? undefined,
     };
     return (
-      <div className="mx-auto max-w-2xl space-y-8">
+      <div className="mx-auto max-w-3xl space-y-8">
         <PageHeader title="Editar anuncio" />
         <PublishStepper anuncioId={anuncio.id} defaultValues={defaultValues} />
       </div>
@@ -71,7 +71,7 @@ export default async function EditarAnuncioPage(
       tipoLicencia: traspaso.tipoLicencia ?? undefined,
     };
     return (
-      <div className="mx-auto max-w-2xl space-y-8">
+      <div className="mx-auto max-w-3xl space-y-8">
         <PageHeader title="Editar traspaso" />
         <TraspasoStepper anuncioId={anuncio.id} defaultValues={defaultValues} />
       </div>
