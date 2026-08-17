@@ -7,16 +7,16 @@ import { PageHeader } from "@/components/layout/PageHeader";
 // as they ship.
 const OPCIONES = [
   {
-    href: "/publicar/maquinaria",
-    icon: LayoutGrid,
-    titulo: "Maquinaria",
-    texto: "Vende equipamiento de estética: aparatología, mobiliario y más.",
-  },
-  {
     href: "/publicar/traspaso",
     icon: Store,
     titulo: "Traspaso",
     texto: "Traspasa tu negocio de belleza: centro, peluquería, clínica, etc.",
+  },
+  {
+    href: "/publicar/maquinaria",
+    icon: LayoutGrid,
+    titulo: "Maquinaria",
+    texto: "Vende equipamiento de estética: aparatología, mobiliario y más.",
   },
 ] as const;
 
