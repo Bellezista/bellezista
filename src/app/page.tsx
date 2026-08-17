@@ -35,7 +35,7 @@ const PILARES = [
     n: "03",
     titulo: "Todo en un lugar",
     texto:
-      "Compra y vende maquinaria y traspasa negocios de belleza hoy. Muy pronto, talento y ofertas.",
+      "Compra y vende maquinaria, traspasa negocios y encuentra talento hoy. Muy pronto, ofertas.",
   },
 ];
 
@@ -104,9 +104,15 @@ export default async function LandingPage() {
           <Link href="/" className="text-background">
             <Logo className="text-2xl text-background" />
           </Link>
-          <nav className="flex items-center gap-6 text-sm text-background/85">
+          <nav className="flex items-center gap-5 text-sm text-background/85 md:gap-6">
+            <Link href="/traspasos" className="hidden transition-colors hover:text-gold sm:inline">
+              Traspasos
+            </Link>
             <Link href="/catalogo" className="hidden transition-colors hover:text-gold sm:inline">
-              Catálogo
+              Maquinaria
+            </Link>
+            <Link href="/talento" className="hidden transition-colors hover:text-gold sm:inline">
+              Empleo &amp; Talento
             </Link>
             <Link href="/publicar" className="hidden transition-colors hover:text-gold sm:inline">
               Publicar

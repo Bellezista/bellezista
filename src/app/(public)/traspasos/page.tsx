@@ -55,13 +55,21 @@ export default async function TraspasosPage(props: PageProps<"/traspasos">) {
           <p className="mt-2 max-w-md text-sm text-background/80">
             Compra y traspasa negocios del sector de la belleza en España.
           </p>
-          <Button
-            asChild
-            size="lg"
-            className="mt-6 h-12 rounded-full bg-gold px-8 text-sm font-semibold text-foreground hover:bg-gold/90"
-          >
-            <Link href="/publicar/traspaso">Quiero publicar un anuncio</Link>
-          </Button>
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Button
+              asChild
+              size="lg"
+              className="h-12 rounded-full bg-gold px-8 text-sm font-semibold text-foreground hover:bg-gold/90"
+            >
+              <Link href="/publicar/traspaso">Quiero publicar un anuncio</Link>
+            </Button>
+            <Link
+              href="/kit-traspaso"
+              className="text-sm text-background underline decoration-gold underline-offset-4 transition-colors hover:text-gold"
+            >
+              ¿Vas a traspasar? Consigue el Kit Traspaso
+            </Link>
+          </div>
         </div>
       </section>
       <FiltroTraspasoBar />

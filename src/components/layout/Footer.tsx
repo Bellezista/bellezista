@@ -1,7 +1,9 @@
 import Link from "next/link";
 
 const ENLACES = [
-  { href: "/catalogo", label: "Catálogo" },
+  { href: "/traspasos", label: "Traspasos" },
+  { href: "/catalogo", label: "Maquinaria" },
+  { href: "/talento", label: "Empleo & Talento" },
   { href: "/publicar", label: "Publicar" },
   { href: "/contacto", label: "Contacto" },
 ] as const;

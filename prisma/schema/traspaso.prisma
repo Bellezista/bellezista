@@ -60,3 +60,32 @@ model Traspaso {
   @@map("traspaso")
   @@schema("public")
 }
+
+// Kit Traspaso: a one-off paid service where Bellezista (SoluciónOK) prepares
+// the reservation + transfer documents for a seller. The web only sells/charges
+// and stores the details the seller submits; the documents are done by hand.
+model KitTraspaso {
+  id              String  @id @default(uuid()) @db.Uuid
+  usuarioId       String  @map("usuario_id") @db.Uuid
+  usuario         Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  anuncioId       String? @map("anuncio_id") @db.Uuid
+
+  stripeSessionId String? @unique @map("stripe_session_id")
+  importe         Int     @default(0)
+  moneda          String  @default("eur")
+
+  // pendiente_pago -> pagado -> datos_enviados
+  estado String @default("pendiente_pago")
+
+  // Free-form details the seller submits after paying, for SoluciónOK to draft
+  // the documents. Photos of the business live alongside as a URL array.
+  datos Json?
+  fotos String[]
+
+  creadoEn      DateTime @default(now()) @map("creado_en")
+  actualizadoEn DateTime @updatedAt @map("actualizado_en")
+
+  @@index([usuarioId])
+  @@map("kit_traspaso")
+  @@schema("public")
+}

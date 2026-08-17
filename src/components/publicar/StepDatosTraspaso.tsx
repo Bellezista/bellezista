@@ -1,6 +1,7 @@
 "use client";
 
 import { Controller, useFormContext } from "react-hook-form";
+import { Sparkles } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,8 +42,17 @@ export function StepDatosTraspaso() {
   const {
     control,
     register,
+    watch,
     formState: { errors },
   } = useFormContext<PublicarTraspasoFormInput>();
+
+  // Barcelona particulares get a free professional-management offer -- surfaced
+  // as a prominent banner the moment they pick Barcelona, not hidden at the end.
+  const provincia = watch("ciudadProvincia");
+  const tipoAnunciante = watch("tipoAnunciante");
+  const mostrarGestionBcn =
+    provincia === PROVINCIA_DESTACADA &&
+    tipoAnunciante === TipoAnuncianteTraspaso.PARTICULAR;
 
   return (
     <div className="space-y-6">
@@ -100,6 +110,28 @@ export function StepDatosTraspaso() {
           <FieldError message={errors.ciudadProvincia?.message} />
         </div>
       </div>
+
+      {mostrarGestionBcn && (
+        <div className="flex items-start gap-3 rounded-xl border border-gold/40 bg-gold/10 p-4">
+          <Sparkles
+            className="mt-0.5 size-5 shrink-0 text-gold"
+            aria-hidden="true"
+          />
+          <div className="space-y-1">
+            <p className="font-serif text-base text-foreground">
+              ¡Estás en Barcelona!
+            </p>
+            <p className="text-sm leading-relaxed text-foreground">
+              Puedes contar con asesoría profesional gratuita para vender tu
+              negocio, sin ningún coste para ti. Nos encargamos de todo
+              —búsqueda de comprador, negociación y documentación— y recibes
+              íntegro el precio que pides por tu negocio: nuestros honorarios se
+              añaden al precio que ve el comprador, no se descuentan de lo que tú
+              recibes.
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
