@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { getAnunciosMaquinaria, getAnunciosTraspaso } from "@/lib/actions/anuncios";
 import { getCvs } from "@/lib/actions/talento";
+import { createClient } from "@/lib/supabase/server";
 import { AnuncioCard } from "@/components/anuncio/AnuncioCard";
 import { CvCard } from "@/components/talento/CvCard";
 import { HeroTabs } from "@/components/landing/HeroTabs";
@@ -47,6 +48,13 @@ export default async function LandingPage() {
     getAnunciosTraspaso(),
     getCvs(),
   ]);
+
+  // The landing nav is public, so check auth to swap "Iniciar sesión" for a
+  // link to the account when the visitor is already logged in.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // One framed pick per live section, in menu order (Traspasos, Maquinaria,
   // Talento). Each section only shows if it has something to feature.
@@ -117,12 +125,21 @@ export default async function LandingPage() {
             <Link href="/publicar" className="hidden transition-colors hover:text-gold sm:inline">
               Publicar
             </Link>
-            <Link
-              href="/login"
-              className="border-b border-gold/60 pb-0.5 transition-colors hover:text-gold"
-            >
-              Iniciar sesión
-            </Link>
+            {user ? (
+              <Link
+                href="/mis-anuncios"
+                className="border-b border-gold/60 pb-0.5 transition-colors hover:text-gold"
+              >
+                Mi cuenta
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="border-b border-gold/60 pb-0.5 transition-colors hover:text-gold"
+              >
+                Iniciar sesión
+              </Link>
+            )}
           </nav>
         </header>
 
