@@ -18,6 +18,7 @@ import { EstadoAnuncio, Prisma, TipoAnuncio } from "@generated/prisma/client";
 // code must import it from there directly, never from this file (see that
 // module's comment for why).
 import { serializeAnuncios, type CatalogoFiltros } from "@/types/anuncio";
+import { limiteTraspasosDeUsuario } from "@/lib/traspaso/suscripcion";
 
 // Every Server Function here is reachable via a direct POST request, not just
 // through the UI (see the plan's Next.js 16 addendum) -- every mutation
@@ -241,6 +242,25 @@ export async function crearAnuncioTraspaso(input: PublicarTraspasoInput) {
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Datos inválidos." };
   }
+
+  // Active-listing limit: free tier (1) or the professional plan's limit.
+  const limite = await limiteTraspasosDeUsuario(usuarioId);
+  if (limite != null) {
+    const activos = await prisma.anuncio.count({
+      where: {
+        propietarioId: usuarioId,
+        tipo: TipoAnuncio.TRASPASO,
+        estado: "ACTIVO",
+      },
+    });
+    if (activos >= limite) {
+      return {
+        error: `Has alcanzado el límite de ${limite} ${limite === 1 ? "anuncio activo" : "anuncios activos"}. Suscríbete a un plan profesional para publicar más.`,
+        limiteAlcanzado: true,
+      };
+    }
+  }
+
   const {
     titulo,
     precio,

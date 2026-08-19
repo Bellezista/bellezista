@@ -32,6 +32,7 @@ model Usuario {
   solicitudesGestion SolicitudGestion[]
   alertas            Alerta[]
   notificaciones     Notificacion[]
+  suscripcionPro     SuscripcionPro?
 
   conversacionesInteresado  Conversacion[] @relation("interesado")
   conversacionesPropietario Conversacion[] @relation("propietario")

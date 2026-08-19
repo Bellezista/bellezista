@@ -69,6 +69,12 @@ export default async function TraspasosPage(props: PageProps<"/traspasos">) {
             >
               ¿Vas a traspasar? Consigue el Kit Traspaso
             </Link>
+            <Link
+              href="/planes-profesionales"
+              className="text-sm text-background underline decoration-gold underline-offset-4 transition-colors hover:text-gold"
+            >
+              ¿Eres profesional? Ver planes
+            </Link>
           </div>
         </div>
       </section>

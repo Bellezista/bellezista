@@ -1,27 +1,44 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma/client";
 import { createClient } from "@/lib/supabase/server";
 import { getMiContacto } from "@/lib/actions/contacto";
 import { getMisAlertas } from "@/lib/actions/alertas";
+import {
+  getMiSuscripcion,
+  confirmarSuscripcion,
+} from "@/lib/actions/suscripcion";
+import { PLANES_PRO, MONEDA_PLAN } from "@/lib/traspaso/planes";
+import { formatearImporte } from "@/lib/talento/precios";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PerfilForm } from "@/components/perfil/PerfilForm";
 import { MisAlertas } from "@/components/alertas/MisAlertas";
+import { GestionarSuscripcionButton } from "@/components/suscripcion/GestionarSuscripcionButton";
 
-export default async function PerfilPage() {
+export default async function PerfilPage(props: PageProps<"/perfil">) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/perfil");
 
-  const [usuario, contacto, alertas] = await Promise.all([
+  // Confirm a subscription checkout returning from Stripe.
+  const sp = await props.searchParams;
+  if (typeof sp.session_id === "string") {
+    await confirmarSuscripcion(sp.session_id);
+  }
+
+  const [usuario, contacto, alertas, suscripcion] = await Promise.all([
     prisma.usuario.findUnique({
       where: { id: user.id },
       select: { nombre: true },
     }),
     getMiContacto(),
     getMisAlertas(),
+    getMiSuscripcion(),
   ]);
+  const planActivo =
+    suscripcion?.estado === "activa" ? PLANES_PRO[suscripcion.plan] : null;
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
@@ -52,6 +69,43 @@ export default async function PerfilPage() {
           defaultEmail={contacto?.email ?? user.email ?? ""}
           defaultTelefono={contacto?.telefono ?? ""}
         />
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-6">
+        <h2 className="font-serif text-xl text-foreground">
+          Suscripción profesional
+        </h2>
+        {planActivo ? (
+          <div className="mt-3 space-y-4">
+            <div>
+              <p className="text-sm text-foreground">
+                Plan{" "}
+                <span className="font-semibold">{planActivo.nombre}</span> ·{" "}
+                {formatearImporte(planActivo.importe, MONEDA_PLAN)} / mes
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {planActivo.limite
+                  ? `Hasta ${planActivo.limite} anuncios activos.`
+                  : "Anuncios ilimitados."}
+                {suscripcion?.vigenteHasta &&
+                  ` Renueva el ${new Date(suscripcion.vigenteHasta).toLocaleDateString("es-ES")}.`}
+              </p>
+            </div>
+            <GestionarSuscripcionButton />
+          </div>
+        ) : (
+          <div className="mt-1 space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Publica varios traspasos a la vez con un plan profesional.
+            </p>
+            <Link
+              href="/planes-profesionales"
+              className="inline-flex text-sm font-semibold text-gold underline-offset-4 hover:underline"
+            >
+              Ver planes profesionales →
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="rounded-xl border border-border bg-card p-6">

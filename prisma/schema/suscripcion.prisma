@@ -1,0 +1,28 @@
+// Professional subscription plans for Traspasos (Stripe Billing, recurring). A
+// professional/agency pays monthly for a number of active traspaso listings.
+enum PlanPro {
+  BASICO
+  PROFESIONAL
+  ILIMITADO
+
+  @@schema("public")
+}
+
+model SuscripcionPro {
+  usuarioId String  @id @map("usuario_id") @db.Uuid
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  plan   PlanPro
+  // activa | cancelada | impagada | incompleta
+  estado String @default("activa")
+
+  stripeCustomerId     String? @unique @map("stripe_customer_id")
+  stripeSubscriptionId String? @unique @map("stripe_subscription_id")
+  vigenteHasta         DateTime? @map("vigente_hasta")
+
+  creadoEn      DateTime @default(now()) @map("creado_en")
+  actualizadoEn DateTime @updatedAt @map("actualizado_en")
+
+  @@map("suscripcion_pro")
+  @@schema("public")
+}
