@@ -3,6 +3,7 @@
 import { BuscadorInput } from "@/components/catalogo/BuscadorInput";
 import { FiltroCiudad } from "@/components/catalogo/FiltroCiudad";
 import { FiltroPuesto } from "@/components/talento/FiltroPuesto";
+import { CrearAlertaButton } from "@/components/alertas/CrearAlertaButton";
 
 // Talento catalog filters: búsqueda por texto, puesto, and provincia (reusing
 // the shared España dropdown). Each reads/writes its own URL param.
@@ -13,6 +14,9 @@ export function FiltroTalentoBar() {
       <div className="grid gap-4 sm:grid-cols-2">
         <FiltroPuesto />
         <FiltroCiudad />
+      </div>
+      <div className="flex justify-end">
+        <CrearAlertaButton seccion="TALENTO" />
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { BuscadorInput } from "@/components/catalogo/BuscadorInput";
 import { FiltroCiudad } from "@/components/catalogo/FiltroCiudad";
 import { FiltroTipoNegocio } from "@/components/catalogo/FiltroTipoNegocio";
 import { FiltroPrecio } from "@/components/catalogo/FiltroPrecio";
+import { CrearAlertaButton } from "@/components/alertas/CrearAlertaButton";
 
 // Traspasos catalog filters (client spec): búsqueda por texto, provincia (the
 // same España dropdown as Maquinaria), tipo de negocio, and price range. Each
@@ -16,6 +17,9 @@ export function FiltroTraspasoBar() {
         <FiltroTipoNegocio />
         <FiltroCiudad />
         <FiltroPrecio />
+      </div>
+      <div className="flex justify-end">
+        <CrearAlertaButton seccion="TRASPASOS" />
       </div>
     </div>
   );

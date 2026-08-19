@@ -1,0 +1,25 @@
+// Saved search alert: stores the filters a user had applied in a section, so a
+// weekly digest can email them new listings that match (Option B).
+enum SeccionAlerta {
+  TRASPASOS
+  MAQUINARIA
+  TALENTO
+
+  @@schema("public")
+}
+
+model Alerta {
+  id        String        @id @default(uuid()) @db.Uuid
+  usuarioId String        @map("usuario_id") @db.Uuid
+  usuario   Usuario       @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  seccion   SeccionAlerta
+  // The exact filters from the section's URL params (tipoNegocio, ciudad,
+  // precio, categoria, marca, puesto, q...). Same fields, nothing new invented.
+  filtros   Json
+
+  creadoEn DateTime @default(now()) @map("creado_en")
+
+  @@index([usuarioId])
+  @@map("alerta")
+  @@schema("public")
+}

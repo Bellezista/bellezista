@@ -2,8 +2,10 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma/client";
 import { createClient } from "@/lib/supabase/server";
 import { getMiContacto } from "@/lib/actions/contacto";
+import { getMisAlertas } from "@/lib/actions/alertas";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PerfilForm } from "@/components/perfil/PerfilForm";
+import { MisAlertas } from "@/components/alertas/MisAlertas";
 
 export default async function PerfilPage() {
   const supabase = await createClient();
@@ -12,12 +14,13 @@ export default async function PerfilPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/perfil");
 
-  const [usuario, contacto] = await Promise.all([
+  const [usuario, contacto, alertas] = await Promise.all([
     prisma.usuario.findUnique({
       where: { id: user.id },
       select: { nombre: true },
     }),
     getMiContacto(),
+    getMisAlertas(),
   ]);
 
   return (
@@ -48,6 +51,23 @@ export default async function PerfilPage() {
         <PerfilForm
           defaultEmail={contacto?.email ?? user.email ?? ""}
           defaultTelefono={contacto?.telefono ?? ""}
+        />
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-6">
+        <h2 className="font-serif text-xl text-foreground">
+          Alertas de búsqueda
+        </h2>
+        <p className="mb-4 mt-1 text-sm text-muted-foreground">
+          Recibirás un resumen semanal por email con los anuncios nuevos que
+          encajen con tus filtros guardados.
+        </p>
+        <MisAlertas
+          alertas={alertas.map((a) => ({
+            id: a.id,
+            seccion: a.seccion,
+            filtros: a.filtros,
+          }))}
         />
       </div>
     </div>

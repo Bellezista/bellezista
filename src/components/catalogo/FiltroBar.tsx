@@ -4,6 +4,7 @@ import { BuscadorInput } from "@/components/catalogo/BuscadorInput";
 import { FiltroCategoria } from "@/components/catalogo/FiltroCategoria";
 import { FiltroCiudad } from "@/components/catalogo/FiltroCiudad";
 import { FiltroMarca } from "@/components/catalogo/FiltroMarca";
+import { CrearAlertaButton } from "@/components/alertas/CrearAlertaButton";
 
 // Composes the 4 URL-driven catalog filters. Each one reads/writes its own
 // query param independently, so this component holds no state of its own.
@@ -24,6 +25,9 @@ export function FiltroBar() {
         </div>
       </div>
       <FiltroCategoria />
+      <div className="flex justify-end">
+        <CrearAlertaButton seccion="MAQUINARIA" />
+      </div>
     </div>
   );
 }

@@ -30,6 +30,7 @@ model Usuario {
 
   kitsTraspaso       KitTraspaso[]
   solicitudesGestion SolicitudGestion[]
+  alertas            Alerta[]
 
   conversacionesInteresado  Conversacion[] @relation("interesado")
   conversacionesPropietario Conversacion[] @relation("propietario")
