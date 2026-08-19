@@ -6,6 +6,7 @@ import { refresh } from "next/cache";
 import { prisma } from "@/lib/prisma/client";
 import { createClient } from "@/lib/supabase/server";
 import { mensajeSchema } from "@/lib/validation/mensajeSchema";
+import { crearNotificacion } from "@/lib/notificaciones/crear";
 
 async function requireUsuarioId() {
   const supabase = await createClient();
@@ -197,25 +198,39 @@ export async function iniciarConversacion(anuncioId: string) {
   const usuarioId = await requireUsuarioId();
   const anuncio = await prisma.anuncio.findUnique({
     where: { id: anuncioId },
-    select: { propietarioId: true },
+    select: { propietarioId: true, titulo: true },
   });
   if (!anuncio || anuncio.propietarioId === usuarioId) {
     redirect(`/anuncios/${anuncioId}`);
   }
 
-  const conversacion = await prisma.conversacion.upsert({
-    where: {
-      anuncioId_interesadoId: { anuncioId, interesadoId: usuarioId },
-    },
-    create: {
-      anuncioId,
-      interesadoId: usuarioId,
-      propietarioId: anuncio.propietarioId,
-    },
-    update: {},
+  const existente = await prisma.conversacion.findUnique({
+    where: { anuncioId_interesadoId: { anuncioId, interesadoId: usuarioId } },
+    select: { id: true },
   });
 
-  redirect(`/mensajes/${conversacion.id}`);
+  let conversacionId: string;
+  if (existente) {
+    conversacionId = existente.id;
+  } else {
+    const nueva = await prisma.conversacion.create({
+      data: {
+        anuncioId,
+        interesadoId: usuarioId,
+        propietarioId: anuncio.propietarioId,
+      },
+    });
+    conversacionId = nueva.id;
+    // Notify the owner that someone contacted about their listing.
+    await crearNotificacion(anuncio.propietarioId, {
+      tipo: "contacto",
+      titulo: "Nuevo contacto en tu anuncio",
+      cuerpo: anuncio.titulo,
+      url: `/mensajes/${conversacionId}`,
+    });
+  }
+
+  redirect(`/mensajes/${conversacionId}`);
 }
 
 export async function enviarMensaje(conversacionId: string, input: unknown) {
@@ -241,6 +256,18 @@ export async function enviarMensaje(conversacionId: string, input: unknown) {
       data: { fechaUltimaActividad: new Date() },
     }),
   ]);
+
+  // Notify the other participant of the new message.
+  const destinatario =
+    conversacion.interesadoId === usuarioId
+      ? conversacion.propietarioId
+      : conversacion.interesadoId;
+  await crearNotificacion(destinatario, {
+    tipo: "mensaje",
+    titulo: "Nuevo mensaje",
+    cuerpo: parsed.data.texto.slice(0, 80),
+    url: `/mensajes/${conversacionId}`,
+  });
 
   revalidatePath(`/mensajes/${conversacionId}`);
   revalidatePath("/mensajes");

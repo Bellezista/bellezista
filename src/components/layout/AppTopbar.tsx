@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "@/components/layout/UserMenu";
+import { NotificacionesBell } from "@/components/notificaciones/NotificacionesBell";
 
 export function AppTopbar({
   userNombre,
@@ -18,7 +19,10 @@ export function AppTopbar({
 
       <div className="flex flex-1 items-center justify-end gap-3">
         {userNombre ? (
-          <UserMenu userNombre={userNombre} />
+          <>
+            <NotificacionesBell />
+            <UserMenu userNombre={userNombre} />
+          </>
         ) : (
           <Button asChild variant="outline" size="sm">
             <Link href="/login">Iniciar sesión</Link>

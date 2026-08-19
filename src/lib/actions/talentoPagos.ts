@@ -9,6 +9,7 @@ import {
   DESBLOQUEO_INDIVIDUAL,
   BONO_DESBLOQUEOS,
 } from "@/lib/talento/precios";
+import { crearNotificacion } from "@/lib/notificaciones/crear";
 
 async function getUsuarioId(): Promise<string | null> {
   const supabase = await createClient();
@@ -156,6 +157,13 @@ export async function desbloquearConCredito(
     }
     throw e;
   }
+
+  await crearNotificacion(cv.usuarioId, {
+    tipo: "desbloqueo",
+    titulo: "Han desbloqueado tu CV",
+    cuerpo: "Un negocio ha accedido a tu perfil completo.",
+    url: "/talento/mi-cv",
+  });
 
   revalidatePath(`/talento/${cvId}`);
   return { ok: true };

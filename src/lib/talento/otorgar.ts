@@ -2,6 +2,7 @@ import "server-only";
 import type Stripe from "stripe";
 import { prisma } from "@/lib/prisma/client";
 import { stripe } from "@/lib/stripe/server";
+import { crearNotificacion } from "@/lib/notificaciones/crear";
 
 // Grants the effect of a paid Checkout Session: unlock a CV (individual) or add
 // bono credits. Idempotent via the unique stripe_session_id, so it is safe to
@@ -54,6 +55,23 @@ export async function otorgarAccesoDesdeSesion(
       return;
     }
     throw e;
+  }
+
+  // Notify the CV owner that a business unlocked their profile (individual only;
+  // the bono grants no specific CV yet).
+  if (tipo === "individual" && md.cvId) {
+    const cv = await prisma.cv.findUnique({
+      where: { id: md.cvId },
+      select: { usuarioId: true },
+    });
+    if (cv) {
+      await crearNotificacion(cv.usuarioId, {
+        tipo: "desbloqueo",
+        titulo: "Han desbloqueado tu CV",
+        cuerpo: "Un negocio ha accedido a tu perfil completo.",
+        url: "/talento/mi-cv",
+      });
+    }
   }
 }
 
