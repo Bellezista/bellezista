@@ -44,7 +44,7 @@ export const ESTADO_ANUNCIO_LABEL: Record<EstadoAnuncio, string> = {
   DESTACADO: "Destacado",
   RESERVADO: "Reservado",
   VENDIDO: "Vendido",
-  RETIRADO: "Retirado",
+  RETIRADO: "Pausado",
 };
 
 export const TIPO_NEGOCIO_TRASPASO_LABEL: Record<TipoNegocioTraspaso, string> = {
