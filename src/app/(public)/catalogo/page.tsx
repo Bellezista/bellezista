@@ -1,6 +1,8 @@
 import Image from "next/image";
+import Link from "next/link";
 import { getAnunciosMaquinaria } from "@/lib/actions/anuncios";
 import type { CatalogoFiltros } from "@/types/anuncio";
+import { Button } from "@/components/ui/button";
 import { FiltroBar } from "@/components/catalogo/FiltroBar";
 import { CatalogoClient } from "@/components/catalogo/CatalogoClient";
 
@@ -47,6 +49,13 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
           <p className="mt-2 max-w-md text-sm text-background/80">
             Compra y vende equipamiento de estética en un solo lugar.
           </p>
+          <Button
+            asChild
+            size="lg"
+            className="mt-6 h-12 rounded-full bg-gold px-8 text-sm font-semibold text-foreground hover:bg-gold/90"
+          >
+            <Link href="/publicar/maquinaria">Quiero vender maquinaria</Link>
+          </Button>
         </div>
       </section>
       <FiltroBar />
