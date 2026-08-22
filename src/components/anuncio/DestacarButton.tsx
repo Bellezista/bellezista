@@ -1,49 +1,42 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Star } from "lucide-react";
-import { crearCheckoutDestacado } from "@/lib/actions/destacado";
 import { Button } from "@/components/ui/button";
+import { DestacarDialog } from "@/components/anuncio/DestacarDialog";
+import type { TipoAnuncio } from "@generated/prisma/enums";
 
+// Owner CTA on the ficha. Opens the explainer dialog first (benefits + price),
+// which then starts the checkout -- no longer jumps straight to payment.
 export function DestacarButton({
   anuncioId,
+  tipo,
   destacado,
 }: {
   anuncioId: string;
+  tipo: TipoAnuncio;
   destacado: boolean;
 }) {
-  const [pending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
-
-  function destacar() {
-    setError(null);
-    startTransition(async () => {
-      const res = await crearCheckoutDestacado(anuncioId);
-      if (res.error) {
-        setError(res.error);
-        return;
-      }
-      if (res.url) window.location.href = res.url;
-    });
-  }
+  const [open, setOpen] = useState(false);
 
   return (
-    <div className="space-y-2">
+    <>
       <Button
         type="button"
         size="lg"
-        disabled={pending}
-        onClick={destacar}
+        onClick={() => setOpen(true)}
         className="h-12 w-full gap-2 rounded-full bg-gold text-sm font-semibold text-foreground hover:bg-gold/90"
       >
         <Star className="size-4" aria-hidden="true" />
-        {pending
-          ? "Redirigiendo..."
-          : destacado
-            ? "Renovar premium"
-            : "Subir a premium"}
+        {destacado ? "Renovar premium" : "Subir a premium"}
       </Button>
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
+      <DestacarDialog
+        anuncioId={anuncioId}
+        tipo={tipo}
+        destacado={destacado}
+        open={open}
+        onOpenChange={setOpen}
+      />
+    </>
   );
 }

@@ -26,8 +26,8 @@ import {
   cambiarEstadoAnuncio,
   eliminarAnuncio,
 } from "@/lib/actions/anuncios";
-import { crearCheckoutDestacado } from "@/lib/actions/destacado";
 import { Button } from "@/components/ui/button";
+import { DestacarDialog } from "@/components/anuncio/DestacarDialog";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { EstadoTexto } from "@/components/anuncio/EstadoTexto";
 import { EliminarAnuncioModal } from "@/components/modals/EliminarAnuncioModal";
@@ -51,19 +51,13 @@ export function MisAnuncioRow({ anuncio }: { anuncio: MisAnuncioSerializado }) {
   const [pending, startTransition] = useTransition();
   const [statsOpen, setStatsOpen] = useState(false);
   const [eliminarOpen, setEliminarOpen] = useState(false);
+  const [destacarOpen, setDestacarOpen] = useState(false);
   const [copiado, setCopiado] = useState(false);
 
   function setEstado(estado: "ACTIVO" | "RESERVADO" | "VENDIDO" | "RETIRADO") {
     startTransition(async () => {
       await cambiarEstadoAnuncio(anuncio.id, estado);
       router.refresh();
-    });
-  }
-
-  function destacar() {
-    startTransition(async () => {
-      const res = await crearCheckoutDestacado(anuncio.id);
-      if (res.url) window.location.href = res.url;
     });
   }
 
@@ -133,8 +127,7 @@ export function MisAnuncioRow({ anuncio }: { anuncio: MisAnuncioSerializado }) {
             <Button
               type="button"
               size="sm"
-              disabled={pending}
-              onClick={destacar}
+              onClick={() => setDestacarOpen(true)}
               className="gap-1.5 rounded-full bg-gold font-semibold text-foreground hover:bg-gold/90"
             >
               <Star className="size-4" aria-hidden="true" />
@@ -277,6 +270,14 @@ export function MisAnuncioRow({ anuncio }: { anuncio: MisAnuncioSerializado }) {
           </div>
         </DialogContent>
       </Dialog>
+
+      <DestacarDialog
+        anuncioId={anuncio.id}
+        tipo={anuncio.tipo}
+        destacado={anuncio.destacado}
+        open={destacarOpen}
+        onOpenChange={setDestacarOpen}
+      />
 
       <EliminarAnuncioModal
         open={eliminarOpen}

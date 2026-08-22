@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { iniciarConversacion } from "@/lib/actions/mensajes";
 import { DestacarButton } from "@/components/anuncio/DestacarButton";
 import { ComprarButton } from "@/components/anuncio/ComprarButton";
+import type { TipoAnuncio } from "@generated/prisma/enums";
 
 interface FichaContactoCardProps {
   anuncioId: string;
+  tipo: TipoAnuncio;
   propietarioNombre: string;
   loggedIn: boolean;
   esPropioAnuncio: boolean;
@@ -30,6 +32,7 @@ function obtenerIniciales(nombre: string): string {
 
 export function FichaContactoCard({
   anuncioId,
+  tipo,
   propietarioNombre,
   loggedIn,
   esPropioAnuncio,
@@ -70,7 +73,7 @@ export function FichaContactoCard({
             Este es tu anuncio. Súbelo a premium para ganar posicionamiento y
             visibilidad.
           </p>
-          <DestacarButton anuncioId={anuncioId} destacado={destacado} />
+          <DestacarButton anuncioId={anuncioId} tipo={tipo} destacado={destacado} />
           <Button asChild variant="outline" className="w-full gap-2">
             <Link href={`/publicar/editar/${anuncioId}`}>
               <Pencil className="size-4" aria-hidden="true" />

@@ -103,6 +103,7 @@ export function AnuncioFicha({
         <div className="space-y-4 lg:sticky lg:top-8">
           <FichaContactoCard
             anuncioId={anuncio.id}
+            tipo={anuncio.tipo}
             propietarioNombre={anuncio.propietario.nombre}
             loggedIn={loggedIn}
             esPropioAnuncio={esPropioAnuncio}

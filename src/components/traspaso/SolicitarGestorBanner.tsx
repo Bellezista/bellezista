@@ -45,7 +45,12 @@ export function SolicitarGestorBanner({
   function solicitar() {
     setError(null);
     startTransition(async () => {
-      const res = await solicitarGestionProfesional({ titulo, precio, provincia });
+      const res = await solicitarGestionProfesional({
+        titulo,
+        precio,
+        provincia,
+        seccion: "Traspasos",
+      });
       if (res.error) {
         setError(res.error);
         return;

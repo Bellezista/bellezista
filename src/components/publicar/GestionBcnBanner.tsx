@@ -31,6 +31,7 @@ export function GestionBcnBanner() {
         titulo: v.titulo,
         precio,
         provincia: v.ciudadProvincia,
+        seccion: "Traspasos",
       });
       if (res.error) {
         setError(res.error);
