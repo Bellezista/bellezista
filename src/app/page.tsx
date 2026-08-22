@@ -28,15 +28,14 @@ const PILARES = [
   },
   {
     n: "02",
-    titulo: "Solo profesionales",
-    texto:
-      "Un espacio dedicado al sector de la estética y la belleza, sin ruido ni intermediarios.",
+    titulo: "Solo profesionales del sector",
+    texto: "Un espacio 100% dedicado a la estética y la belleza.",
   },
   {
     n: "03",
     titulo: "Todo en un lugar",
     texto:
-      "Compra y vende maquinaria, traspasa negocios y encuentra talento hoy. Muy pronto, ofertas.",
+      "Traspasa tu negocio, compra o vende maquinaria y encuentra trabajadores o colaboradores especializados — todo en un mismo lugar.",
   },
 ];
 
@@ -169,7 +168,7 @@ export default async function LandingPage() {
             Por qué Bellezista
           </span>
           <h2 className="mt-3 max-w-xl font-serif text-3xl leading-tight text-foreground md:text-4xl">
-            Un marketplace pensado para el profesional, no para el ruido.
+            Un espacio pensado solo para profesionales del sector belleza.
           </h2>
 
           <div className="mt-14 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
