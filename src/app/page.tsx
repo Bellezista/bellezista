@@ -81,8 +81,8 @@ export default async function LandingPage() {
           (cream band, gold only as the accent button, never as background). */}
       <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-b border-border bg-cream px-4 py-3.5 text-center">
         <span className="text-sm font-medium text-foreground sm:text-base">
-          ¿Tienes maquinaria, un traspaso o buscas empleo? Publícalo gratis en
-          Bellezista.
+          Vende tu maquinaria, traspasa tu negocio o encuentra talento — gratis
+          y en minutos.
         </span>
         <Button
           asChild
