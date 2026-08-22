@@ -50,7 +50,7 @@ export function ThreadClient({
       : conversacion.ultimaLecturaInteresado;
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] flex-col">
+    <div className="mx-auto flex max-w-2xl flex-col gap-4">
       <div className="flex items-center gap-3 border-b border-border pb-4">
         <div className="relative size-12 shrink-0 overflow-hidden rounded-md bg-muted">
           {foto && (
@@ -68,18 +68,28 @@ export function ThreadClient({
         </p>
       </div>
 
-      <div className="flex-1 space-y-3 overflow-y-auto py-4">
-        {conversacion.mensajes.map((mensaje) => (
-          <MensajeBubble
-            key={mensaje.id}
-            mensaje={mensaje}
-            esPropio={mensaje.autorId === currentUserId}
-            leido={
-              otroUltimaLectura != null &&
-              new Date(mensaje.fechaHora) <= new Date(otroUltimaLectura)
-            }
-          />
-        ))}
+      {/* Messages fill a comfortable panel height and anchor to the bottom, so
+          the composer sits in the lower-middle (near the last message), not
+          stranded at the very bottom nor floating at the top. */}
+      <div className="flex h-[52vh] flex-col justify-end gap-3 overflow-y-auto">
+        {cantidadMensajes === 0 ? (
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            Aún no hay mensajes. Escribe el primero para contactar con el
+            propietario.
+          </p>
+        ) : (
+          conversacion.mensajes.map((mensaje) => (
+            <MensajeBubble
+              key={mensaje.id}
+              mensaje={mensaje}
+              esPropio={mensaje.autorId === currentUserId}
+              leido={
+                otroUltimaLectura != null &&
+                new Date(mensaje.fechaHora) <= new Date(otroUltimaLectura)
+              }
+            />
+          ))
+        )}
         <div ref={finalRef} />
       </div>
 

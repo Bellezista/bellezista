@@ -32,7 +32,7 @@ export function FichaContactoCard({
     : propietarioNombre;
 
   return (
-    <div className="flex flex-col gap-5 rounded-lg border border-border bg-card p-6 lg:sticky lg:top-8">
+    <div className="flex flex-col gap-5 rounded-lg border border-border bg-card p-6">
       <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
         Contacto
       </span>

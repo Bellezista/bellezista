@@ -64,16 +64,28 @@ export default async function TalentoPage(props: PageProps<"/talento">) {
               Encuentra profesionales de la belleza para tu negocio.
             </p>
           </div>
-          <Button
-            asChild
-            size="lg"
-            className="h-12 rounded-full bg-gold px-8 text-sm font-semibold text-foreground hover:bg-gold/90"
-          >
-            <Link href="/talento/mi-cv">Publicar mi CV</Link>
-          </Button>
+          <div className="flex flex-col gap-3">
+            <Button
+              asChild
+              size="lg"
+              className="h-12 rounded-full bg-gold px-8 text-sm font-semibold text-foreground hover:bg-gold/90"
+            >
+              <Link href="#buscar-talento">¿Qué profesional buscas?</Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="h-12 rounded-full border-background/40 bg-transparent px-8 text-sm font-semibold text-background hover:bg-background hover:text-foreground"
+            >
+              <Link href="/talento/mi-cv">Soy profesional · Publicar mi CV</Link>
+            </Button>
+          </div>
         </div>
       </section>
-      <FiltroTalentoBar />
+      <div id="buscar-talento" className="scroll-mt-24">
+        <FiltroTalentoBar />
+      </div>
       <TalentoCatalogoClient filtros={filtros} initialData={cvs} />
     </div>
   );

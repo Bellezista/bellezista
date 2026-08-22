@@ -30,14 +30,17 @@ export function MensajeComposer({ conversacionId }: MensajeComposerProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-2 rounded-xl border border-gold/30 bg-cream p-3"
+    >
       <div className="flex items-end gap-2">
         <Textarea
           value={texto}
           onChange={(event) => setTexto(event.target.value)}
           rows={2}
           placeholder="Escribe un mensaje..."
-          className="flex-1"
+          className="flex-1 bg-background"
         />
         <Button
           type="submit"

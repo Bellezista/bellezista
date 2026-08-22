@@ -112,7 +112,7 @@ export default async function LandingPage() {
           <Link href="/" className="text-background">
             <Logo className="text-2xl text-background" />
           </Link>
-          <nav className="flex items-center gap-5 text-sm text-background/85 md:gap-6">
+          <nav className="flex items-center gap-4 text-base font-bold text-background [text-shadow:0_2px_10px_rgba(0,0,0,0.55)] md:gap-6 md:text-lg">
             <Link href="/traspasos" className="hidden transition-colors hover:text-gold sm:inline">
               Traspasos
             </Link>

@@ -8,6 +8,7 @@ import { formatPrecio } from "@/lib/format";
 import { FichaGaleria } from "@/components/anuncio/FichaGaleria";
 import { FichaAtributos } from "@/components/anuncio/FichaAtributos";
 import { FichaContactoCard } from "@/components/anuncio/FichaContactoCard";
+import { AlertaSimilaresButton } from "@/components/alertas/AlertaSimilaresButton";
 import { EstadoTexto } from "@/components/anuncio/EstadoTexto";
 
 interface AnuncioFichaProps {
@@ -84,14 +85,36 @@ export function AnuncioFicha({
         </div>
       </div>
 
+      {/* Grid item stretches to the row height by default, giving the inner
+          wrapper room to stick as the (taller) left column scrolls. */}
       <div>
-        <FichaContactoCard
-          anuncioId={anuncio.id}
-          propietarioNombre={anuncio.propietario.nombre}
-          loggedIn={loggedIn}
-          esPropioAnuncio={esPropioAnuncio}
-          identidadOculta={identidadOculta}
-        />
+        <div className="space-y-4 lg:sticky lg:top-8">
+          <FichaContactoCard
+            anuncioId={anuncio.id}
+            propietarioNombre={anuncio.propietario.nombre}
+            loggedIn={loggedIn}
+            esPropioAnuncio={esPropioAnuncio}
+            identidadOculta={identidadOculta}
+          />
+
+          {anuncio.tipo === "TRASPASO" && anuncio.traspaso && (
+            <div className="rounded-lg border border-border bg-card p-6">
+              <p className="text-sm font-medium text-foreground">
+                ¿Buscas negocios como este?
+              </p>
+              <p className="mb-4 mt-1 text-sm text-muted-foreground">
+                Crea una alerta y te avisamos por email cuando se publiquen
+                traspasos similares
+                {categoria ? ` de ${categoria.toLowerCase()}` : ""}.
+              </p>
+              <AlertaSimilaresButton
+                seccion="TRASPASOS"
+                filtros={{ tipoNegocio: anuncio.traspaso.tipoNegocio }}
+                etiqueta="Crear alerta de negocios similares"
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

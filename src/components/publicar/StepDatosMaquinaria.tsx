@@ -216,16 +216,6 @@ export function StepDatosMaquinaria() {
           <FieldError message={errors.esMedicoEstetico?.message} />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="fechaPuestaEnMarcha">Fecha de puesta en marcha</Label>
-          <Input
-            id="fechaPuestaEnMarcha"
-            type="date"
-            {...register("fechaPuestaEnMarcha")}
-          />
-          <FieldError message={errors.fechaPuestaEnMarcha?.message} />
-        </div>
-
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="descripcion">Descripción</Label>
           <Textarea
