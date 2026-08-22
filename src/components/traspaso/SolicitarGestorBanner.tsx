@@ -16,6 +16,11 @@ interface SolicitarGestorBannerProps {
   // "banner" = full-width promo (Traspasos page); "compact" = small card
   // (inside the ficha sidebar).
   variant?: "banner" | "compact";
+  // Whether the viewer is signed in. Logged-out clicks go straight to sign-up
+  // instead of firing the action and showing a "log in" hint afterwards.
+  loggedIn?: boolean;
+  // Where to return after signing up (defaults to the Traspasos page).
+  next?: string;
 }
 
 // Lead-capture CTA for SoluciónOK's professional management service: the user
@@ -28,29 +33,47 @@ export function SolicitarGestorBanner({
   precio,
   provincia,
   variant = "banner",
+  loggedIn = false,
+  next = "/traspasos",
 }: SolicitarGestorBannerProps) {
   const [pending, startTransition] = useTransition();
   const [enviado, setEnviado] = useState(false);
-  const [noAuth, setNoAuth] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const registroHref = `/registro?next=${encodeURIComponent(next)}`;
 
   function solicitar() {
     setError(null);
-    setNoAuth(false);
     startTransition(async () => {
       const res = await solicitarGestionProfesional({ titulo, precio, provincia });
       if (res.error) {
-        // The action returns this specific message for logged-out users.
-        if (res.error.toLowerCase().includes("inicia sesión")) {
-          setNoAuth(true);
-        } else {
-          setError(res.error);
-        }
+        setError(res.error);
         return;
       }
       setEnviado(true);
     });
   }
+
+  const cta = (extraClass: string, size: "sm" | "lg") =>
+    loggedIn ? (
+      <Button
+        type="button"
+        size={size}
+        disabled={pending}
+        onClick={solicitar}
+        className={extraClass}
+      >
+        <BadgeCheck className="size-4" aria-hidden="true" />
+        {pending ? "Enviando..." : "Que me contacte un profesional"}
+      </Button>
+    ) : (
+      <Button asChild size={size} className={extraClass}>
+        <Link href={registroHref}>
+          <BadgeCheck className="size-4" aria-hidden="true" />
+          Que me contacte un profesional
+        </Link>
+      </Button>
+    );
 
   if (variant === "compact") {
     return (
@@ -72,26 +95,9 @@ export function SolicitarGestorBanner({
               Un gestor de Bellezista te contacta y se encarga de todo. Sin
               coste para ti.
             </p>
-            <Button
-              type="button"
-              size="sm"
-              disabled={pending}
-              onClick={solicitar}
-              className="w-full gap-2 rounded-full bg-gold text-sm font-semibold text-foreground hover:bg-gold/90"
-            >
-              <BadgeCheck className="size-4" aria-hidden="true" />
-              {pending ? "Enviando..." : "Que me contacte un profesional"}
-            </Button>
-            {noAuth && (
-              <p className="mt-2 text-center text-xs text-muted-foreground">
-                <Link
-                  href="/login?next=/traspasos"
-                  className="text-foreground underline underline-offset-4"
-                >
-                  Inicia sesión
-                </Link>{" "}
-                para solicitar la ayuda.
-              </p>
+            {cta(
+              "w-full gap-2 rounded-full bg-gold text-sm font-semibold text-foreground hover:bg-gold/90",
+              "sm",
             )}
             {error && (
               <p className="mt-2 text-center text-xs text-destructive">{error}</p>
@@ -146,30 +152,13 @@ export function SolicitarGestorBanner({
 
         {/* CTA zone */}
         <div className="flex flex-col justify-center gap-2 border-t border-gold/30 bg-gold/15 p-6 md:w-80 md:shrink-0 md:border-l md:border-t-0">
-          <Button
-            type="button"
-            size="lg"
-            disabled={pending}
-            onClick={solicitar}
-            className="h-12 w-full gap-2 rounded-full bg-gold text-sm font-semibold text-foreground hover:bg-gold/90"
-          >
-            <BadgeCheck className="size-4" aria-hidden="true" />
-            {pending ? "Enviando..." : "Que me contacte un profesional"}
-          </Button>
+          {cta(
+            "h-12 w-full gap-2 rounded-full bg-gold text-sm font-semibold text-foreground hover:bg-gold/90",
+            "lg",
+          )}
           <p className="text-center text-xs text-foreground/70">
             Sin compromiso. Te contactamos nosotros.
           </p>
-          {noAuth && (
-            <p className="text-center text-xs text-foreground/70">
-              <Link
-                href="/login?next=/traspasos"
-                className="text-foreground underline underline-offset-4"
-              >
-                Inicia sesión
-              </Link>{" "}
-              para solicitar la ayuda.
-            </p>
-          )}
           {error && (
             <p className="text-center text-sm text-destructive">{error}</p>
           )}

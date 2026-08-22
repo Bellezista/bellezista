@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 import { getAnunciosTraspaso } from "@/lib/actions/anuncios";
 import type { CatalogoFiltros } from "@/types/anuncio";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,11 @@ export default async function TraspasosPage(props: PageProps<"/traspasos">) {
   };
 
   const anuncios = await getAnunciosTraspaso(filtros);
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <div className="space-y-6">
@@ -81,7 +87,7 @@ export default async function TraspasosPage(props: PageProps<"/traspasos">) {
           </div>
         </div>
       </section>
-      <SolicitarGestorBanner />
+      <SolicitarGestorBanner loggedIn={Boolean(user)} />
       <FiltroTraspasoBar />
       <TraspasoCatalogoClient filtros={filtros} initialData={anuncios} />
     </div>

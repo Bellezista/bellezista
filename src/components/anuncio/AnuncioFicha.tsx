@@ -115,6 +115,8 @@ export function AnuncioFicha({
           {esPropioAnuncio && anuncio.tipo === "TRASPASO" && anuncio.traspaso && (
             <SolicitarGestorBanner
               variant="compact"
+              loggedIn={loggedIn}
+              next={`/anuncios/${anuncio.id}`}
               titulo={anuncio.titulo}
               precio={Number(anuncio.precio)}
               provincia={anuncio.ciudadProvincia}
