@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function RecuperarForm() {
+export function RecuperarForm({ next }: { next: string }) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -20,8 +20,11 @@ export function RecuperarForm() {
 
     const supabase = createClient();
     // The recovery link returns to /api/auth/callback, which exchanges the code
-    // for a session and forwards to the set-new-password page.
-    const redirectTo = `${window.location.origin}/api/auth/callback?next=/actualizar-password`;
+    // for a session and forwards to the set-new-password page. We carry the
+    // original destination (`next`) so that, once the password is saved, the
+    // user lands back where they started instead of on a default page.
+    const destino = `/actualizar-password?next=${encodeURIComponent(next)}`;
+    const redirectTo = `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(destino)}`;
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(
       email,
       { redirectTo },

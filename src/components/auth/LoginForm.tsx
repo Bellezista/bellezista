@@ -61,7 +61,7 @@ export function LoginForm({ next }: { next: string }) {
         <div className="flex items-center justify-between">
           <Label htmlFor="password">Contraseña</Label>
           <Link
-            href="/recuperar"
+            href={`/recuperar?next=${encodeURIComponent(next)}`}
             className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
           >
             ¿Olvidaste tu contraseña?

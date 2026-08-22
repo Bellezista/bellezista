@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 
-export function ActualizarPasswordForm() {
+export function ActualizarPasswordForm({ next }: { next: string }) {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +66,7 @@ export function ActualizarPasswordForm() {
           Ya puedes usar tu nueva contraseña.
         </p>
         <Button asChild variant="default" className="w-full">
-          <Link href="/catalogo">Continuar</Link>
+          <Link href={next}>Continuar</Link>
         </Button>
       </div>
     );

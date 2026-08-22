@@ -5,6 +5,7 @@ import type { CatalogoFiltros } from "@/types/anuncio";
 import { Button } from "@/components/ui/button";
 import { FiltroTraspasoBar } from "@/components/catalogo/FiltroTraspasoBar";
 import { TraspasoCatalogoClient } from "@/components/catalogo/TraspasoCatalogoClient";
+import { SolicitarGestorBanner } from "@/components/traspaso/SolicitarGestorBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -80,6 +81,7 @@ export default async function TraspasosPage(props: PageProps<"/traspasos">) {
           </div>
         </div>
       </section>
+      <SolicitarGestorBanner />
       <FiltroTraspasoBar />
       <TraspasoCatalogoClient filtros={filtros} initialData={anuncios} />
     </div>

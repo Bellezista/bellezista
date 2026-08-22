@@ -9,6 +9,7 @@ import { FichaGaleria } from "@/components/anuncio/FichaGaleria";
 import { FichaAtributos } from "@/components/anuncio/FichaAtributos";
 import { FichaContactoCard } from "@/components/anuncio/FichaContactoCard";
 import { AlertaSimilaresButton } from "@/components/alertas/AlertaSimilaresButton";
+import { SolicitarGestorBanner } from "@/components/traspaso/SolicitarGestorBanner";
 import { EstadoTexto } from "@/components/anuncio/EstadoTexto";
 
 interface AnuncioFichaProps {
@@ -100,6 +101,15 @@ export function AnuncioFicha({
             destacado={destacado}
             identidadOculta={identidadOculta}
           />
+
+          {esPropioAnuncio && anuncio.tipo === "TRASPASO" && anuncio.traspaso && (
+            <SolicitarGestorBanner
+              variant="compact"
+              titulo={anuncio.titulo}
+              precio={Number(anuncio.precio)}
+              provincia={anuncio.ciudadProvincia}
+            />
+          )}
 
           {!esPropioAnuncio && anuncio.tipo === "TRASPASO" && anuncio.traspaso && (
             <div className="rounded-lg border border-border bg-card p-6">
