@@ -40,6 +40,9 @@ export function AnuncioFicha({
   const descripcion = descripcionDe(anuncio);
   const categoria = categoriaLabelDe(anuncio);
   const esPropioAnuncio = currentUserId === anuncio.propietarioId;
+  const destacado =
+    anuncio.destacadoHasta != null &&
+    new Date(anuncio.destacadoHasta).getTime() > Date.now();
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
@@ -94,10 +97,11 @@ export function AnuncioFicha({
             propietarioNombre={anuncio.propietario.nombre}
             loggedIn={loggedIn}
             esPropioAnuncio={esPropioAnuncio}
+            destacado={destacado}
             identidadOculta={identidadOculta}
           />
 
-          {anuncio.tipo === "TRASPASO" && anuncio.traspaso && (
+          {!esPropioAnuncio && anuncio.tipo === "TRASPASO" && anuncio.traspaso && (
             <div className="rounded-lg border border-border bg-card p-6">
               <p className="text-sm font-medium text-foreground">
                 ¿Buscas negocios como este?

@@ -1,13 +1,17 @@
 import Link from "next/link";
+import { Pencil } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { iniciarConversacion } from "@/lib/actions/mensajes";
+import { DestacarButton } from "@/components/anuncio/DestacarButton";
 
 interface FichaContactoCardProps {
   anuncioId: string;
   propietarioNombre: string;
   loggedIn: boolean;
   esPropioAnuncio: boolean;
+  // True while the listing is a paid featured one (for the owner's "renovar").
+  destacado?: boolean;
   // Traspaso confidentiality: hide the owner's name/initials until the
   // interested party has contacted (see the ficha page).
   identidadOculta?: boolean;
@@ -25,6 +29,7 @@ export function FichaContactoCard({
   propietarioNombre,
   loggedIn,
   esPropioAnuncio,
+  destacado = false,
   identidadOculta = false,
 }: FichaContactoCardProps) {
   const nombreMostrado = identidadOculta
@@ -54,7 +59,19 @@ export function FichaContactoCard({
       </div>
 
       {esPropioAnuncio ? (
-        <p className="text-sm text-muted-foreground">Este es tu anuncio.</p>
+        <div className="flex flex-col gap-3">
+          <p className="text-sm text-muted-foreground">
+            Este es tu anuncio. Súbelo a premium para ganar posicionamiento y
+            visibilidad.
+          </p>
+          <DestacarButton anuncioId={anuncioId} destacado={destacado} />
+          <Button asChild variant="outline" className="w-full gap-2">
+            <Link href={`/publicar/editar/${anuncioId}`}>
+              <Pencil className="size-4" aria-hidden="true" />
+              Editar anuncio
+            </Link>
+          </Button>
+        </div>
       ) : !loggedIn ? (
         <div className="flex flex-col gap-3">
           <p className="text-sm text-muted-foreground">
