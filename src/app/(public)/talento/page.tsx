@@ -64,7 +64,7 @@ export default async function TalentoPage(props: PageProps<"/talento">) {
               Encuentra profesionales de la belleza para tu negocio.
             </p>
           </div>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Button
               asChild
               size="lg"
@@ -75,8 +75,7 @@ export default async function TalentoPage(props: PageProps<"/talento">) {
             <Button
               asChild
               size="lg"
-              variant="outline"
-              className="h-12 rounded-full border-background/40 bg-transparent px-8 text-sm font-semibold text-background hover:bg-background hover:text-foreground"
+              className="h-12 rounded-full bg-background px-8 text-sm font-semibold text-foreground shadow-[var(--shadow-card)] hover:bg-background/90"
             >
               <Link href="/talento/mi-cv">Soy profesional · Publicar mi CV</Link>
             </Button>
