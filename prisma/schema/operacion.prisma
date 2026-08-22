@@ -3,31 +3,48 @@ enum EstadoOperacion {
   PAGADO_EN_REVISION
   LIBERADO
   INCIDENCIA_ABIERTA
+  REEMBOLSADO
+  CANCELADO
 
   @@schema("public")
 }
 
-// SCHEMA-ONLY PLACEHOLDER for Etapa 1 -- this is the client's own open item
-// (see CLAUDE.md: unresolved whether Fase 2's payment/escrow flow needs this
-// schema-only or with full commission logic). No Server Action, no page, and
-// no component may reference this model in Etapa 1. Treat any request to add
-// logic here as an out-of-scope change requiring a new quote.
+// A secure purchase with commission + retention (escrow): the buyer pays into
+// Bellezista's Stripe account, the funds are held during a review window, and on
+// release a Stripe transfer sends the price minus commission to the seller's
+// connected account (separate charges & transfers). Applies to Maquinaria and
+// Traspaso listings. See src/lib/operacion/* and src/lib/actions/operacion.ts.
 model Operacion {
   id            String  @id @default(uuid()) @db.Uuid
   anuncioId     String  @map("anuncio_id") @db.Uuid
   anuncio       Anuncio @relation(fields: [anuncioId], references: [id])
   propietarioId String  @map("propietario_id") @db.Uuid
+  propietario   Usuario @relation("vendedor", fields: [propietarioId], references: [id])
   compradorId   String  @map("comprador_id") @db.Uuid
+  comprador     Usuario @relation("comprador", fields: [compradorId], references: [id])
 
+  // Euros. precioFinal = what the buyer pays; comision = Bellezista's cut
+  // (deducted from the seller's payout). Seller receives precioFinal - comision.
   precioFinal Decimal? @db.Decimal(12, 2) @map("precio_final")
   comision    Decimal? @db.Decimal(12, 2)
 
   estadoOperacion EstadoOperacion @default(PENDIENTE_DE_PAGO) @map("estado_operacion")
 
   fechaPago       DateTime? @map("fecha_pago")
-  plazoRevision   Int?      @map("plazo_revision")
+  plazoRevision   Int?      @map("plazo_revision") // review window in days
   fechaLiberacion DateTime? @map("fecha_liberacion")
+  motivoIncidencia String?  @map("motivo_incidencia")
 
+  stripeSessionId       String? @unique @map("stripe_session_id")
+  stripePaymentIntentId String? @map("stripe_payment_intent_id")
+  stripeTransferId      String? @map("stripe_transfer_id")
+
+  creadoEn      DateTime @default(now()) @map("creado_en")
+  actualizadoEn DateTime @updatedAt @map("actualizado_en")
+
+  @@index([compradorId])
+  @@index([propietarioId])
+  @@index([estadoOperacion])
   @@map("operacion")
   @@schema("public")
 }

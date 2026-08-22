@@ -11,9 +11,11 @@ import {
 import { PLANES_PRO, MONEDA_PLAN } from "@/lib/traspaso/planes";
 import { formatearImporte } from "@/lib/talento/precios";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { getEstadoCobros } from "@/lib/actions/connect";
 import { PerfilForm } from "@/components/perfil/PerfilForm";
 import { MisAlertas } from "@/components/alertas/MisAlertas";
 import { GestionarSuscripcionButton } from "@/components/suscripcion/GestionarSuscripcionButton";
+import { ActivarCobrosCard } from "@/components/perfil/ActivarCobrosCard";
 
 export default async function PerfilPage(props: PageProps<"/perfil">) {
   const supabase = await createClient();
@@ -28,15 +30,17 @@ export default async function PerfilPage(props: PageProps<"/perfil">) {
     await confirmarSuscripcion(sp.session_id);
   }
 
-  const [usuario, contacto, alertas, suscripcion] = await Promise.all([
-    prisma.usuario.findUnique({
-      where: { id: user.id },
-      select: { nombre: true },
-    }),
-    getMiContacto(),
-    getMisAlertas(),
-    getMiSuscripcion(),
-  ]);
+  const [usuario, contacto, alertas, suscripcion, estadoCobros] =
+    await Promise.all([
+      prisma.usuario.findUnique({
+        where: { id: user.id },
+        select: { nombre: true },
+      }),
+      getMiContacto(),
+      getMisAlertas(),
+      getMiSuscripcion(),
+      getEstadoCobros(),
+    ]);
   const planActivo =
     suscripcion?.estado === "activa" ? PLANES_PRO[suscripcion.plan] : null;
 
@@ -70,6 +74,12 @@ export default async function PerfilPage(props: PageProps<"/perfil">) {
           defaultTelefono={contacto?.telefono ?? ""}
         />
       </div>
+
+      <ActivarCobrosCard
+        tieneCuenta={estadoCobros?.tieneCuenta ?? false}
+        cobrosActivos={estadoCobros?.cobrosActivos ?? false}
+        datosPendientes={estadoCobros?.datosPendientes ?? false}
+      />
 
       <div className="rounded-xl border border-border bg-card p-6">
         <h2 className="font-serif text-xl text-foreground">

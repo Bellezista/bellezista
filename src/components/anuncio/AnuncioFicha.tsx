@@ -16,7 +16,7 @@ interface AnuncioFichaProps {
   anuncio: Anuncio & {
     maquinaria: Maquinaria | null;
     traspaso: Traspaso | null;
-    propietario: { nombre: string };
+    propietario: { nombre: string; cobrosActivos: boolean };
   };
   loggedIn: boolean;
   currentUserId?: string;
@@ -44,6 +44,14 @@ export function AnuncioFicha({
   const destacado =
     anuncio.destacadoHasta != null &&
     new Date(anuncio.destacadoHasta).getTime() > Date.now();
+  // Secure payment is offered for eligible listing types once the seller has
+  // activated payouts and the listing is still available.
+  const disponible = anuncio.estado === "ACTIVO" || anuncio.estado === "DESTACADO";
+  const admitePagoSeguro =
+    !esPropioAnuncio &&
+    disponible &&
+    anuncio.propietario.cobrosActivos &&
+    (anuncio.tipo === "MAQUINARIA" || anuncio.tipo === "TRASPASO");
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
@@ -99,6 +107,8 @@ export function AnuncioFicha({
             loggedIn={loggedIn}
             esPropioAnuncio={esPropioAnuncio}
             destacado={destacado}
+            admitePagoSeguro={admitePagoSeguro}
+            precioFormateado={formatPrecio(anuncio.precio.toString())}
             identidadOculta={identidadOculta}
           />
 

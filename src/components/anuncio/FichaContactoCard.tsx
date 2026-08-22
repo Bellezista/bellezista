@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { Pencil, ShieldCheck } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { iniciarConversacion } from "@/lib/actions/mensajes";
 import { DestacarButton } from "@/components/anuncio/DestacarButton";
+import { ComprarButton } from "@/components/anuncio/ComprarButton";
 
 interface FichaContactoCardProps {
   anuncioId: string;
@@ -12,6 +13,9 @@ interface FichaContactoCardProps {
   esPropioAnuncio: boolean;
   // True while the listing is a paid featured one (for the owner's "renovar").
   destacado?: boolean;
+  // Secure payment available: eligible type + seller has payouts activated.
+  admitePagoSeguro?: boolean;
+  precioFormateado?: string;
   // Traspaso confidentiality: hide the owner's name/initials until the
   // interested party has contacted (see the ficha page).
   identidadOculta?: boolean;
@@ -30,6 +34,8 @@ export function FichaContactoCard({
   loggedIn,
   esPropioAnuncio,
   destacado = false,
+  admitePagoSeguro = false,
+  precioFormateado = "",
   identidadOculta = false,
 }: FichaContactoCardProps) {
   const nombreMostrado = identidadOculta
@@ -74,14 +80,38 @@ export function FichaContactoCard({
         </div>
       ) : !loggedIn ? (
         <div className="flex flex-col gap-3">
+          {admitePagoSeguro && (
+            <>
+              <Button
+                asChild
+                size="lg"
+                className="h-12 w-full gap-2 rounded-full bg-gold text-sm font-semibold text-foreground hover:bg-gold/90"
+              >
+                <Link href={`/login?next=/anuncios/${anuncioId}`}>
+                  <ShieldCheck className="size-4" aria-hidden="true" />
+                  Comprar con pago seguro · {precioFormateado}
+                </Link>
+              </Button>
+              <p className="text-center text-xs text-muted-foreground">
+                Inicia sesión para comprar. El dinero queda retenido hasta que
+                confirmas que todo está correcto.
+              </p>
+              <div className="my-1 border-t border-border" />
+            </>
+          )}
           <p className="text-sm text-muted-foreground">
-            Escribe al propietario y pregúntale lo que necesites. Inicia sesión
-            para enviar tu mensaje.
+            ¿Prefieres preguntar antes? Escribe al propietario. Inicia sesión para
+            enviar tu mensaje.
           </p>
           <Button
             asChild
             size="lg"
-            className="h-12 w-full rounded-full bg-gold text-sm font-semibold text-foreground hover:bg-gold/90"
+            variant={admitePagoSeguro ? "outline" : "default"}
+            className={
+              admitePagoSeguro
+                ? "h-12 w-full rounded-full"
+                : "h-12 w-full rounded-full bg-gold text-sm font-semibold text-foreground hover:bg-gold/90"
+            }
           >
             <Link href={`/login?next=/anuncios/${anuncioId}`}>
               Enviar mensaje al propietario
@@ -89,21 +119,39 @@ export function FichaContactoCard({
           </Button>
         </div>
       ) : (
-        <form
-          action={iniciarConversacion.bind(null, anuncioId)}
-          className="flex flex-col gap-3"
-        >
-          <p className="text-sm text-muted-foreground">
-            Escribe al propietario y pregúntale lo que necesites.
-          </p>
-          <Button
-            type="submit"
-            size="lg"
-            className="h-12 w-full rounded-full bg-gold text-sm font-semibold text-foreground hover:bg-gold/90"
+        <div className="flex flex-col gap-4">
+          {admitePagoSeguro && (
+            <>
+              <ComprarButton
+                anuncioId={anuncioId}
+                precioFormateado={precioFormateado}
+              />
+              <div className="border-t border-border" />
+            </>
+          )}
+          <form
+            action={iniciarConversacion.bind(null, anuncioId)}
+            className="flex flex-col gap-3"
           >
-            Enviar mensaje al propietario
-          </Button>
-        </form>
+            <p className="text-sm text-muted-foreground">
+              {admitePagoSeguro
+                ? "¿Tienes dudas? Escribe al propietario antes de comprar."
+                : "Escribe al propietario y pregúntale lo que necesites."}
+            </p>
+            <Button
+              type="submit"
+              size="lg"
+              variant={admitePagoSeguro ? "outline" : "default"}
+              className={
+                admitePagoSeguro
+                  ? "h-12 w-full rounded-full"
+                  : "h-12 w-full rounded-full bg-gold text-sm font-semibold text-foreground hover:bg-gold/90"
+              }
+            >
+              Enviar mensaje al propietario
+            </Button>
+          </form>
+        </div>
       )}
 
       {!esPropioAnuncio && (

@@ -5,6 +5,10 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma/client";
 import { createClient } from "@/lib/supabase/server";
 import { EstadoAnuncio, Prisma, RolUsuario } from "@generated/prisma/client";
+import {
+  liberarOperacionCore,
+  reembolsarOperacionCore,
+} from "@/lib/operacion/otorgar";
 
 // Basic admin panel only (manage listings/users) -- advanced backoffice
 // (stats, mass moderation, audit) is explicitly Fase 2, not built here.
@@ -80,4 +84,35 @@ export async function suspenderUsuario(usuarioId: string, suspendido: boolean) {
     data: { suspendido },
   });
   revalidatePath("/admin/usuarios");
+}
+
+// --- Secure-payment operations (commission + retention) ---
+
+export async function listOperacionesAdmin() {
+  await requireAdmin();
+  return prisma.operacion.findMany({
+    orderBy: { creadoEn: "desc" },
+    include: {
+      anuncio: { select: { id: true, titulo: true } },
+      comprador: { select: { nombre: true } },
+      propietario: { select: { nombre: true, cobrosActivos: true } },
+    },
+  });
+}
+
+// Resolves an incidencia (or an in-review operation) by releasing the funds to
+// the seller or refunding the buyer. Uses the shared core logic.
+export async function resolverOperacionAdmin(
+  operacionId: string,
+  accion: "liberar" | "reembolsar",
+): Promise<{ ok?: boolean; error?: string }> {
+  await requireAdmin();
+  try {
+    if (accion === "liberar") await liberarOperacionCore(operacionId);
+    else await reembolsarOperacionCore(operacionId);
+    revalidatePath("/admin/operaciones");
+    return { ok: true };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "No se pudo resolver la operación." };
+  }
 }

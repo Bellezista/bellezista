@@ -5,6 +5,8 @@ import { otorgarAccesoDesdeSesion } from "@/lib/talento/otorgar";
 import { otorgarDestacadoDesdeSesion } from "@/lib/anuncio/destacado";
 import { otorgarKitDesdeSesion } from "@/lib/traspaso/kit-otorgar";
 import { sincronizarSuscripcion } from "@/lib/traspaso/suscripcion";
+import { registrarPagoOperacion } from "@/lib/operacion/otorgar";
+import { sincronizarCuentaConnect } from "@/lib/stripe/connect";
 
 // Stripe webhook. Grants one-off purchases (Talento unlock/bono, destacado, Kit
 // Traspaso) on payment, and keeps professional subscriptions in sync. The raw
@@ -49,6 +51,7 @@ export async function POST(request: Request) {
       } else if (session.payment_status === "paid") {
         if (tipo === "destacado") await otorgarDestacadoDesdeSesion(session);
         else if (tipo === "kit_traspaso") await otorgarKitDesdeSesion(session);
+        else if (tipo === "operacion") await registrarPagoOperacion(session);
         else await otorgarAccesoDesdeSesion(session); // Talento (individual/bono)
       }
       break;
@@ -56,6 +59,11 @@ export async function POST(request: Request) {
     case "customer.subscription.updated":
     case "customer.subscription.deleted": {
       await sincronizarSuscripcion(event.data.object as Stripe.Subscription);
+      break;
+    }
+    case "account.updated": {
+      // Connect seller finished / changed onboarding: refresh cached payouts flag.
+      await sincronizarCuentaConnect(event.data.object as Stripe.Account);
       break;
     }
   }

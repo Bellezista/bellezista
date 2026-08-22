@@ -58,8 +58,8 @@ export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isProtected =
     path.startsWith("/admin") ||
-    ["/publicar", "/mis-anuncios", "/mensajes"].some((p) =>
-      path.startsWith(p),
+    ["/publicar", "/mis-anuncios", "/mis-compras", "/mis-ventas", "/mensajes", "/perfil"].some(
+      (p) => path.startsWith(p),
     );
 
   if (!user && isProtected) {

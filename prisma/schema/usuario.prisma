@@ -17,6 +17,13 @@ model Usuario {
   // users" feature.
   suspendido Boolean @default(false)
 
+  // Stripe Connect (Express) account for receiving payouts as a seller in the
+  // commission-with-retention flow. `cobrosActivos` caches Stripe's
+  // payouts_enabled so the buy flow can gate on it without an API round-trip
+  // (kept in sync by the account.updated webhook + refreshEstadoConnect).
+  stripeConnectId String?  @unique @map("stripe_connect_id")
+  cobrosActivos   Boolean  @default(false) @map("cobros_activos")
+
   creadoEn DateTime @default(now()) @map("creado_en")
 
   anuncios Anuncio[]
@@ -37,6 +44,9 @@ model Usuario {
   conversacionesInteresado  Conversacion[] @relation("interesado")
   conversacionesPropietario Conversacion[] @relation("propietario")
   mensajes                  Mensaje[]
+
+  operacionesVendidas  Operacion[] @relation("vendedor")
+  operacionesCompradas Operacion[] @relation("comprador")
 
   @@map("usuario")
   @@schema("public")

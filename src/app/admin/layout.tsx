@@ -39,6 +39,12 @@ export default async function AdminLayout({
           >
             Miembros
           </Link>
+          <Link
+            href="/admin/operaciones"
+            className="font-medium text-foreground hover:underline"
+          >
+            Operaciones
+          </Link>
         </nav>
       </header>
       <main className="p-6">{children}</main>

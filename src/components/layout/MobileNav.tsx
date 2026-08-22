@@ -10,8 +10,10 @@ import {
   List,
   Menu,
   MessageCircle,
+  ShoppingBag,
   Store,
   Users,
+  Wallet,
   X,
 } from "lucide-react";
 
@@ -28,6 +30,8 @@ const NAV_ITEMS = [
   { href: "/publicar", label: "Publicar anuncio", icon: CirclePlus },
   { href: "/talento/mi-cv", label: "Mi CV", icon: FileText },
   { href: "/mis-anuncios", label: "Mis anuncios", icon: List },
+  { href: "/mis-compras", label: "Mis compras", icon: ShoppingBag },
+  { href: "/mis-ventas", label: "Mis ventas", icon: Wallet },
   { href: "/mensajes", label: "Mensajes", icon: MessageCircle },
 ] as const;
 
