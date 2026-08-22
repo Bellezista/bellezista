@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { LayoutGrid, Store, ArrowRight } from "lucide-react";
+import { LayoutGrid, Store, Megaphone, ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 
 // The platform has several listing modules, so publishing starts with a
-// choice. Only the two live modules appear here today; Talento/Ofertas join
-// as they ship.
+// choice. Talento joins as it ships.
 const OPCIONES = [
   {
     href: "/publicar/traspaso",
@@ -17,6 +16,13 @@ const OPCIONES = [
     icon: LayoutGrid,
     titulo: "Maquinaria",
     texto: "Vende equipamiento de estética: aparatología, mobiliario y más.",
+  },
+  {
+    href: "/publicar/oferta",
+    icon: Megaphone,
+    titulo: "Oferta",
+    texto:
+      "Promociona un servicio o pack con una página propia para compartir en redes.",
   },
 ] as const;
 

@@ -6,6 +6,7 @@ import { otorgarDestacadoDesdeSesion } from "@/lib/anuncio/destacado";
 import { otorgarKitDesdeSesion } from "@/lib/traspaso/kit-otorgar";
 import { sincronizarSuscripcion } from "@/lib/traspaso/suscripcion";
 import { registrarPagoOperacion } from "@/lib/operacion/otorgar";
+import { otorgarOfertaDesdeSesion } from "@/lib/oferta/otorgar";
 import { sincronizarCuentaConnect } from "@/lib/stripe/connect";
 
 // Stripe webhook. Grants one-off purchases (Talento unlock/bono, destacado, Kit
@@ -52,6 +53,7 @@ export async function POST(request: Request) {
         if (tipo === "destacado") await otorgarDestacadoDesdeSesion(session);
         else if (tipo === "kit_traspaso") await otorgarKitDesdeSesion(session);
         else if (tipo === "operacion") await registrarPagoOperacion(session);
+        else if (tipo === "oferta") await otorgarOfertaDesdeSesion(session);
         else await otorgarAccesoDesdeSesion(session); // Talento (individual/bono)
       }
       break;

@@ -48,6 +48,8 @@ model Usuario {
   operacionesVendidas  Operacion[] @relation("vendedor")
   operacionesCompradas Operacion[] @relation("comprador")
 
+  ofertas Oferta[]
+
   @@map("usuario")
   @@schema("public")
 }
