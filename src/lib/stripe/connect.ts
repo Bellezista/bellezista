@@ -22,7 +22,13 @@ export async function getOrCreateConnectAccount(
     type: "express",
     country: "ES",
     email,
-    capabilities: { transfers: { requested: true } },
+    // ES (and most EU countries) require card_payments alongside transfers, even
+    // though we settle via separate charges + transfers (the charge lives on the
+    // platform account, the connected account only needs to receive transfers).
+    capabilities: {
+      card_payments: { requested: true },
+      transfers: { requested: true },
+    },
     business_type: "individual",
     metadata: { usuarioId },
   });
