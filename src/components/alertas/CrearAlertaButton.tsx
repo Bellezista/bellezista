@@ -52,10 +52,9 @@ export function CrearAlertaButton({ seccion }: { seccion: SeccionAlerta }) {
     <Button
       type="button"
       variant="outline"
-      size="sm"
       disabled={pending}
       onClick={crear}
-      className="gap-1.5 whitespace-nowrap"
+      className="gap-2 whitespace-nowrap rounded-full border-gold bg-gold/10 font-semibold text-gold hover:bg-gold hover:text-foreground"
     >
       <BellPlus className="size-4" aria-hidden="true" />
       {pending ? "Creando..." : "Crear alerta con estos filtros"}

@@ -55,7 +55,7 @@ export default async function TraspasosPage(props: PageProps<"/traspasos">) {
           <p className="mt-2 max-w-md text-sm text-background/80">
             Compra y traspasa negocios del sector de la belleza en España.
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <div className="mt-6 flex flex-wrap items-center gap-3">
             <Button
               asChild
               size="lg"
@@ -63,18 +63,20 @@ export default async function TraspasosPage(props: PageProps<"/traspasos">) {
             >
               <Link href="/publicar/traspaso">Quiero publicar un anuncio</Link>
             </Button>
-            <Link
-              href="/kit-traspaso"
-              className="text-sm text-background underline decoration-gold underline-offset-4 transition-colors hover:text-gold"
+            <Button
+              asChild
+              size="lg"
+              className="h-12 rounded-full bg-background px-8 text-sm font-semibold text-foreground shadow-[var(--shadow-card)] hover:bg-background/90"
             >
-              ¿Vas a traspasar? Consigue el Kit Traspaso
-            </Link>
-            <Link
-              href="/planes-profesionales"
-              className="text-sm text-background underline decoration-gold underline-offset-4 transition-colors hover:text-gold"
+              <Link href="/kit-traspaso">Consigue el Kit Traspaso</Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              className="h-12 rounded-full bg-background px-8 text-sm font-semibold text-foreground shadow-[var(--shadow-card)] hover:bg-background/90"
             >
-              ¿Eres profesional? Ver planes
-            </Link>
+              <Link href="/planes-profesionales">Planes para profesionales</Link>
+            </Button>
           </div>
         </div>
       </section>

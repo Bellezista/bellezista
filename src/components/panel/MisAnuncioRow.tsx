@@ -27,6 +27,7 @@ import {
   eliminarAnuncio,
 } from "@/lib/actions/anuncios";
 import { crearCheckoutDestacado } from "@/lib/actions/destacado";
+import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { EstadoTexto } from "@/components/anuncio/EstadoTexto";
 import { EliminarAnuncioModal } from "@/components/modals/EliminarAnuncioModal";
@@ -125,10 +126,20 @@ export function MisAnuncioRow({ anuncio }: { anuncio: MisAnuncioSerializado }) {
         <TableCell>{anuncio._count.conversaciones}</TableCell>
         <TableCell>{formatPrecio(anuncio.precio.toString())}</TableCell>
         <TableCell>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             {copiado && (
               <span className="text-xs text-gold">Enlace copiado</span>
             )}
+            <Button
+              type="button"
+              size="sm"
+              disabled={pending}
+              onClick={destacar}
+              className="gap-1.5 rounded-full bg-gold font-semibold text-foreground hover:bg-gold/90"
+            >
+              <Star className="size-4" aria-hidden="true" />
+              {anuncio.destacado ? "Renovar premium" : "Subir a premium"}
+            </Button>
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
                 <button
@@ -176,10 +187,6 @@ export function MisAnuncioRow({ anuncio }: { anuncio: MisAnuncioSerializado }) {
 
                   <DropdownMenu.Separator className="my-1 h-px bg-border" />
 
-                  <DropdownMenu.Item className={itemClass} onSelect={destacar}>
-                    <Star className="size-4" aria-hidden="true" />
-                    {anuncio.destacado ? "Renovar destacado" : "Destacar"}
-                  </DropdownMenu.Item>
                   <DropdownMenu.Item
                     className={itemClass}
                     onSelect={() => setEstado(esPausado ? "ACTIVO" : "RETIRADO")}
