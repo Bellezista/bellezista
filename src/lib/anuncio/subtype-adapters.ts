@@ -38,16 +38,10 @@ export interface SubtypeAdapter<TSubtype> {
   getDescripcion: (subtipo: TSubtype) => string | null;
 }
 
-// beautyScore is typed loosely (Decimal | number) so this adapter works
-// against both the raw Prisma shape (server-side) and the serialized shape
-// passed into Client Components (see src/types/anuncio.ts -- Prisma's
-// Decimal can't cross that boundary as a prop). Nothing here actually reads
-// beautyScore yet, but the parameter type is checked structurally either way.
-type MaquinariaLike = Omit<Maquinaria, "beautyScore"> & {
-  beautyScore: Maquinaria["beautyScore"] | number;
-};
-
-export const maquinariaAdapter: SubtypeAdapter<MaquinariaLike> = {
+// Maquinaria has no Decimal fields, so the raw Prisma shape and the serialized
+// shape passed into Client Components are identical here (unlike Traspaso's
+// alquilerMensual, see TraspasoLike below).
+export const maquinariaAdapter: SubtypeAdapter<Maquinaria> = {
   tipo: TipoAnuncio.MAQUINARIA,
   label: "Maquinaria",
   contactoDirecto: false,
@@ -83,8 +77,8 @@ export const maquinariaAdapter: SubtypeAdapter<MaquinariaLike> = {
   },
 };
 
-// alquilerMensual is Decimal (server) | number (serialized), same reason as
-// MaquinariaLike's beautyScore -- the adapter must work on both shapes.
+// alquilerMensual is Decimal (server) | number (serialized), so the adapter
+// must work on both shapes (Prisma's Decimal can't cross into Client Components).
 type TraspasoLike = Omit<Traspaso, "alquilerMensual"> & {
   alquilerMensual: Traspaso["alquilerMensual"] | number;
 };
@@ -166,7 +160,7 @@ export type AnuncioConMaquinaria = Anuncio & {
 // (number) shape work.
 type AnuncioSubtipoLike = {
   tipo: TipoAnuncio;
-  maquinaria: MaquinariaLike | null;
+  maquinaria: Maquinaria | null;
   traspaso: TraspasoLike | null;
 };
 

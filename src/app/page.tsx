@@ -252,9 +252,8 @@ export default async function LandingPage() {
                   "Empieza sin coste y destaca tu anuncio cuando quieras.",
               },
               {
-                titulo: "Todo el sector, en un sitio",
-                texto:
-                  "Compradores y profesionales de la belleza de toda España.",
+                titulo: "Publica en minutos",
+                texto: "Sube tu anuncio en pocos pasos, sin complicaciones.",
               },
               {
                 titulo: "Gestión sencilla",

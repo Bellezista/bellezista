@@ -39,7 +39,7 @@ export type MisAnuncioConDetalle = AnuncioConMaquinaria & {
   _count: { conversaciones: number };
 };
 
-// React Server Components can't pass Prisma's Decimal (precio, beautyScore --
+// React Server Components can't pass Prisma's Decimal (precio, alquilerMensual --
 // class instances, not plain objects) as a prop into a Client Component --
 // confirmed live via a dev-server smoke test ("Only plain objects can be
 // passed to Client Components... Decimal objects are not supported"), not
@@ -47,9 +47,8 @@ export type MisAnuncioConDetalle = AnuncioConMaquinaria & {
 // hands Anuncio data to a "use client" component must serialize through
 // serializeAnuncio()/serializeAnuncios() first; the client-side prop types
 // below reflect the serialized (number) shape those functions produce.
-type MaquinariaSerializada = Omit<Maquinaria, "beautyScore"> & {
-  beautyScore: number | null;
-};
+// Maquinaria has no Decimal fields, so its serialized shape is unchanged.
+type MaquinariaSerializada = Maquinaria;
 
 type TraspasoSerializado = Omit<Traspaso, "alquilerMensual"> & {
   alquilerMensual: number | null;
@@ -80,15 +79,7 @@ export function serializeAnuncio(
     destacado:
       anuncio.destacadoHasta != null &&
       anuncio.destacadoHasta.getTime() > Date.now(),
-    maquinaria: anuncio.maquinaria
-      ? {
-          ...anuncio.maquinaria,
-          beautyScore:
-            anuncio.maquinaria.beautyScore != null
-              ? Number(anuncio.maquinaria.beautyScore)
-              : null,
-        }
-      : null,
+    maquinaria: anuncio.maquinaria,
     traspaso: anuncio.traspaso
       ? {
           ...anuncio.traspaso,

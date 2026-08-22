@@ -43,7 +43,6 @@ model Maquinaria {
 
   anio        Int?
   horasDeUso  Int?     @map("horas_de_uso")
-  beautyScore Decimal? @db.Decimal(3, 1) @map("beauty_score")
 
   estadoEquipo    EstadoEquipo  @map("estado_equipo")
   nivelDeServicio NivelServicio @default(BASICO) @map("nivel_de_servicio")

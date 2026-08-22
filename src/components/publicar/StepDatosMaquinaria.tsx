@@ -133,21 +133,6 @@ export function StepDatosMaquinaria() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="beautyScore">Beauty score (0-10)</Label>
-          <Input
-            id="beautyScore"
-            type="number"
-            min={0}
-            max={10}
-            placeholder="Opcional"
-            {...register("beautyScore", {
-              setValueAs: (v) => (v === "" ? undefined : Number(v)),
-            })}
-          />
-          <FieldError message={errors.beautyScore?.message} />
-        </div>
-
-        <div className="space-y-2">
           <Label htmlFor="estadoEquipo">Estado del equipo</Label>
           <Controller
             control={control}

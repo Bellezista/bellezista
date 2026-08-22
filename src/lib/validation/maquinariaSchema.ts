@@ -20,7 +20,6 @@ export const maquinariaSchema = z.object({
   descripcion: z.string().max(4000).optional(),
   anio: z.coerce.number().int().min(1980).max(2100).optional(),
   horasDeUso: z.coerce.number().int().min(0).optional(),
-  beautyScore: z.coerce.number().min(0).max(10).optional(),
   estadoEquipo: z.enum(EstadoEquipo),
   nivelDeServicio: z.enum(NivelServicio).default(NivelServicio.BASICO),
   esMedicoEstetico: z.coerce.boolean().default(false),

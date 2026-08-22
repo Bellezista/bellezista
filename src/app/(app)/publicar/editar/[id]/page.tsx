@@ -34,9 +34,6 @@ export default async function EditarAnuncioPage(
       numeroSerie: maquinaria.numeroSerie ?? undefined,
       anio: maquinaria.anio ?? undefined,
       horasDeUso: maquinaria.horasDeUso ?? undefined,
-      beautyScore: maquinaria.beautyScore
-        ? Number(maquinaria.beautyScore)
-        : undefined,
       estadoEquipo: maquinaria.estadoEquipo,
       nivelDeServicio: maquinaria.nivelDeServicio,
       esMedicoEstetico: maquinaria.esMedicoEstetico,
