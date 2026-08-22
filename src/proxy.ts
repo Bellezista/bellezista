@@ -8,6 +8,17 @@ import { createServerClient } from "@supabase/ssr";
 // admin-role check -- that's a real Prisma lookup, which belongs close to the
 // data (in the /admin layout), not as a JWT-claim guess here.
 export async function proxy(request: NextRequest) {
+  // Force the custom domain: the .vercel.app default URL can't be deleted, so
+  // 308-redirect it to bellezista.com (keeps path + query). Preview deploys use
+  // unique *.vercel.app hosts, so only the production alias is redirected.
+  const host = request.headers.get("host");
+  if (host === "bellezista.vercel.app") {
+    const url = new URL(request.url);
+    url.protocol = "https:";
+    url.host = "www.bellezista.com";
+    return NextResponse.redirect(url, 308);
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
