@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { FormProvider, useForm, type Path } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -118,7 +119,21 @@ export function TraspasoStepper({
         </div>
 
         {mutation.data && "error" in mutation.data && (
-          <p className="text-sm text-destructive">{mutation.data.error}</p>
+          (mutation.data as { limiteAlcanzado?: boolean }).limiteAlcanzado ? (
+            <div className="space-y-3 rounded-lg border border-gold/40 bg-gold/10 p-4">
+              <p className="text-sm text-foreground">{mutation.data.error}</p>
+              <Button
+                asChild
+                className="gap-1.5 rounded-full bg-gold font-semibold text-foreground hover:bg-gold/90"
+              >
+                <Link href="/planes-profesionales">
+                  Ver planes profesionales
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            <p className="text-sm text-destructive">{mutation.data.error}</p>
+          )
         )}
         {mutation.isError && (
           <p className="text-sm text-destructive">

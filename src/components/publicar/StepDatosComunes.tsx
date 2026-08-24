@@ -40,6 +40,7 @@ export function StepDatosComunes() {
         <Input
           id="titulo"
           placeholder="Ej: Máquina de depilación láser diodo"
+          autoComplete="off"
           aria-invalid={!!errors.titulo}
           {...register("titulo")}
         />

@@ -63,6 +63,7 @@ export function StepDatosTraspaso() {
         <Input
           id="titulo"
           placeholder="Ej: Traspaso de centro de estética en pleno centro"
+          autoComplete="off"
           aria-invalid={!!errors.titulo}
           {...register("titulo")}
         />

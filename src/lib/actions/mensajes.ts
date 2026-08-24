@@ -3,10 +3,12 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { refresh } from "next/cache";
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { createClient } from "@/lib/supabase/server";
 import { mensajeSchema } from "@/lib/validation/mensajeSchema";
 import { crearNotificacion } from "@/lib/notificaciones/crear";
+import { enviarAvisoMensajeEmail } from "@/lib/mensajes/avisoEmail";
 
 async function requireUsuarioId() {
   const supabase = await createClient();
@@ -228,6 +230,18 @@ export async function iniciarConversacion(anuncioId: string) {
       cuerpo: anuncio.titulo,
       url: `/mensajes/${conversacionId}`,
     });
+    // ...and by email, so sellers who don't keep the panel open find out.
+    const idConv = conversacionId;
+    const tituloAnuncio = anuncio.titulo;
+    const propietarioId = anuncio.propietarioId;
+    after(() =>
+      enviarAvisoMensajeEmail(propietarioId, {
+        asunto: "Nuevo contacto en tu anuncio · Bellezista",
+        encabezado: "Alguien está interesado en tu anuncio",
+        preview: tituloAnuncio,
+        conversacionId: idConv,
+      }),
+    );
   }
 
   redirect(`/mensajes/${conversacionId}`);
@@ -268,6 +282,15 @@ export async function enviarMensaje(conversacionId: string, input: unknown) {
     cuerpo: parsed.data.texto.slice(0, 80),
     url: `/mensajes/${conversacionId}`,
   });
+  const previewTexto = parsed.data.texto.slice(0, 140);
+  after(() =>
+    enviarAvisoMensajeEmail(destinatario, {
+      asunto: "Nuevo mensaje en Bellezista",
+      encabezado: "Tienes un mensaje nuevo",
+      preview: previewTexto,
+      conversacionId,
+    }),
+  );
 
   revalidatePath(`/mensajes/${conversacionId}`);
   revalidatePath("/mensajes");
