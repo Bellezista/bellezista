@@ -16,8 +16,8 @@ const HEADER_IMG =
 export default async function TalentoPage(props: PageProps<"/talento">) {
   const params = await props.searchParams;
 
-  // Confirm a bono purchase returning from Stripe (grants credits even before
-  // the webhook lands / is configured).
+  // Confirm a Talento pack purchase returning from Stripe (grants credits or
+  // unlimited access even before the webhook lands / is configured).
   const sessionId =
     typeof params.session_id === "string" ? params.session_id : null;
   if (sessionId) {

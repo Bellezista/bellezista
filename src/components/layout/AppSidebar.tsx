@@ -8,7 +8,6 @@ import {
   FileText,
   LayoutGrid,
   List,
-  Megaphone,
   MessageCircle,
   ShoppingBag,
   Store,
@@ -28,7 +27,6 @@ const NAV_ITEMS = [
   { href: "/publicar", label: "Publicar anuncio", icon: CirclePlus },
   { href: "/talento/mi-cv", label: "Mi CV", icon: FileText },
   { href: "/mis-anuncios", label: "Mis anuncios", icon: List },
-  { href: "/mis-ofertas", label: "Mis ofertas", icon: Megaphone },
   { href: "/mis-compras", label: "Mis compras", icon: ShoppingBag },
   { href: "/mis-ventas", label: "Mis ventas", icon: Wallet },
   { href: "/mensajes", label: "Mensajes", icon: MessageCircle },
@@ -85,16 +83,18 @@ export function AppSidebar({
         })}
       </nav>
 
-      {typeof anunciosActivos === "number" && (
-        <div className="mt-auto px-6 py-6">
-          <p className="text-xs text-background/60">
-            <span className="font-medium text-background">
-              {anunciosActivos}
-            </span>{" "}
-            {anunciosActivos === 1 ? "anuncio activo" : "anuncios activos"}
-          </p>
-        </div>
-      )}
+      {/* Active-listings counter temporarily hidden at the client's request:
+          with few listings early on, showing a number reads as "empty". The
+          `anunciosActivos` prop is kept wired so this can be restored later by
+          re-adding the block below.
+          {typeof anunciosActivos === "number" && (
+            <div className="mt-auto px-6 py-6">
+              <p className="text-xs text-background/60">
+                <span className="font-medium text-background">{anunciosActivos}</span>{" "}
+                {anunciosActivos === 1 ? "anuncio activo" : "anuncios activos"}
+              </p>
+            </div>
+          )} */}
     </aside>
   );
 }

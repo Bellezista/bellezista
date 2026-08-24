@@ -5,10 +5,7 @@ import { prisma } from "@/lib/prisma/client";
 import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe/server";
 import { getBaseUrl } from "@/lib/site";
-import {
-  DESBLOQUEO_INDIVIDUAL,
-  BONO_DESBLOQUEOS,
-} from "@/lib/talento/precios";
+import { TALENTO_PACKS } from "@/lib/talento/precios";
 import { crearNotificacion } from "@/lib/notificaciones/crear";
 
 async function getUsuarioId(): Promise<string | null> {
@@ -19,7 +16,18 @@ async function getUsuarioId(): Promise<string | null> {
   return user?.id ?? null;
 }
 
-// Whether `usuarioId` (a business owner) can see the full profile of `cvId`.
+// Whether `usuarioId` has an active unlimited-access pack (3/6/12 months).
+export async function accesoIlimitadoActivo(usuarioId: string): Promise<boolean> {
+  const c = await prisma.talentoCredito.findUnique({
+    where: { usuarioId },
+    select: { accesoIlimitadoHasta: true },
+  });
+  return Boolean(
+    c?.accesoIlimitadoHasta && c.accesoIlimitadoHasta.getTime() > Date.now(),
+  );
+}
+
+// True if a specific CV was permanently unlocked with a credit.
 export async function estaDesbloqueado(
   usuarioId: string,
   cvId: string,
@@ -29,6 +37,16 @@ export async function estaDesbloqueado(
     select: { id: true },
   });
   return Boolean(d);
+}
+
+// Whether `usuarioId` (a business owner) can see the full profile of `cvId`:
+// either an active unlimited pack, or a credit-unlocked CV.
+export async function tieneAccesoCv(
+  usuarioId: string,
+  cvId: string,
+): Promise<boolean> {
+  if (await accesoIlimitadoActivo(usuarioId)) return true;
+  return estaDesbloqueado(usuarioId, cvId);
 }
 
 export async function getMiSaldoCreditos(): Promise<number> {
@@ -41,25 +59,39 @@ export async function getMiSaldoCreditos(): Promise<number> {
   return c?.saldo ?? 0;
 }
 
+// Current Talento access for the logged-in business: credit balance + whether an
+// unlimited pack is active (and until when). Used by the ficha CTA and the
+// account counter (#4).
+export async function getMiAccesoTalento(): Promise<{
+  saldo: number;
+  ilimitadoHasta: Date | null;
+  usados: number;
+}> {
+  const usuarioId = await getUsuarioId();
+  if (!usuarioId) return { saldo: 0, ilimitadoHasta: null, usados: 0 };
+  const [c, usados] = await Promise.all([
+    prisma.talentoCredito.findUnique({ where: { usuarioId } }),
+    prisma.cvDesbloqueo.count({ where: { usuarioId } }),
+  ]);
+  const ilim =
+    c?.accesoIlimitadoHasta && c.accesoIlimitadoHasta.getTime() > Date.now()
+      ? c.accesoIlimitadoHasta
+      : null;
+  return { saldo: c?.saldo ?? 0, ilimitadoHasta: ilim, usados };
+}
+
 type CheckoutResult = { url?: string; error?: string };
 
-// Stripe Checkout for unlocking a single CV. Returns the hosted checkout URL to
-// redirect to; the actual unlock is granted by the webhook on payment success.
-export async function crearCheckoutDesbloqueo(
-  cvId: string,
+// Stripe Checkout to buy a Talento access pack. The grant (credits or unlimited
+// period) happens on payment via the webhook / success redirect.
+export async function crearCheckoutPack(
+  packId: string,
 ): Promise<CheckoutResult> {
   const usuarioId = await getUsuarioId();
-  if (!usuarioId) return { error: "Inicia sesión para desbloquear." };
+  if (!usuarioId) return { error: "Inicia sesión para comprar un pack." };
 
-  const cv = await prisma.cv.findUnique({
-    where: { id: cvId },
-    select: { id: true, usuarioId: true },
-  });
-  if (!cv) return { error: "El CV no existe." };
-  if (cv.usuarioId === usuarioId) return { error: "Es tu propio CV." };
-  if (await estaDesbloqueado(usuarioId, cvId)) {
-    return { error: "Ya has desbloqueado este CV." };
-  }
+  const pack = TALENTO_PACKS[packId];
+  if (!pack) return { error: "Pack no válido." };
 
   const base = await getBaseUrl();
   const session = await stripe.checkout.sessions.create({
@@ -67,61 +99,27 @@ export async function crearCheckoutDesbloqueo(
     line_items: [
       {
         price_data: {
-          currency: DESBLOQUEO_INDIVIDUAL.moneda,
+          currency: pack.moneda,
           product_data: {
-            name: DESBLOQUEO_INDIVIDUAL.nombre,
-            description: DESBLOQUEO_INDIVIDUAL.descripcion,
+            name: `${pack.nombre} · Empleo & Talento`,
+            description: pack.descripcion,
           },
-          unit_amount: DESBLOQUEO_INDIVIDUAL.importe,
+          unit_amount: pack.importe,
         },
         quantity: 1,
       },
     ],
-    success_url: `${base}/talento/${cvId}?pago=ok&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${base}/talento/${cvId}?pago=cancel`,
+    success_url: `${base}/talento?pack=ok&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${base}/talento?pack=cancel`,
     client_reference_id: usuarioId,
-    metadata: { usuarioId, tipo: "individual", cvId },
+    metadata: { usuarioId, tipo: "talento_pack", packId: pack.id },
   });
 
   return { url: session.url ?? undefined };
 }
 
-// Stripe Checkout for the bono (several unlock credits at once).
-export async function crearCheckoutBono(): Promise<CheckoutResult> {
-  const usuarioId = await getUsuarioId();
-  if (!usuarioId) return { error: "Inicia sesión para comprar el bono." };
-
-  const base = await getBaseUrl();
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    line_items: [
-      {
-        price_data: {
-          currency: BONO_DESBLOQUEOS.moneda,
-          product_data: {
-            name: BONO_DESBLOQUEOS.nombre,
-            description: BONO_DESBLOQUEOS.descripcion,
-          },
-          unit_amount: BONO_DESBLOQUEOS.importe,
-        },
-        quantity: 1,
-      },
-    ],
-    success_url: `${base}/talento?bono=ok&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${base}/talento?bono=cancel`,
-    client_reference_id: usuarioId,
-    metadata: {
-      usuarioId,
-      tipo: "bono",
-      creditos: String(BONO_DESBLOQUEOS.creditos),
-    },
-  });
-
-  return { url: session.url ?? undefined };
-}
-
-// Spend one prepaid credit to unlock a CV, with no trip to Stripe. Atomic: the
-// credit is only consumed if the unlock is actually created.
+// Spend one prepaid credit (Pack Inicio) to permanently unlock a CV. If the user
+// has an active unlimited pack, no credit is spent -- access is already granted.
 export async function desbloquearConCredito(
   cvId: string,
 ): Promise<{ ok?: boolean; error?: string }> {
@@ -134,7 +132,9 @@ export async function desbloquearConCredito(
   });
   if (!cv) return { error: "El CV no existe." };
   if (cv.usuarioId === usuarioId) return { error: "Es tu propio CV." };
-  if (await estaDesbloqueado(usuarioId, cvId)) {
+
+  // Already accessible (active unlimited pack or previously unlocked).
+  if (await tieneAccesoCv(usuarioId, cvId)) {
     revalidatePath(`/talento/${cvId}`);
     return { ok: true };
   }
@@ -153,7 +153,7 @@ export async function desbloquearConCredito(
     });
   } catch (e) {
     if (e instanceof Error && e.message === "SIN_SALDO") {
-      return { error: "No te quedan desbloqueos en el bono." };
+      return { error: "No te quedan desbloqueos disponibles." };
     }
     throw e;
   }

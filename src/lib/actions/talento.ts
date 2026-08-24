@@ -2,10 +2,13 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { createClient } from "@/lib/supabase/server";
 import { cvSchema, type CvInput } from "@/lib/validation/cvSchema";
 import { tecnicasDePuesto } from "@/lib/talento/cv-tecnicas";
+import { enviarEmail } from "@/lib/email/enviar";
+import { emailBienvenidaTalento } from "@/lib/email/plantillas";
 import type { TalentoFiltros } from "@/types/talento";
 
 async function requireUsuarioId() {
@@ -70,12 +73,24 @@ export async function getMiCv() {
 // the same flow. The technique block is replaced wholesale on each save and
 // filtered to the keys valid for the selected puesto.
 export async function guardarMiCv(input: CvInput) {
-  const usuarioId = await requireUsuarioId();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+  const usuarioId = user.id;
+
   const parsed = cvSchema.safeParse(input);
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Datos inválidos." };
   }
   const { tecnicas, ...scalars } = parsed.data;
+
+  // First publish? (Cv didn't exist yet) -> send the Talento welcome email.
+  const yaTenia = await prisma.cv.findUnique({
+    where: { usuarioId },
+    select: { id: true },
+  });
 
   const clavesValidas = new Set(
     tecnicasDePuesto(scalars.puesto).map((t) => t.key),
@@ -100,6 +115,22 @@ export async function guardarMiCv(input: CvInput) {
     }
     return guardado;
   });
+
+  if (!yaTenia && user.email) {
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: usuarioId },
+      select: { nombre: true },
+    });
+    const { subject, html } = emailBienvenidaTalento(usuario?.nombre ?? "Bienvenido");
+    const destino = user.email;
+    after(async () => {
+      try {
+        await enviarEmail(destino, subject, html);
+      } catch (e) {
+        console.error("No se pudo enviar el email de bienvenida (talento):", e);
+      }
+    });
+  }
 
   revalidatePath("/talento");
   revalidatePath("/talento/mi-cv");

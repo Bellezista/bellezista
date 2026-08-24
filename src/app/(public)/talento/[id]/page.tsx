@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Lock } from "lucide-react";
 import { getCvById } from "@/lib/actions/talento";
 import {
-  estaDesbloqueado,
+  tieneAccesoCv,
   getMiSaldoCreditos,
 } from "@/lib/actions/talentoPagos";
 import { confirmarSesionCheckout } from "@/lib/talento/otorgar";
@@ -41,7 +41,7 @@ export default async function CvDetallePage(props: PageProps<"/talento/[id]">) {
   // Full profile + name + contact are gated behind the pay-to-access paywall.
   // The owner always sees their own CV; a business owner sees it once unlocked.
   const desbloqueado =
-    esPropio || (user ? await estaDesbloqueado(user.id, cv.id) : false);
+    esPropio || (user ? await tieneAccesoCv(user.id, cv.id) : false);
   const saldoCreditos = user && !esPropio ? await getMiSaldoCreditos() : 0;
 
   return (

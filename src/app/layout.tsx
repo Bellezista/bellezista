@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat, Fraunces } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/providers/QueryProvider";
+import { CookieBanner } from "@/components/layout/CookieBanner";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -40,6 +41,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <QueryProvider>{children}</QueryProvider>
+        <CookieBanner />
       </body>
     </html>
   );

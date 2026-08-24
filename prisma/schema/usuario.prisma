@@ -17,6 +17,11 @@ model Usuario {
   // users" feature.
   suspendido Boolean @default(false)
 
+  // Opt-in consent (given at registration) to receive marketing/advertising
+  // communications. Separate from the cookie banner. Set by the signup trigger
+  // from raw_user_meta_data.acepta_publicidad.
+  aceptaPublicidad Boolean @default(false) @map("acepta_publicidad")
+
   // Stripe Connect (Express) account for receiving payouts as a seller in the
   // commission-with-retention flow. `cobrosActivos` caches Stripe's
   // payouts_enabled so the buy flow can gate on it without an API round-trip

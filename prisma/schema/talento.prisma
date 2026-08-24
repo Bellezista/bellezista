@@ -118,12 +118,15 @@ model CvDesbloqueo {
   @@schema("public")
 }
 
-// Prepaid unlock credits from buying a "bono de varios desbloqueos". One row per
-// owner; saldo is decremented each time a credit is spent to unlock a CV.
+// A business owner's Talento access. `saldo` holds prepaid unlock credits (Pack
+// Inicio = 5). `accesoIlimitadoHasta`, while in the future, grants unlimited
+// access to any CV (the time-based packs: 3/6/12 months). One row per owner.
 model TalentoCredito {
   usuarioId String  @id @map("usuario_id") @db.Uuid
   usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   saldo     Int     @default(0)
+
+  accesoIlimitadoHasta DateTime? @map("acceso_ilimitado_hasta")
 
   actualizadoEn DateTime @updatedAt @map("actualizado_en")
 

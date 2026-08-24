@@ -12,6 +12,7 @@ import { PLANES_PRO, MONEDA_PLAN } from "@/lib/traspaso/planes";
 import { formatearImporte } from "@/lib/talento/precios";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getEstadoCobros } from "@/lib/actions/connect";
+import { getMiAccesoTalento } from "@/lib/actions/talentoPagos";
 import { PerfilForm } from "@/components/perfil/PerfilForm";
 import { MisAlertas } from "@/components/alertas/MisAlertas";
 import { GestionarSuscripcionButton } from "@/components/suscripcion/GestionarSuscripcionButton";
@@ -30,7 +31,7 @@ export default async function PerfilPage(props: PageProps<"/perfil">) {
     await confirmarSuscripcion(sp.session_id);
   }
 
-  const [usuario, contacto, alertas, suscripcion, estadoCobros] =
+  const [usuario, contacto, alertas, suscripcion, estadoCobros, accesoTalento] =
     await Promise.all([
       prisma.usuario.findUnique({
         where: { id: user.id },
@@ -40,6 +41,7 @@ export default async function PerfilPage(props: PageProps<"/perfil">) {
       getMisAlertas(),
       getMiSuscripcion(),
       getEstadoCobros(),
+      getMiAccesoTalento(),
     ]);
   const planActivo =
     suscripcion?.estado === "activa" ? PLANES_PRO[suscripcion.plan] : null;
@@ -113,6 +115,54 @@ export default async function PerfilPage(props: PageProps<"/perfil">) {
               className="inline-flex text-sm font-semibold text-gold underline-offset-4 hover:underline"
             >
               Ver planes profesionales →
+            </Link>
+          </div>
+        )}
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-6">
+        <h2 className="font-serif text-xl text-foreground">
+          Acceso a Empleo &amp; Talento
+        </h2>
+        {accesoTalento.ilimitadoHasta ? (
+          <div className="mt-2 space-y-1">
+            <p className="text-sm text-foreground">
+              <span className="font-semibold">Acceso ilimitado a CVs</span> ·
+              válido hasta{" "}
+              {new Date(accesoTalento.ilimitadoHasta).toLocaleDateString("es-ES")}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {accesoTalento.usados}{" "}
+              {accesoTalento.usados === 1
+                ? "CV desbloqueado"
+                : "CVs desbloqueados"}{" "}
+              hasta ahora.
+            </p>
+          </div>
+        ) : accesoTalento.saldo > 0 ? (
+          <div className="mt-2 space-y-1">
+            <p className="text-sm text-foreground">
+              Te quedan{" "}
+              <span className="font-semibold">
+                {accesoTalento.saldo} desbloqueos
+              </span>{" "}
+              disponibles.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {accesoTalento.usados} usados hasta ahora.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-1 space-y-3">
+            <p className="text-sm text-muted-foreground">
+              No tienes ningún pack de acceso activo. Contrata uno para
+              desbloquear los CVs de los candidatos.
+            </p>
+            <Link
+              href="/talento"
+              className="inline-flex text-sm font-semibold text-gold underline-offset-4 hover:underline"
+            >
+              Ver candidatos y packs →
             </Link>
           </div>
         )}

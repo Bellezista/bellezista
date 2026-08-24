@@ -2,18 +2,23 @@ import "server-only";
 import type Stripe from "stripe";
 import { prisma } from "@/lib/prisma/client";
 import { stripe } from "@/lib/stripe/server";
-import { crearNotificacion } from "@/lib/notificaciones/crear";
+import { TALENTO_PACKS } from "@/lib/talento/precios";
 
-// Grants the effect of a paid Checkout Session: unlock a CV (individual) or add
-// bono credits. Idempotent via the unique stripe_session_id, so it is safe to
-// call from BOTH the webhook and the success-redirect confirmation.
+const DIA_MS = 24 * 60 * 60 * 1000;
+
+// Grants the effect of a paid Talento pack Checkout: add unlock credits (Pack
+// Inicio) or extend unlimited access (3/6/12-month packs). Idempotent via the
+// unique stripe_session_id, so it is safe to call from BOTH the webhook and the
+// success-redirect confirmation.
 export async function otorgarAccesoDesdeSesion(
   session: Stripe.Checkout.Session,
 ): Promise<void> {
   const md = session.metadata ?? {};
   const usuarioId = md.usuarioId;
-  const tipo = md.tipo;
-  if (!usuarioId || !tipo) return;
+  if (!usuarioId || md.tipo !== "talento_pack") return;
+
+  const pack = TALENTO_PACKS[md.packId ?? ""];
+  if (!pack) return;
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -21,26 +26,38 @@ export async function otorgarAccesoDesdeSesion(
         data: {
           stripeSessionId: session.id,
           usuarioId,
-          tipo,
-          cvId: tipo === "individual" ? (md.cvId ?? null) : null,
-          creditos: tipo === "bono" ? Number(md.creditos ?? 0) : 0,
+          tipo: `pack_${pack.id.toLowerCase()}`,
+          creditos: pack.tipo === "creditos" ? (pack.creditos ?? 0) : 0,
           importe: session.amount_total ?? 0,
           moneda: session.currency ?? "eur",
         },
       });
 
-      if (tipo === "individual" && md.cvId) {
-        await tx.cvDesbloqueo.upsert({
-          where: { usuarioId_cvId: { usuarioId, cvId: md.cvId } },
-          create: { usuarioId, cvId: md.cvId },
-          update: {},
-        });
-      } else if (tipo === "bono") {
-        const creditos = Number(md.creditos ?? 0);
+      if (pack.tipo === "creditos") {
+        const creditos = pack.creditos ?? 0;
         await tx.talentoCredito.upsert({
           where: { usuarioId },
           create: { usuarioId, saldo: creditos },
           update: { saldo: { increment: creditos } },
+        });
+      } else {
+        // Extend the unlimited window from now (or from the current expiry if
+        // still active), so buying/renewing stacks the remaining time.
+        const actual = await tx.talentoCredito.findUnique({
+          where: { usuarioId },
+          select: { accesoIlimitadoHasta: true },
+        });
+        const ahora = Date.now();
+        const base =
+          actual?.accesoIlimitadoHasta &&
+          actual.accesoIlimitadoHasta.getTime() > ahora
+            ? actual.accesoIlimitadoHasta.getTime()
+            : ahora;
+        const hasta = new Date(base + (pack.meses ?? 0) * 30 * DIA_MS);
+        await tx.talentoCredito.upsert({
+          where: { usuarioId },
+          create: { usuarioId, saldo: 0, accesoIlimitadoHasta: hasta },
+          update: { accesoIlimitadoHasta: hasta },
         });
       }
     });
@@ -55,23 +72,6 @@ export async function otorgarAccesoDesdeSesion(
       return;
     }
     throw e;
-  }
-
-  // Notify the CV owner that a business unlocked their profile (individual only;
-  // the bono grants no specific CV yet).
-  if (tipo === "individual" && md.cvId) {
-    const cv = await prisma.cv.findUnique({
-      where: { id: md.cvId },
-      select: { usuarioId: true },
-    });
-    if (cv) {
-      await crearNotificacion(cv.usuarioId, {
-        tipo: "desbloqueo",
-        titulo: "Han desbloqueado tu CV",
-        cuerpo: "Un negocio ha accedido a tu perfil completo.",
-        url: "/talento/mi-cv",
-      });
-    }
   }
 }
 

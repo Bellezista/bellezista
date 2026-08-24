@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { enviarEmailBienvenida } from "@/lib/actions/bienvenida";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -14,6 +15,7 @@ export function RegistroForm({ next }: { next: string }) {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [aceptaPublicidad, setAceptaPublicidad] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [confirmacionEnviada, setConfirmacionEnviada] = useState(false);
@@ -48,7 +50,10 @@ export function RegistroForm({ next }: { next: string }) {
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { nombre }, emailRedirectTo },
+      options: {
+        data: { nombre, acepta_publicidad: aceptaPublicidad },
+        emailRedirectTo,
+      },
     });
 
     setPending(false);
@@ -66,6 +71,9 @@ export function RegistroForm({ next }: { next: string }) {
       setCuentaExistente(true);
       return;
     }
+
+    // Registro nuevo real (no es una cuenta ya existente): email de bienvenida.
+    void enviarEmailBienvenida(email, nombre);
 
     if (!data.session) {
       // Confirmación de email requerida antes de poder iniciar sesión.
@@ -192,6 +200,18 @@ export function RegistroForm({ next }: { next: string }) {
           autoComplete="new-password"
         />
       </div>
+      <label className="flex cursor-pointer items-start gap-2.5 text-sm text-muted-foreground">
+        <input
+          type="checkbox"
+          checked={aceptaPublicidad}
+          onChange={(e) => setAceptaPublicidad(e.target.checked)}
+          className="mt-0.5 size-4 shrink-0 accent-gold"
+        />
+        <span>
+          Autorizo a Bellezista a enviarme comunicaciones comerciales y
+          publicitarias. (Opcional, puedes cambiarlo cuando quieras.)
+        </span>
+      </label>
       {error && <p className="text-sm text-destructive">{error}</p>}
       <Button type="submit" variant="default" className="w-full" disabled={pending}>
         {pending ? "Creando cuenta..." : "Crear cuenta"}
