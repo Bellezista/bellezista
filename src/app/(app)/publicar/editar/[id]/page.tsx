@@ -66,6 +66,16 @@ export default async function EditarAnuncioPage(
         ? Number(traspaso.alquilerMensual)
         : undefined,
       tipoLicencia: traspaso.tipoLicencia ?? undefined,
+      tocadores: traspaso.tocadores ?? undefined,
+      lavacabezas: traspaso.lavacabezas ?? undefined,
+      sillonesBarberia: traspaso.sillonesBarberia ?? undefined,
+      puestosManicura: traspaso.puestosManicura ?? undefined,
+      puestosPedicura: traspaso.puestosPedicura ?? undefined,
+      puestosTrabajo: traspaso.puestosTrabajo ?? undefined,
+      lavamanosPorCabina: traspaso.lavamanosPorCabina ?? undefined,
+      tieneDucha: traspaso.tieneDucha ?? undefined,
+      incluyePersonal: traspaso.incluyePersonal ?? undefined,
+      antiguedadPersonal: traspaso.antiguedadPersonal ?? undefined,
     };
     return (
       <div className="mx-auto max-w-3xl space-y-8">

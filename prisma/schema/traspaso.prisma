@@ -52,9 +52,24 @@ model Traspaso {
   // What a buyer actually looks at (from the client's Traspasos screen spec).
   metrosCuadrados Int?     @map("metros_cuadrados")
   cabinas         Int?
-  personal        Int? // empleados / personal a subrogar
+  personal        Int? // legacy count; superseded by incluyePersonal/antiguedadPersonal
   alquilerMensual Decimal? @db.Decimal(12, 2) @map("alquiler_mensual")
   tipoLicencia    TipoLicenciaTraspaso? @map("tipo_licencia")
+
+  // Business-type-specific fields (see src/lib/traspaso/campos-negocio.ts).
+  // Which ones apply is driven by tipoNegocio; all are optional at the DB level.
+  tocadores          Int?     @map("tocadores")
+  lavacabezas        Int?     @map("lavacabezas")
+  sillonesBarberia   Int?     @map("sillones_barberia")
+  puestosManicura    Int?     @map("puestos_manicura")
+  puestosPedicura    Int?     @map("puestos_pedicura")
+  puestosTrabajo     Int?     @map("puestos_trabajo")
+  lavamanosPorCabina Boolean? @map("lavamanos_por_cabina")
+  tieneDucha         Boolean? @map("tiene_ducha")
+
+  // Universal to every business type.
+  incluyePersonal    Boolean? @map("incluye_personal")
+  antiguedadPersonal String?  @map("antiguedad_personal")
 
   @@index([tipoNegocio])
   @@map("traspaso")

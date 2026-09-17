@@ -29,6 +29,21 @@ export const traspasoSchema = z.object({
   personal: numeroOpcional(z.coerce.number().int().min(0)),
   alquilerMensual: numeroOpcional(z.coerce.number().min(0)),
   tipoLicencia: z.enum(TipoLicenciaTraspaso).optional(),
+
+  // Business-type-specific fields (see campos-negocio.ts). All optional; the
+  // form only renders the ones that apply to the chosen tipoNegocio.
+  tocadores: numeroOpcional(z.coerce.number().int().min(0)),
+  lavacabezas: numeroOpcional(z.coerce.number().int().min(0)),
+  sillonesBarberia: numeroOpcional(z.coerce.number().int().min(0)),
+  puestosManicura: numeroOpcional(z.coerce.number().int().min(0)),
+  puestosPedicura: numeroOpcional(z.coerce.number().int().min(0)),
+  puestosTrabajo: numeroOpcional(z.coerce.number().int().min(0)),
+  lavamanosPorCabina: z.coerce.boolean().optional(),
+  tieneDucha: z.coerce.boolean().optional(),
+
+  // Universal staff fields.
+  incluyePersonal: z.coerce.boolean().optional(),
+  antiguedadPersonal: z.string().max(200).optional(),
 });
 
 export type TraspasoInput = z.infer<typeof traspasoSchema>;

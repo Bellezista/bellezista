@@ -13,6 +13,10 @@ import {
   TIPO_ANUNCIANTE_TRASPASO_LABEL,
   TIPO_LICENCIA_TRASPASO_LABEL,
 } from "./labels";
+import {
+  CAMPOS_NEGOCIO_TODOS,
+  CAMPO_NEGOCIO_LABEL,
+} from "@/lib/traspaso/campos-negocio";
 
 // The reusable-component pattern the bid was won on: one card, one ficha, and
 // one publish stepper, all driven by an adapter per subtype -- never
@@ -112,11 +116,26 @@ export const traspasoAdapter: SubtypeAdapter<TraspasoLike> = {
     if (t.metrosCuadrados != null) {
       atributos.push({ label: "Superficie", value: `${t.metrosCuadrados} m²` });
     }
-    if (t.cabinas != null) {
-      atributos.push({ label: "Cabinas", value: String(t.cabinas) });
+    // Business-type-specific fields: show whichever ones have a value.
+    for (const campo of CAMPOS_NEGOCIO_TODOS) {
+      const v = (t as Record<string, unknown>)[campo.key];
+      if (v == null) continue;
+      if (campo.tipo === "boolean") {
+        if (v === true) {
+          atributos.push({ label: CAMPO_NEGOCIO_LABEL[campo.key], value: "Sí" });
+        }
+      } else {
+        atributos.push({
+          label: CAMPO_NEGOCIO_LABEL[campo.key],
+          value: String(v),
+        });
+      }
     }
-    if (t.personal != null) {
-      atributos.push({ label: "Personal", value: String(t.personal) });
+    if (t.incluyePersonal) {
+      atributos.push({
+        label: "Personal incluido",
+        value: t.antiguedadPersonal ? `Sí · ${t.antiguedadPersonal}` : "Sí",
+      });
     }
     if (t.alquilerMensual != null) {
       atributos.push({

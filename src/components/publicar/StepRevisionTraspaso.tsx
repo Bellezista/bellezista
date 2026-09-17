@@ -11,6 +11,10 @@ import {
   TIPO_ANUNCIANTE_TRASPASO_LABEL,
 } from "@/lib/anuncio/labels";
 import type { AtributoDisplay } from "@/lib/anuncio/subtype-adapters";
+import {
+  CAMPOS_POR_NEGOCIO,
+  CAMPO_NEGOCIO_LABEL,
+} from "@/lib/traspaso/campos-negocio";
 import { formatPrecio } from "@/lib/format";
 import type { PublicarTraspasoFormInput } from "@/lib/validation/publicarTraspasoSchema";
 
@@ -20,6 +24,29 @@ export function StepRevisionTraspaso() {
   const values = getValues();
   const fotos = values.fotos ?? [];
   const aceptaCondiciones = watch("aceptaCondiciones");
+
+  // Per-business fields entered, shown only if they have a value.
+  const campos = values.tipoNegocio
+    ? CAMPOS_POR_NEGOCIO[values.tipoNegocio]
+    : [];
+  const camposNegocioRevision: AtributoDisplay[] = campos
+    .map((c) => {
+      const v = (values as Record<string, unknown>)[c.key];
+      if (v == null || v === "" || v === false) return null;
+      return {
+        label: CAMPO_NEGOCIO_LABEL[c.key],
+        value: c.tipo === "boolean" ? "Sí" : String(v),
+      };
+    })
+    .filter((x): x is AtributoDisplay => x !== null);
+  if (values.incluyePersonal) {
+    camposNegocioRevision.push({
+      label: "Personal incluido",
+      value: values.antiguedadPersonal
+        ? `Sí · ${values.antiguedadPersonal}`
+        : "Sí",
+    });
+  }
 
   const atributos: AtributoDisplay[] = [
     { label: "Título", value: values.titulo || "—" },
@@ -44,7 +71,7 @@ export function StepRevisionTraspaso() {
       label: "Superficie",
       value: values.metrosCuadrados ? `${values.metrosCuadrados} m²` : "—",
     },
-    { label: "Cabinas", value: values.cabinas ? String(values.cabinas) : "—" },
+    ...camposNegocioRevision,
     {
       label: "Alquiler mensual",
       value: values.alquilerMensual

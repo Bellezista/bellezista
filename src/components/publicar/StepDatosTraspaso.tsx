@@ -1,7 +1,8 @@
 "use client";
 
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFormContext, type Path } from "react-hook-form";
 import { GestionBcnBanner } from "@/components/publicar/GestionBcnBanner";
+import { CAMPOS_POR_NEGOCIO } from "@/lib/traspaso/campos-negocio";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -53,6 +54,11 @@ export function StepDatosTraspaso() {
   const mostrarGestionBcn =
     provincia === PROVINCIA_DESTACADA &&
     tipoAnunciante === TipoAnuncianteTraspaso.PARTICULAR;
+
+  // Which specific fields to ask depends on the chosen business type.
+  const tipoNegocio = watch("tipoNegocio");
+  const camposNegocio = tipoNegocio ? CAMPOS_POR_NEGOCIO[tipoNegocio] : [];
+  const incluyePersonal = watch("incluyePersonal");
 
   return (
     <div className="space-y-6">
@@ -162,7 +168,7 @@ export function StepDatosTraspaso() {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="metrosCuadrados">Superficie (m²)</Label>
           <Input
@@ -174,29 +180,6 @@ export function StepDatosTraspaso() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="cabinas">Cabinas</Label>
-          <Input
-            id="cabinas"
-            type="number"
-            min={0}
-            placeholder="Opcional"
-            {...register("cabinas", { valueAsNumber: true })}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="personal">Personal</Label>
-          <Input
-            id="personal"
-            type="number"
-            min={0}
-            placeholder="Opcional"
-            {...register("personal", { valueAsNumber: true })}
-          />
-        </div>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
           <Label htmlFor="alquilerMensual">Alquiler mensual (€)</Label>
           <Input
             id="alquilerMensual"
@@ -206,6 +189,71 @@ export function StepDatosTraspaso() {
             {...register("alquilerMensual", { valueAsNumber: true })}
           />
         </div>
+      </div>
+
+      {/* Campos específicos según el tipo de negocio elegido. */}
+      {camposNegocio.length > 0 && (
+        <div className="space-y-3 rounded-lg border border-border bg-cream/40 p-4">
+          <p className="text-sm font-medium text-foreground">
+            Detalles del negocio
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {camposNegocio.map((campo) =>
+              campo.tipo === "number" ? (
+                <div key={campo.key} className="space-y-2">
+                  <Label htmlFor={campo.key}>{campo.label}</Label>
+                  <Input
+                    id={campo.key}
+                    type="number"
+                    min={0}
+                    placeholder="Opcional"
+                    {...register(
+                      campo.key as Path<PublicarTraspasoFormInput>,
+                      { valueAsNumber: true },
+                    )}
+                  />
+                </div>
+              ) : (
+                <label
+                  key={campo.key}
+                  className="flex items-center gap-2.5 self-end pb-2 text-sm text-foreground"
+                >
+                  <input
+                    type="checkbox"
+                    className="size-4 accent-gold"
+                    {...register(campo.key as Path<PublicarTraspasoFormInput>)}
+                  />
+                  {campo.label}
+                </label>
+              ),
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Universal para todos los tipos: ¿incluye personal? */}
+      <div className="space-y-3 rounded-lg border border-border p-4">
+        <label className="flex items-center gap-2.5 text-sm text-foreground">
+          <input
+            type="checkbox"
+            className="size-4 accent-gold"
+            {...register("incluyePersonal")}
+          />
+          ¿Incluye personal? (empleados que continúan tras el traspaso)
+        </label>
+        {Boolean(incluyePersonal) && (
+          <div className="space-y-2">
+            <Label htmlFor="antiguedadPersonal">Antigüedad del personal</Label>
+            <Input
+              id="antiguedadPersonal"
+              placeholder="Ej: 2 empleados con 3 y 5 años de antigüedad"
+              {...register("antiguedadPersonal")}
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="tipoLicencia">Tipo de licencia</Label>
           <Controller
