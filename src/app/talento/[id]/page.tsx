@@ -45,7 +45,7 @@ export default async function CvDetallePage(props: PageProps<"/talento/[id]">) {
   const saldoCreditos = user && !esPropio ? await getMiSaldoCreditos() : 0;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6 px-6 py-10 md:py-14">
       <div className="rounded-xl bg-cream px-6 py-9 md:px-10 md:py-11">
         <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
           {PUESTO_TALENTO_LABEL[cv.puesto]}
