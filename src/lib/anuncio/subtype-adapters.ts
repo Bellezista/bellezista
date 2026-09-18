@@ -6,9 +6,10 @@ import type { Anuncio, Maquinaria, Traspaso } from "@generated/prisma/client";
 // "use client" parent) -- @generated/prisma/client also contains the
 // PrismaClient runtime (Node-only internals), which breaks that bundle.
 import { TipoAnuncio } from "@generated/prisma/enums";
+import { formatPrecio } from "@/lib/format";
 import {
   CATEGORIA_MAQUINARIA_LABEL,
-  ESTADO_EQUIPO_LABEL,
+  estadoEquipoSimple,
   TIPO_NEGOCIO_TRASPASO_LABEL,
   TIPO_ANUNCIANTE_TRASPASO_LABEL,
   TIPO_LICENCIA_TRASPASO_LABEL,
@@ -52,7 +53,7 @@ export const maquinariaAdapter: SubtypeAdapter<Maquinaria> = {
   getAtributosCard(m) {
     return [
       { label: "Marca", value: m.marca },
-      { label: "Estado", value: ESTADO_EQUIPO_LABEL[m.estadoEquipo] },
+      { label: "Estado", value: estadoEquipoSimple(m.estadoEquipo) },
     ];
   },
   getAtributosFicha(m) {
@@ -60,7 +61,7 @@ export const maquinariaAdapter: SubtypeAdapter<Maquinaria> = {
       { label: "Categoría", value: CATEGORIA_MAQUINARIA_LABEL[m.categoria] },
       { label: "Marca", value: m.marca },
       { label: "Modelo", value: m.modelo },
-      { label: "Estado del equipo", value: ESTADO_EQUIPO_LABEL[m.estadoEquipo] },
+      { label: "Estado del equipo", value: estadoEquipoSimple(m.estadoEquipo) },
     ];
     if (m.subcategoria) {
       atributos.push({ label: "Subcategoría", value: m.subcategoria });
@@ -140,7 +141,7 @@ export const traspasoAdapter: SubtypeAdapter<TraspasoLike> = {
     if (t.alquilerMensual != null) {
       atributos.push({
         label: "Alquiler mensual",
-        value: `${Number(t.alquilerMensual).toLocaleString("es-ES")} €`,
+        value: formatPrecio(Number(t.alquilerMensual)),
       });
     }
     if (t.tipoLicencia) {

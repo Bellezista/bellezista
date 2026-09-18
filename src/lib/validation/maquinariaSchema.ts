@@ -23,6 +23,7 @@ export const maquinariaSchema = z.object({
   estadoEquipo: z.enum(EstadoEquipo),
   nivelDeServicio: z.enum(NivelServicio).default(NivelServicio.BASICO),
   esMedicoEstetico: z.coerce.boolean().default(false),
+  garantiaEnVigor: z.coerce.boolean().optional(),
 });
 
 export type MaquinariaInput = z.infer<typeof maquinariaSchema>;

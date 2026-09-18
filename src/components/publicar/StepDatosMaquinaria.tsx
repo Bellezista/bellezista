@@ -24,7 +24,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import {
   CATEGORIA_MAQUINARIA_LABEL,
-  ESTADO_EQUIPO_LABEL,
   NIVEL_SERVICIO_LABEL,
 } from "@/lib/anuncio/labels";
 import type { PublicarMaquinariaFormInput } from "@/lib/validation/publicarMaquinariaSchema";
@@ -143,11 +142,8 @@ export function StepDatosMaquinaria() {
                   <SelectValue placeholder="Elige el estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.values(EstadoEquipo).map((estado) => (
-                    <SelectItem key={estado} value={estado}>
-                      {ESTADO_EQUIPO_LABEL[estado]}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value={EstadoEquipo.NUEVO}>Nuevo</SelectItem>
+                  <SelectItem value={EstadoEquipo.COMO_NUEVO}>Seminuevo</SelectItem>
                 </SelectContent>
               </Select>
             )}
@@ -199,6 +195,28 @@ export function StepDatosMaquinaria() {
             </Label>
           </div>
           <FieldError message={errors.esMedicoEstetico?.message} />
+        </div>
+
+        <div className="space-y-2">
+          <span className="block select-none text-sm font-medium text-transparent">
+            Garantía
+          </span>
+          <div className="flex h-8 items-center gap-2">
+            <Controller
+              control={control}
+              name="garantiaEnVigor"
+              render={({ field }) => (
+                <Checkbox
+                  id="garantiaEnVigor"
+                  checked={Boolean(field.value)}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
+            <Label htmlFor="garantiaEnVigor" className="font-normal">
+              Con garantía en vigor
+            </Label>
+          </div>
         </div>
 
         <div className="space-y-2 sm:col-span-2">

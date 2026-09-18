@@ -49,6 +49,10 @@ model Maquinaria {
 
   esMedicoEstetico Boolean @default(false) @map("es_medico_estetico")
 
+  // Warranty status -- surfaced as a catalog filter (Con garantía en vigor / Sin
+  // garantía). Null = seller didn't specify (treated as "sin garantía").
+  garantiaEnVigor Boolean? @map("garantia_en_vigor")
+
   // Storage object paths, not raw files. `video` is public (alongside fotos);
   // `factura` is a private, owner/admin-only bucket (financial document) --
   // see supabase/migrations/0004_storage_buckets.sql. Assumption flagged in

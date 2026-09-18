@@ -33,6 +33,13 @@ export const ESTADO_EQUIPO_LABEL: Record<EstadoEquipo, string> = {
   REQUIERE_REVISION: "Requiere revisión",
 };
 
+// Client-facing simplified state: the marketplace only exposes two options,
+// Nuevo / Seminuevo. NUEVO stays "Nuevo"; every other stored value (used
+// equipment) reads as "Seminuevo".
+export function estadoEquipoSimple(e: EstadoEquipo): "Nuevo" | "Seminuevo" {
+  return e === "NUEVO" ? "Nuevo" : "Seminuevo";
+}
+
 export const NIVEL_SERVICIO_LABEL: Record<NivelServicio, string> = {
   BASICO: "Básico",
   VENTA_PROTEGIDA: "Venta Protegida",
