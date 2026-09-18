@@ -45,6 +45,12 @@ export default async function AdminLayout({
           >
             Operaciones
           </Link>
+          <Link
+            href="/admin/eventos"
+            className="font-medium text-foreground hover:underline"
+          >
+            Eventos
+          </Link>
         </nav>
       </header>
       <main className="p-6">{children}</main>

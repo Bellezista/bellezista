@@ -1,0 +1,16 @@
+// Sector events shown in the "Próximos eventos" block on the portada and the
+// Actualidad page. Added by hand from the admin panel (real source, no examples).
+model Evento {
+  id        String   @id @default(uuid()) @db.Uuid
+  titulo    String
+  ciudad    String?
+  modalidad String? // "Presencial" | "Online"
+  fecha     DateTime
+  url       String?
+
+  creadoEn DateTime @default(now()) @map("creado_en")
+
+  @@index([fecha])
+  @@map("evento")
+  @@schema("public")
+}

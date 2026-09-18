@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat, Fraunces } from "next/font/google";
+import { Montserrat, Fraunces, Cinzel } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { CookieBanner } from "@/components/layout/CookieBanner";
@@ -13,6 +13,16 @@ const montserrat = Montserrat({
 const editorial = Fraunces({
   variable: "--font-editorial",
   subsets: ["latin"],
+  display: "swap",
+});
+
+// Wordmark-only face: an even-weight Roman/inscriptional serif for the
+// BELLEZISTA logo (matches the client's design), distinct from the body/heading
+// serif (Fraunces).
+const logo = Cinzel({
+  variable: "--font-logo",
+  subsets: ["latin"],
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -37,7 +47,7 @@ export default function RootLayout({
     <html
       lang="es"
       translate="no"
-      className={`${montserrat.variable} ${editorial.variable} h-full antialiased`}
+      className={`${montserrat.variable} ${editorial.variable} ${logo.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <QueryProvider>{children}</QueryProvider>
