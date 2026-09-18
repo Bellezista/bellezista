@@ -1,0 +1,35 @@
+// Directory of professionals/providers that help beauty businesses
+// (Profesionales section). Added by hand from the admin panel.
+enum CategoriaProveedor {
+  INGENIERIA_LICENCIAS
+  GESTORIA
+  MARKETING
+  ACADEMIA
+  NOTARIA
+  ASEGURADORA
+  FINANCIERA
+  DISTRIBUIDOR_APARATOLOGIA
+
+  @@schema("public")
+}
+
+model Proveedor {
+  id            String             @id @default(uuid()) @db.Uuid
+  nombre        String
+  categoria     CategoriaProveedor
+  zonaCobertura String             @map("zona_cobertura")
+  descripcion   String?            @db.Text
+  logo          String?
+  web           String?
+
+  // Badge "Premium" for the top plan (paid listing highlight).
+  premium Boolean @default(false)
+  // Workers/admin can hide a listing.
+  visible Boolean @default(true)
+
+  creadoEn DateTime @default(now()) @map("creado_en")
+
+  @@index([categoria])
+  @@map("proveedor")
+  @@schema("public")
+}

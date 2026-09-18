@@ -51,6 +51,12 @@ export default async function AdminLayout({
           >
             Eventos
           </Link>
+          <Link
+            href="/admin/proveedores"
+            className="font-medium text-foreground hover:underline"
+          >
+            Profesionales
+          </Link>
         </nav>
       </header>
       <main className="p-6">{children}</main>
