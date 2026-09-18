@@ -92,17 +92,17 @@ export default async function TraspasosPage() {
         </div>
       </section>
 
-      {/* ASESORÍA PROFESIONAL (Barcelona) -- cerca de arriba */}
-      <div className="mx-auto max-w-7xl px-6 pt-10 md:px-10">
+      {/* BÚSQUEDA + RESULTADOS */}
+      <TraspasoBusqueda anuncios={anuncios} />
+
+      {/* ASESORÍA PROFESIONAL (Barcelona) -- tras la sección de tarjetas */}
+      <div className="mx-auto max-w-7xl px-6 pb-16 md:px-10">
         <SolicitarGestorBanner
           loggedIn={Boolean(user)}
           headline="¿Tu negocio está en Barcelona?"
           descripcion="Cuenta con gestión profesional gratuita para tu traspaso: nos encargamos de todo, sin coste inicial."
         />
       </div>
-
-      {/* BÚSQUEDA + RESULTADOS */}
-      <TraspasoBusqueda anuncios={anuncios} />
 
       {/* COMUNIDAD + NEWSLETTER */}
       <section className="w-full bg-[#171512] text-white">

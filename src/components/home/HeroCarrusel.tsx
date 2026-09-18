@@ -22,7 +22,7 @@ export function HeroCarrusel() {
           <h1 className="font-serif text-[2.5rem] leading-[1.06] text-foreground md:text-[3.6rem]">
             El punto de encuentro{" "}
             <br className="hidden md:inline" />
-            del sector beauty
+            del sector de la belleza
           </h1>
           <p className="mt-6 max-w-[38ch] text-base leading-relaxed text-muted-foreground md:text-[1.1rem]">
             Negocios, talento, formación y oportunidades para profesionales que
@@ -45,10 +45,10 @@ export function HeroCarrusel() {
         </div>
       </div>
 
-      {/* Overlay tagline over the photo, bottom-right (per the design). Dark
-          tone so it reads over the light/cream part of the image. */}
-      <div className="absolute bottom-8 right-8 hidden text-right text-[0.78rem] font-semibold uppercase leading-[2] tracking-[0.3em] text-[#4a4238] [text-shadow:0_1px_2px_rgba(255,255,255,0.35)] lg:block">
-        Belleza.<br />Tu profesional<br />Oportunidades<br />Reales
+      {/* Overlay tagline over the photo, bottom-right. Readable via a soft text
+          shadow -- no dark overlay box over the image. */}
+      <div className="absolute bottom-8 right-8 hidden text-right text-[1.05rem] font-semibold uppercase leading-[1.9] tracking-[0.28em] text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.55),0_0_2px_rgba(0,0,0,0.5)] lg:block">
+        Belleza real.<br />Profesionales reales.<br />Oportunidades reales.
       </div>
     </section>
   );

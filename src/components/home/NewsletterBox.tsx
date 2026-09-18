@@ -42,7 +42,7 @@ export function NewsletterBox({ vertical = false }: { vertical?: boolean }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Tu email"
-                className="w-full rounded-sm border border-gold/60 bg-transparent px-4 py-3.5 text-sm text-white placeholder:text-white/40 outline-none focus:border-gold"
+                className="w-full rounded-sm border border-transparent bg-white px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-gold focus:bg-gold/5 focus:ring-2 focus:ring-gold/40"
               />
               <button
                 type="submit"

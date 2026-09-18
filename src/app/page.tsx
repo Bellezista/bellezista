@@ -51,15 +51,24 @@ export default async function LandingPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // "Hoy en Bellezista" -- real featured items, only the ones that have data.
+  // "Hoy en Bellezista" -- the 4 agreed cards: Apertura destacada, Profesional
+  // destacado, Negocio destacado, Maquinaria destacada. Only cards with real
+  // data are shown. "Apertura destacada" = the newest listing on the platform
+  // (the latest business to appear), kept distinct from the other cards.
   const cv = cvs[0];
+  const apertura = [...traspaso, ...maquinaria].sort(
+    (a, b) => new Date(b.creadoEn).getTime() - new Date(a.creadoEn).getTime(),
+  )[0];
+  const negocio = traspaso.find((t) => t.id !== apertura?.id) ?? traspaso[0];
+  const maq = maquinaria.find((m) => m.id !== apertura?.id) ?? maquinaria[0];
+
   const hoy = [
-    traspaso[0] && {
-      tag: "Negocio destacado",
-      titulo: traspaso[0].titulo,
-      img: traspaso[0].fotos[0] ?? `${BUCKET}/hero-salon.jpg`,
-      href: `/anuncios/${traspaso[0].id}`,
-      cta: "Ver anuncio",
+    apertura && {
+      tag: "Apertura destacada",
+      titulo: apertura.titulo,
+      img: apertura.fotos[0] ?? `${BUCKET}/hero-salon.jpg`,
+      href: `/anuncios/${apertura.id}`,
+      cta: "Ver más",
     },
     cv && {
       tag: "Profesional destacado",
@@ -69,20 +78,19 @@ export default async function LandingPage() {
       href: `/talento/${cv.id}`,
       cta: "Conócelo",
     },
-    maquinaria[0] && {
-      tag: "Maquinaria destacada",
-      titulo: maquinaria[0].titulo,
-      img: maquinaria[0].fotos[0] ?? `${BUCKET}/hero-maquinaria-equipo3.jpg`,
-      href: `/anuncios/${maquinaria[0].id}`,
-      cta: "Ver equipo",
+    negocio && {
+      tag: "Negocio destacado",
+      titulo: negocio.titulo,
+      img: negocio.fotos[0] ?? `${BUCKET}/hero-salon.jpg`,
+      href: `/anuncios/${negocio.id}`,
+      cta: "Ver anuncio",
     },
-    (traspaso[1] || maquinaria[1]) && {
-      tag: "Novedad",
-      titulo: (traspaso[1] || maquinaria[1])!.titulo,
-      img:
-        (traspaso[1] || maquinaria[1])!.fotos[0] ?? `${BUCKET}/hero-talento.jpg`,
-      href: `/anuncios/${(traspaso[1] || maquinaria[1])!.id}`,
-      cta: "Ver más",
+    maq && {
+      tag: "Maquinaria destacada",
+      titulo: maq.titulo,
+      img: maq.fotos[0] ?? `${BUCKET}/hero-maquinaria-equipo3.jpg`,
+      href: `/anuncios/${maq.id}`,
+      cta: "Ver equipo",
     },
   ].filter(Boolean) as {
     tag: string;
@@ -196,99 +204,106 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ACTUALIDAD + PROXIMOS EVENTOS */}
-      <section className="w-full pb-20">
-        <div className="grid w-full items-stretch gap-8 lg:grid-cols-2">
-          {/* Actualidad -- dark editorial card */}
-          <Link
-            href="/actualidad"
-            className="group relative flex min-h-[440px] overflow-hidden bg-[#171512] text-white"
-          >
-            <div className="relative z-10 flex max-w-[56%] flex-col justify-center gap-4 p-8 md:p-10">
-              <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gold">
-                Resumen diario
-              </span>
-              <h3 className="font-serif text-[1.6rem] leading-tight md:text-[1.8rem]">
-                Hoy en el sector
-              </h3>
-              <ul className="flex flex-col gap-2.5">
-                {resumen.map((l, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-2.5 text-[0.85rem] leading-snug text-white/85"
-                  >
-                    <span className="mt-[0.4rem] size-1.5 shrink-0 rounded-full bg-gold" />
-                    <span>
-                      <b className="font-semibold text-white">{l.destacado}</b>
-                      {l.texto}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <span className="mt-1 inline-flex items-center gap-2 text-[0.7rem] font-bold uppercase tracking-[0.08em] text-white">
-                Ver toda la actualidad
-                <ArrowRight className="size-4 text-gold" aria-hidden="true" />
-              </span>
-            </div>
-            <div className="absolute inset-y-0 right-0 w-[56%]">
-              <Image
-                src={`${BUCKET}/hero-rostro.jpg`}
-                alt="Tendencias del sector de la belleza"
-                fill
-                sizes="(min-width:1024px) 28vw, 60vw"
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#171512] via-[#171512]/45 to-transparent" />
-            </div>
-          </Link>
-
-          {/* Próximos eventos */}
-          <div className="flex flex-col px-6 pt-12 md:pl-0 md:pr-10 lg:pr-16">
-            <div className="mb-8">
-              <span className="text-[0.95rem] font-semibold uppercase tracking-[0.2em] text-foreground">
-                Próximos eventos
-              </span>
-              <div className="mt-4 h-0.5 w-14 bg-gold" />
-            </div>
-            {eventos.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Aún no hay eventos programados. Los publicaremos aquí en cuanto
-                haya novedades del sector.
-              </p>
-            ) : (
-              <div className="grid flex-1 grid-cols-1 border-t border-border sm:grid-cols-3 sm:divide-x sm:divide-border">
-                {eventos.map((ev) => {
-                  const f = new Date(ev.fecha);
-                  return (
-                    <div
-                      key={ev.id}
-                      className="flex flex-col border-t border-border pt-5 first:border-t-0 sm:border-t-0 sm:px-5 sm:first:pl-0 sm:last:pr-0"
-                    >
-                      <span className="font-serif text-[2rem] leading-none text-foreground">
-                        {String(f.getDate()).padStart(2, "0")}
-                      </span>
-                      <span className="mt-1 text-[0.6rem] uppercase tracking-[0.14em] text-muted-foreground">
-                        {MESES[f.getMonth()]}
-                      </span>
-                      <h4 className="mt-5 text-[0.95rem] font-semibold leading-snug text-foreground">
-                        {ev.titulo}
-                      </h4>
-                      <p className="mt-1.5 text-xs text-muted-foreground">
-                        {[ev.ciudad, ev.modalidad].filter(Boolean).join(" · ")}
-                      </p>
-                      <Link
-                        href={ev.url ?? "/actualidad"}
-                        className="mt-auto inline-flex items-center gap-1.5 pt-6 text-[0.65rem] font-bold uppercase tracking-[0.06em] text-foreground transition-colors hover:text-gold"
-                      >
-                        Ver evento
-                        <ArrowRight className="size-3.5 text-gold" aria-hidden="true" />
-                      </Link>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+      {/* RESUMEN DIARIO BELLEZISTA -- banda ancha oscura, foto a la izquierda +
+          feed automático de actividad (se genera solo desde la base de datos) */}
+      <section className="w-full bg-[#171512] text-white">
+        <div className="grid w-full items-stretch lg:grid-cols-[0.85fr_1.15fr]">
+          {/* Foto a la izquierda */}
+          <div className="relative min-h-[340px] lg:min-h-[460px]">
+            <Image
+              src={`${BUCKET}/comunidad.jpg`}
+              alt="Actividad del sector de la belleza"
+              fill
+              sizes="(min-width:1024px) 40vw, 100vw"
+              className="object-cover object-[60%_top]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/25 via-transparent to-[#171512] lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-[#171512]" />
           </div>
+
+          {/* Feed automático */}
+          <div className="flex flex-col justify-center gap-4 p-10 md:p-14 lg:pr-20">
+            <span className="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-gold">
+              Resumen Diario Bellezista
+            </span>
+            <h2 className="font-serif text-2xl leading-tight md:text-3xl">
+              Hoy en el sector
+            </h2>
+            <p className="max-w-[46ch] text-sm leading-relaxed text-white/60">
+              Esto es lo que está pasando ahora mismo en Bellezista. Se genera
+              solo, cada día.
+            </p>
+            <ul className="mt-2 flex flex-col gap-3.5">
+              {resumen.map((l, i) => (
+                <li
+                  key={i}
+                  className="flex items-start gap-3.5 text-[0.98rem] leading-snug text-white/90"
+                >
+                  <span className="mt-2 size-2 shrink-0 rounded-full bg-gold" />
+                  <span>
+                    <b className="font-semibold text-white">{l.destacado}</b>
+                    {l.texto}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/actualidad"
+              className="mt-4 inline-flex items-center gap-2 text-[0.72rem] font-bold uppercase tracking-[0.1em] text-gold transition-colors hover:text-white"
+            >
+              Ver toda la actualidad
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* PROXIMOS EVENTOS */}
+      <section className="px-6 py-20 md:px-10">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-8">
+            <span className="text-[0.95rem] font-semibold uppercase tracking-[0.2em] text-foreground">
+              Próximos eventos
+            </span>
+            <div className="mt-4 h-0.5 w-14 bg-gold" />
+          </div>
+          {eventos.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Aún no hay eventos programados. Los publicaremos aquí en cuanto
+              haya novedades del sector.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 border-t border-border sm:grid-cols-3 sm:divide-x sm:divide-border">
+              {eventos.map((ev) => {
+                const f = new Date(ev.fecha);
+                return (
+                  <div
+                    key={ev.id}
+                    className="flex flex-col border-t border-border pt-5 first:border-t-0 sm:border-t-0 sm:px-6 sm:first:pl-0 sm:last:pr-0"
+                  >
+                    <span className="font-serif text-[2rem] leading-none text-foreground">
+                      {String(f.getDate()).padStart(2, "0")}
+                    </span>
+                    <span className="mt-1 text-[0.6rem] uppercase tracking-[0.14em] text-muted-foreground">
+                      {MESES[f.getMonth()]}
+                    </span>
+                    <h4 className="mt-5 text-[0.95rem] font-semibold leading-snug text-foreground">
+                      {ev.titulo}
+                    </h4>
+                    <p className="mt-1.5 text-xs text-muted-foreground">
+                      {[ev.ciudad, ev.modalidad].filter(Boolean).join(" · ")}
+                    </p>
+                    <Link
+                      href={ev.url ?? "/actualidad"}
+                      className="mt-auto inline-flex items-center gap-1.5 pt-6 text-[0.65rem] font-bold uppercase tracking-[0.06em] text-foreground transition-colors hover:text-gold"
+                    >
+                      Ver evento
+                      <ArrowRight className="size-3.5 text-gold" aria-hidden="true" />
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 

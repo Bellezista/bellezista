@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, User, X } from "lucide-react";
 
 const LINKS = [
@@ -16,6 +17,9 @@ const LINKS = [
 // icon and a mobile menu.
 export function PortadaNav({ loggedIn }: { loggedIn: boolean }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const esActivo = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <header className="bg-[#171512] text-white">
@@ -50,7 +54,12 @@ export function PortadaNav({ loggedIn }: { loggedIn: boolean }) {
             <Link
               key={l.href}
               href={l.href}
-              className="whitespace-nowrap text-white/85 transition-colors hover:text-white"
+              aria-current={esActivo(l.href) ? "page" : undefined}
+              className={`whitespace-nowrap transition-colors ${
+                esActivo(l.href)
+                  ? "text-gold"
+                  : "text-white/85 hover:text-white"
+              }`}
             >
               {l.label}
             </Link>
@@ -88,7 +97,10 @@ export function PortadaNav({ loggedIn }: { loggedIn: boolean }) {
             <Link
               key={l.href}
               href={l.href}
-              className="block py-3 text-sm font-semibold uppercase tracking-[0.08em] text-white/85"
+              aria-current={esActivo(l.href) ? "page" : undefined}
+              className={`block py-3 text-sm font-semibold uppercase tracking-[0.08em] ${
+                esActivo(l.href) ? "text-gold" : "text-white/85"
+              }`}
             >
               {l.label}
             </Link>
