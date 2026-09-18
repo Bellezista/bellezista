@@ -231,7 +231,7 @@ export default async function LandingPage() {
           </Link>
 
           {/* Próximos eventos */}
-          <div className="flex flex-col pr-6 pt-12 md:pr-10 lg:pr-16">
+          <div className="flex flex-col px-6 pt-12 md:pl-0 md:pr-10 lg:pr-16">
             <div className="mb-8">
               <span className="text-[0.95rem] font-semibold uppercase tracking-[0.2em] text-foreground">
                 Próximos eventos

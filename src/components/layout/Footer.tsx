@@ -56,7 +56,7 @@ const SOCIAL = [
 export function Footer() {
   return (
     <footer className="border-t-2 border-gold bg-[#171512] text-white">
-      <div className="flex w-full flex-col gap-8 px-6 py-9 md:px-10 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex w-full flex-col items-start gap-8 px-6 py-9 md:px-10 lg:flex-row lg:items-center lg:justify-between">
         {/* Logo -- same as the header */}
         <Link href="/" className="inline-block shrink-0 leading-none">
           <span
