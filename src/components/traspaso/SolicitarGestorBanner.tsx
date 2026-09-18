@@ -21,6 +21,9 @@ interface SolicitarGestorBannerProps {
   loggedIn?: boolean;
   // Where to return after signing up (defaults to the Traspasos page).
   next?: string;
+  // Optional copy overrides for the full "banner" variant.
+  headline?: string;
+  descripcion?: string;
 }
 
 // Lead-capture CTA for SoluciónOK's professional management service: the user
@@ -35,6 +38,8 @@ export function SolicitarGestorBanner({
   variant = "banner",
   loggedIn = false,
   next = "/traspasos",
+  headline = "¿Prefieres que un profesional se encargue de tu traspaso?",
+  descripcion = "Un gestor de Bellezista te contacta y se encarga de todo —búsqueda de comprador, negociación y documentación—. Sin compromiso y sin coste para ti.",
 }: SolicitarGestorBannerProps) {
   const [pending, startTransition] = useTransition();
   const [enviado, setEnviado] = useState(false);
@@ -146,12 +151,10 @@ export function SolicitarGestorBanner({
             </span>
           </div>
           <p className="mt-3 font-serif text-xl leading-tight text-foreground md:text-2xl">
-            ¿Prefieres que un profesional se encargue de tu traspaso?
+            {headline}
           </p>
           <p className="mt-2 text-sm leading-relaxed text-foreground">
-            Un gestor de Bellezista te contacta y se encarga de todo —búsqueda de
-            comprador, negociación y documentación—. Sin compromiso y sin coste
-            para ti.
+            {descripcion}
           </p>
         </div>
 

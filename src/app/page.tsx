@@ -13,6 +13,7 @@ import {
 import { getAnunciosMaquinaria, getAnunciosTraspaso } from "@/lib/actions/anuncios";
 import { getCvs } from "@/lib/actions/talento";
 import { getProximosEventos } from "@/lib/actions/eventos";
+import { getResumenDiario } from "@/lib/home/resumen";
 import { createClient } from "@/lib/supabase/server";
 import { PUESTO_TALENTO_LABEL } from "@/lib/anuncio/labels";
 import { Footer } from "@/components/layout/Footer";
@@ -37,11 +38,12 @@ const EXPLORA = [
 const MESES = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
 
 export default async function LandingPage() {
-  const [maquinaria, traspaso, cvs, eventos] = await Promise.all([
+  const [maquinaria, traspaso, cvs, eventos, resumen] = await Promise.all([
     getAnunciosMaquinaria(),
     getAnunciosTraspaso(),
     getCvs(),
     getProximosEventos(3),
+    getResumenDiario(),
   ]);
 
   const supabase = await createClient();
@@ -202,19 +204,29 @@ export default async function LandingPage() {
             href="/actualidad"
             className="group relative flex min-h-[440px] overflow-hidden bg-[#171512] text-white"
           >
-            <div className="relative z-10 flex max-w-[50%] flex-col justify-center gap-4 p-8 md:p-10">
+            <div className="relative z-10 flex max-w-[56%] flex-col justify-center gap-4 p-8 md:p-10">
               <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gold">
-                Actualidad
+                Resumen diario
               </span>
               <h3 className="font-serif text-[1.6rem] leading-tight md:text-[1.8rem]">
-                Tendencias que marcan el futuro de la belleza
+                Hoy en el sector
               </h3>
-              <p className="text-[0.82rem] leading-relaxed text-white/70">
-                Las últimas novedades, tecnologías y estrategias para mantener tu
-                negocio a la vanguardia.
-              </p>
-              <span className="mt-2 inline-flex items-center gap-2 text-[0.7rem] font-bold uppercase tracking-[0.08em] text-white">
-                Leer artículo
+              <ul className="flex flex-col gap-2.5">
+                {resumen.map((l, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2.5 text-[0.85rem] leading-snug text-white/85"
+                  >
+                    <span className="mt-[0.4rem] size-1.5 shrink-0 rounded-full bg-gold" />
+                    <span>
+                      <b className="font-semibold text-white">{l.destacado}</b>
+                      {l.texto}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <span className="mt-1 inline-flex items-center gap-2 text-[0.7rem] font-bold uppercase tracking-[0.08em] text-white">
+                Ver toda la actualidad
                 <ArrowRight className="size-4 text-gold" aria-hidden="true" />
               </span>
             </div>

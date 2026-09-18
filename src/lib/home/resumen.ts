@@ -8,17 +8,28 @@ export interface LineaResumen {
 }
 
 // Auto-generated "Resumen Diario Bellezista": a snapshot of recent real activity
-// on the platform, built from the database with no manual writing. Only includes
-// lines that actually have data, so it's honest even when the platform is quiet.
+// on the platform, built from the database with no manual writing. Only lines
+// with actual data are included, so it stays honest even when the platform is
+// quiet.
+//
+// Event types whose module does not exist yet are intentionally NOT faked and
+// will be wired when their data source lands:
+//   - Nueva oferta de empleo (no job-vacancy model; `Oferta` is a promo)
+//   - Nuevo proveedor en Profesionales (directory is still a placeholder)
+//   - Profesional destacado Premium (depends on the Profesionales directory)
 export async function getResumenDiario(): Promise<LineaResumen[]> {
   const desde = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-  const [ultimoTraspaso, maquinariaNuevas, cvsNuevos, destacados, aperturaReciente] =
+  const [ultimoTraspaso, maquinariaNuevas, cvsNuevos, miembrosNuevos] =
     await Promise.all([
       prisma.anuncio.findFirst({
-        where: { tipo: TipoAnuncio.TRASPASO, estado: "ACTIVO" },
+        where: {
+          tipo: TipoAnuncio.TRASPASO,
+          estado: "ACTIVO",
+          creadoEn: { gte: desde },
+        },
         orderBy: { creadoEn: "desc" },
-        select: { ciudadProvincia: true, creadoEn: true },
+        select: { ciudadProvincia: true },
       }),
       prisma.anuncio.count({
         where: {
@@ -28,12 +39,7 @@ export async function getResumenDiario(): Promise<LineaResumen[]> {
         },
       }),
       prisma.cv.count({ where: { visible: true, creadoEn: { gte: desde } } }),
-      prisma.anuncio.count({ where: { destacadoHasta: { gt: new Date() } } }),
-      prisma.anuncio.findFirst({
-        where: { tipo: TipoAnuncio.TRASPASO, estado: "ACTIVO", creadoEn: { gte: desde } },
-        orderBy: { creadoEn: "desc" },
-        select: { ciudadProvincia: true },
-      }),
+      prisma.usuario.count({ where: { creadoEn: { gte: desde } } }),
     ]);
 
   const lineas: LineaResumen[] = [];
@@ -47,26 +53,35 @@ export async function getResumenDiario(): Promise<LineaResumen[]> {
   if (maquinariaNuevas > 0) {
     lineas.push({
       destacado:
-        maquinariaNuevas === 1 ? "Nueva maquinaria" : `${maquinariaNuevas} equipos nuevos`,
-      texto: " disponibles para profesionales.",
+        maquinariaNuevas === 1
+          ? "Nueva maquinaria"
+          : `${maquinariaNuevas} equipos nuevos`,
+      texto:
+        maquinariaNuevas === 1
+          ? " disponible para profesionales."
+          : " disponibles para profesionales.",
     });
   }
   if (cvsNuevos > 0) {
     lineas.push({
-      destacado: cvsNuevos === 1 ? "Nuevo perfil" : `${cvsNuevos} nuevos perfiles`,
-      texto: " de talento en Empleo & Talento.",
+      destacado:
+        cvsNuevos === 1 ? "Nuevo perfil de talento" : `${cvsNuevos} nuevos perfiles`,
+      texto:
+        cvsNuevos === 1
+          ? " en Empleo & Talento."
+          : " de talento en Empleo & Talento.",
     });
   }
-  if (destacados > 0) {
+  if (miembrosNuevos > 0) {
     lineas.push({
-      destacado: destacados === 1 ? "Un anuncio destacado" : `${destacados} anuncios destacados`,
-      texto: " ahora mismo en la plataforma.",
-    });
-  }
-  if (aperturaReciente && lineas.length < 5) {
-    lineas.push({
-      destacado: "Nueva actividad",
-      texto: " en el sector esta semana.",
+      destacado:
+        miembrosNuevos === 1
+          ? "Un nuevo profesional"
+          : `${miembrosNuevos} nuevos profesionales`,
+      texto:
+        miembrosNuevos === 1
+          ? " se ha unido a Bellezista esta semana."
+          : " se han unido a Bellezista esta semana.",
     });
   }
 

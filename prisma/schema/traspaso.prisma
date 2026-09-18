@@ -71,6 +71,13 @@ model Traspaso {
   incluyePersonal    Boolean? @map("incluye_personal")
   antiguedadPersonal String?  @map("antiguedad_personal")
 
+  // Local characteristics -- surfaced as catalog filters on /traspasos.
+  enFuncionamiento Boolean? @map("en_funcionamiento")
+  aPieDeCalle      Boolean? @map("a_pie_de_calle")
+  reformado        Boolean?
+  conClientela     Boolean? @map("con_clientela")
+  conAparatologia  Boolean? @map("con_aparatologia")
+
   @@index([tipoNegocio])
   @@map("traspaso")
   @@schema("public")

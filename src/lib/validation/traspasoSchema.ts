@@ -44,6 +44,13 @@ export const traspasoSchema = z.object({
   // Universal staff fields.
   incluyePersonal: z.coerce.boolean().optional(),
   antiguedadPersonal: z.string().max(200).optional(),
+
+  // Local characteristics (catalog filters).
+  enFuncionamiento: z.coerce.boolean().optional(),
+  aPieDeCalle: z.coerce.boolean().optional(),
+  reformado: z.coerce.boolean().optional(),
+  conClientela: z.coerce.boolean().optional(),
+  conAparatologia: z.coerce.boolean().optional(),
 });
 
 export type TraspasoInput = z.infer<typeof traspasoSchema>;

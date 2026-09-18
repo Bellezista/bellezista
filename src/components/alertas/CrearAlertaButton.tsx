@@ -11,7 +11,21 @@ import { Button } from "@/components/ui/button";
 
 // "Crear alerta con estos filtros" -- saves the section's current URL filters as
 // a saved search. Shown next to the search bar in each section.
-export function CrearAlertaButton({ seccion }: { seccion: SeccionAlerta }) {
+export function CrearAlertaButton({
+  seccion,
+  filtros: filtrosProp,
+  className,
+  label = "Crear alerta con estos filtros",
+}: {
+  seccion: SeccionAlerta;
+  // When provided (client-side filter state), these are saved instead of the
+  // URL query params.
+  filtros?: Record<string, string>;
+  // Extra classes for the idle button (e.g. w-full inside a sidebar panel).
+  className?: string;
+  // Idle-state label (shortened where space is tight, e.g. a narrow sidebar).
+  label?: string;
+}) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
@@ -20,7 +34,8 @@ export function CrearAlertaButton({ seccion }: { seccion: SeccionAlerta }) {
   );
 
   function crear() {
-    const filtros = Object.fromEntries(searchParams.entries());
+    const filtros =
+      filtrosProp ?? Object.fromEntries(searchParams.entries());
     startTransition(async () => {
       const res = await crearAlerta(seccion, filtros);
       if (res.error === "NO_AUTH") return setEstado("noauth");
@@ -54,10 +69,10 @@ export function CrearAlertaButton({ seccion }: { seccion: SeccionAlerta }) {
       variant="outline"
       disabled={pending}
       onClick={crear}
-      className="gap-2 whitespace-nowrap rounded-full border-gold bg-gold/10 font-semibold text-gold hover:bg-gold hover:text-foreground"
+      className={`gap-2 whitespace-nowrap rounded-full border-gold bg-gold/10 font-semibold text-gold hover:bg-gold hover:text-foreground ${className ?? ""}`}
     >
       <BellPlus className="size-4" aria-hidden="true" />
-      {pending ? "Creando..." : "Crear alerta con estos filtros"}
+      {pending ? "Creando..." : label}
     </Button>
   );
 }

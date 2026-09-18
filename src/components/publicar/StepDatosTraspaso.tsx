@@ -253,6 +253,34 @@ export function StepDatosTraspaso() {
         )}
       </div>
 
+      {/* Características del local (filtros del catálogo) */}
+      <div className="space-y-3 rounded-lg border border-border p-4">
+        <p className="text-sm font-medium text-foreground">
+          Características del local
+        </p>
+        <div className="grid gap-2.5 sm:grid-cols-2">
+          {[
+            { key: "enFuncionamiento", label: "En funcionamiento" },
+            { key: "aPieDeCalle", label: "A pie de calle" },
+            { key: "reformado", label: "Reformado" },
+            { key: "conClientela", label: "Con clientela" },
+            { key: "conAparatologia", label: "Con aparatología" },
+          ].map((c) => (
+            <label
+              key={c.key}
+              className="flex items-center gap-2.5 text-sm text-foreground"
+            >
+              <input
+                type="checkbox"
+                className="size-4 accent-gold"
+                {...register(c.key as Path<PublicarTraspasoFormInput>)}
+              />
+              {c.label}
+            </label>
+          ))}
+        </div>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="tipoLicencia">Tipo de licencia</Label>
