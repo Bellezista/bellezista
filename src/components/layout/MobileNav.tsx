@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/layout/Logo";
 import { UnreadBadge } from "@/components/layout/UnreadBadge";
 import { useConteoNoLeidos } from "@/hooks/useConteoNoLeidos";
 import { Button } from "@/components/ui/button";
@@ -76,7 +75,18 @@ export function MobileNav({ isAuthenticated = true }: { isAuthenticated?: boolea
             onClick={() => setOpen(false)}
             aria-label="Ir al inicio"
           >
-            <Logo className="text-lg" />
+            <span
+              className="block whitespace-nowrap text-[1.35rem] font-medium leading-none tracking-[0.14em]"
+              style={{
+                fontFamily: "var(--font-logo)",
+                background: "linear-gradient(180deg,#dab86f 0%,#c19a52 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+              }}
+            >
+              BELLEZISTA
+            </span>
           </Link>
           <Button
             variant="ghost"

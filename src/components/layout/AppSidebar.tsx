@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/layout/Logo";
 import { UnreadBadge } from "@/components/layout/UnreadBadge";
 import { useConteoNoLeidos } from "@/hooks/useConteoNoLeidos";
 
@@ -43,10 +42,26 @@ export function AppSidebar({
   const { data: noLeidos } = useConteoNoLeidos(isAuthenticated);
 
   return (
-    <aside className="hidden text-background md:sticky md:top-0 md:flex md:h-screen md:w-60 md:flex-col md:overflow-y-auto md:border-r md:border-white/10 md:bg-foreground">
-      <Link href="/" className="flex flex-col gap-1 px-6 py-8" aria-label="Ir al inicio">
-        <Logo className="text-xl text-background" />
-        <span className="text-xs text-gold">El mundo de la belleza</span>
+    <aside className="hidden text-white md:sticky md:top-0 md:flex md:h-screen md:w-60 md:flex-col md:overflow-y-auto md:border-r md:border-white/10 md:bg-[#171512]">
+      <Link href="/" className="block px-6 py-8 text-center" aria-label="Ir al inicio">
+        <span
+          className="block whitespace-nowrap text-[1.6rem] font-medium leading-none tracking-[0.14em]"
+          style={{
+            fontFamily: "var(--font-logo)",
+            background: "linear-gradient(180deg,#dab86f 0%,#c19a52 100%)",
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            color: "transparent",
+          }}
+        >
+          BELLEZISTA
+        </span>
+        <span
+          className="mt-1.5 block whitespace-nowrap text-[0.5rem] font-medium"
+          style={{ color: "#c6a05a", textAlign: "justify", textAlignLast: "justify" }}
+        >
+          PLATAFORMA PROFESIONAL DE BELLEZA
+        </span>
       </Link>
 
       <nav className="flex flex-1 flex-col gap-1 px-3">

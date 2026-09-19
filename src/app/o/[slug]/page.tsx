@@ -11,6 +11,23 @@ export const dynamic = "force-dynamic";
 // here from a link the business shares, sees one offer, and contacts by
 // WhatsApp. Traffic is external, so there is no catalog for this module.
 
+function MarcaBellezista({ className = "" }: { className?: string }) {
+  return (
+    <span
+      className={`font-medium tracking-[0.1em] ${className}`}
+      style={{
+        fontFamily: "var(--font-logo)",
+        background: "linear-gradient(180deg,#dab86f 0%,#c19a52 100%)",
+        WebkitBackgroundClip: "text",
+        backgroundClip: "text",
+        color: "transparent",
+      }}
+    >
+      BELLEZISTA
+    </span>
+  );
+}
+
 function iniciales(nombre: string): string {
   const p = nombre.trim().split(/\s+/).filter(Boolean);
   if (p.length === 0) return "?";
@@ -51,17 +68,14 @@ export default async function OfertaLandingPage({
   // Not found, unpaid, or expired: a minimal standalone notice (still no shell).
   if (!data || !data.vigente) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-muted px-4 py-10">
-        <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-8 text-center shadow-[var(--shadow-card)]">
+      <main className="flex min-h-screen items-center justify-center bg-[#efe9df] px-4 py-10">
+        <div className="w-full max-w-sm rounded-2xl border border-border bg-white p-8 text-center shadow-[var(--shadow-card)]">
           <p className="font-serif text-xl text-foreground">Oferta no disponible</p>
           <p className="mt-2 text-sm text-muted-foreground">
             Esta oferta ha caducado o ya no está activa.
           </p>
-          <Link
-            href="/"
-            className="mt-5 inline-block text-sm font-bold text-foreground"
-          >
-            Bellez<span className="text-gold">i</span>sta
+          <Link href="/" className="mt-5 inline-block" aria-label="Ir a Bellezista">
+            <MarcaBellezista className="text-sm" />
           </Link>
         </div>
       </main>
@@ -83,8 +97,8 @@ export default async function OfertaLandingPage({
     : null;
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-muted px-4 py-10">
-      <div className="w-full max-w-sm overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
+    <main className="flex min-h-screen items-center justify-center bg-[#efe9df] px-4 py-10">
+      <div className="w-full max-w-sm overflow-hidden rounded-2xl border border-border bg-white shadow-[var(--shadow-card)]">
         {/* Imagen + badge */}
         <div className="relative aspect-[16/10] w-full">
           <Image
@@ -96,7 +110,7 @@ export default async function OfertaLandingPage({
             className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-foreground/5 to-foreground/35" />
-          <span className="absolute left-4 top-4 rounded-md bg-cream px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-gold">
+          <span className="absolute left-4 top-4 rounded-md bg-gold px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-foreground">
             {badge}
           </span>
         </div>
@@ -155,10 +169,10 @@ export default async function OfertaLandingPage({
         </div>
 
         {/* Crédito Bellezista */}
-        <div className="border-t border-border px-6 py-3 text-center text-[11px] text-muted-foreground">
-          Página de oferta creada con{" "}
-          <Link href="/" className="font-bold text-foreground">
-            Bellez<span className="text-gold">i</span>sta
+        <div className="flex items-center justify-center gap-1.5 border-t border-border px-6 py-3.5 text-center text-[11px] text-muted-foreground">
+          Página de oferta creada con
+          <Link href="/" aria-label="Ir a Bellezista">
+            <MarcaBellezista className="text-[0.72rem]" />
           </Link>
         </div>
       </div>

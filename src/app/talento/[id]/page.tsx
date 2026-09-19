@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Lock } from "lucide-react";
+import { Lock, UserRound, ArrowLeft } from "lucide-react";
 import { getCvById } from "@/lib/actions/talento";
 import {
   tieneAccesoCv,
@@ -45,44 +45,48 @@ export default async function CvDetallePage(props: PageProps<"/talento/[id]">) {
   const saldoCreditos = user && !esPropio ? await getMiSaldoCreditos() : 0;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 px-6 py-10 md:py-14">
-      <div className="rounded-xl bg-cream px-6 py-9 md:px-10 md:py-11">
-        <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
-          {PUESTO_TALENTO_LABEL[cv.puesto]}
+    <div className="mx-auto max-w-3xl space-y-6 px-6 py-8 md:py-12">
+      <Link
+        href="/talento"
+        className="inline-flex items-center gap-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted-foreground transition-colors hover:text-gold"
+      >
+        <ArrowLeft className="size-4" aria-hidden="true" />
+        Volver a Empleo & Talento
+      </Link>
+
+      <div className="flex items-center gap-5 rounded-xl bg-[#f6f2ea] px-6 py-8 md:px-8">
+        <span className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#171512] text-white">
+          {desbloqueado && cv.foto ? (
+            <Image src={cv.foto} alt={cv.nombre ?? "Candidato"} fill sizes="64px" className="object-cover" />
+          ) : (
+            <>
+              <UserRound className="size-7" aria-hidden="true" />
+              {!desbloqueado && (
+                <span className="absolute -bottom-1 -right-1 flex size-6 items-center justify-center rounded-full border-2 border-[#f6f2ea] bg-gold text-foreground">
+                  <Lock className="size-3" aria-hidden="true" />
+                </span>
+              )}
+            </>
+          )}
         </span>
-        <h1 className="mt-2 font-serif text-3xl leading-tight text-foreground md:text-4xl">
-          {cv.aniosExperiencia} {cv.aniosExperiencia === 1 ? "año" : "años"} de
-          experiencia
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {cv.provincia} · {JORNADA_TALENTO_LABEL[cv.jornada]} ·{" "}
-          {DISPONIBILIDAD_TALENTO_LABEL[cv.disponibilidad]}
-        </p>
+        <div>
+          <span className="text-xs font-medium uppercase tracking-[0.18em] text-gold">
+            {PUESTO_TALENTO_LABEL[cv.puesto]}
+          </span>
+          <h1 className="mt-1 font-serif text-2xl leading-tight text-foreground md:text-3xl">
+            {desbloqueado
+              ? (cv.nombre ?? cv.usuario.nombre)
+              : `${cv.aniosExperiencia} ${cv.aniosExperiencia === 1 ? "año" : "años"} de experiencia`}
+          </h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            {cv.provincia} · {JORNADA_TALENTO_LABEL[cv.jornada]} ·{" "}
+            {DISPONIBILIDAD_TALENTO_LABEL[cv.disponibilidad]}
+          </p>
+        </div>
       </div>
 
       {desbloqueado ? (
-        <div className="space-y-5 rounded-xl border border-border bg-card p-6">
-          <div className="flex items-center gap-4">
-            {cv.foto && (
-              <div className="relative size-16 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
-                <Image
-                  src={cv.foto}
-                  alt={cv.nombre ?? "Candidato"}
-                  fill
-                  sizes="64px"
-                  className="object-cover"
-                />
-              </div>
-            )}
-            <div>
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Candidato
-              </p>
-              <p className="text-lg font-semibold text-foreground">
-                {cv.nombre ?? cv.usuario.nombre}
-              </p>
-            </div>
-          </div>
+        <div className="space-y-5 rounded-xl border border-border bg-white p-6">
           {cv.expectativaSalarial && (
             <div>
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -118,7 +122,7 @@ export default async function CvDetallePage(props: PageProps<"/talento/[id]">) {
                 {cv.tecnicas.map((t) => (
                   <li
                     key={t.id}
-                    className="rounded-full border border-border bg-muted px-3 py-1 text-xs text-foreground"
+                    className="rounded-full border border-border bg-cream px-3 py-1 text-xs text-foreground"
                   >
                     {labelTecnica(t.tecnica)}
                     {t.anios > 0 && (
@@ -149,8 +153,8 @@ export default async function CvDetallePage(props: PageProps<"/talento/[id]">) {
           )}
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-5 rounded-xl border border-border bg-card p-8 text-center">
-          <span className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+        <div className="flex flex-col items-center gap-5 rounded-xl border border-border bg-[#f6f2ea] p-8 text-center">
+          <span className="flex size-12 items-center justify-center rounded-full bg-[#171512] text-gold">
             <Lock className="size-5" aria-hidden="true" />
           </span>
           <div>
